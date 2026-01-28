@@ -1,0 +1,295 @@
+/* Analytics.css */
+
+/* Container */
+.analytics-container {
+  @apply min-h-screen bg-slate-950 flex;
+}
+
+/* Main Content */
+.analytics-main {
+  @apply flex-1 ml-0 lg:ml-64 p-6 lg:p-8;
+}
+
+/* Header */
+.analytics-header {
+  @apply mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4;
+}
+
+.analytics-header-content {
+  @apply space-y-1;
+}
+
+.analytics-title {
+  @apply text-3xl lg:text-4xl font-bold text-white;
+}
+
+.analytics-subtitle {
+  @apply text-slate-400 text-sm lg:text-base;
+}
+
+.analytics-actions {
+  @apply flex items-center gap-3;
+}
+
+.analytics-date-select {
+  @apply px-4 py-2.5 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-xl text-slate-300 focus:outline-none focus:border-cyan-500/30 text-sm font-medium transition-all duration-300;
+}
+
+.analytics-export-btn {
+  @apply px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl flex items-center gap-2 text-sm font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300;
+}
+
+/* Status Banner */
+.analytics-status-banner {
+  @apply mb-6 px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl backdrop-blur-sm flex items-center gap-3;
+}
+
+.analytics-status-indicator {
+  @apply w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50 animate-pulse;
+}
+
+.analytics-status-text {
+  @apply text-emerald-400 text-sm font-medium;
+}
+
+/* Stats Grid */
+.analytics-stats-grid {
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8;
+}
+
+.analytics-stat-card {
+  @apply bg-gradient-to-br from-slate-900/80 to-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all duration-300;
+}
+
+.stat-icon {
+  @apply w-12 h-12 rounded-xl flex items-center justify-center mb-4;
+}
+
+.stat-icon-cyan {
+  @apply bg-cyan-500/10 text-cyan-400;
+}
+
+.stat-icon-purple {
+  @apply bg-purple-500/10 text-purple-400;
+}
+
+.stat-icon-blue {
+  @apply bg-blue-500/10 text-blue-400;
+}
+
+.stat-icon-emerald {
+  @apply bg-emerald-500/10 text-emerald-400;
+}
+
+.stat-content {
+  @apply space-y-2;
+}
+
+.stat-label {
+  @apply text-slate-400 text-sm;
+}
+
+.stat-value {
+  @apply text-white text-3xl font-bold;
+}
+
+.stat-change {
+  @apply text-sm font-medium;
+}
+
+.stat-change-positive {
+  @apply text-emerald-400;
+}
+
+.stat-change-negative {
+  @apply text-rose-400;
+}
+
+.stat-change-neutral {
+  @apply text-slate-400;
+}
+
+/* Charts Grid */
+.analytics-charts-grid {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8;
+}
+
+.analytics-chart-card {
+  @apply bg-gradient-to-br from-slate-900/80 to-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6;
+}
+
+.analytics-chart-large {
+  @apply lg:col-span-2;
+}
+
+.chart-header {
+  @apply mb-6;
+}
+
+.chart-title {
+  @apply text-xl font-bold text-white mb-1;
+}
+
+.chart-subtitle {
+  @apply text-slate-400 text-sm;
+}
+
+.chart-content {
+  @apply mt-4;
+}
+
+/* Bar Chart */
+.bar-chart {
+  @apply flex items-end justify-between gap-3 h-64;
+}
+
+.bar-chart-item {
+  @apply flex-1 flex flex-col items-center gap-2;
+}
+
+.bar-container {
+  @apply w-full h-full flex items-end;
+}
+
+.bar-fill {
+  @apply w-full bg-gradient-to-t from-cyan-500 to-blue-600 rounded-t-lg relative flex items-start justify-center pt-2 transition-all duration-500;
+}
+
+.bar-value {
+  @apply text-white text-xs font-bold;
+}
+
+.bar-label {
+  @apply text-slate-400 text-xs;
+}
+
+/* Distribution Chart */
+.distribution-chart {
+  @apply space-y-4;
+}
+
+.distribution-item {
+  @apply space-y-2;
+}
+
+.distribution-header {
+  @apply flex items-center justify-between;
+}
+
+.distribution-label {
+  @apply text-sm font-medium;
+}
+
+.distribution-label-rose {
+  @apply text-rose-400;
+}
+
+.distribution-label-amber {
+  @apply text-amber-400;
+}
+
+.distribution-label-blue {
+  @apply text-blue-400;
+}
+
+.distribution-count {
+  @apply text-white font-bold;
+}
+
+.distribution-bar-container {
+  @apply w-full h-3 bg-slate-800/50 rounded-full overflow-hidden;
+}
+
+.distribution-bar {
+  @apply h-full rounded-full transition-all duration-500;
+}
+
+.distribution-bar-rose {
+  @apply bg-gradient-to-r from-rose-500 to-rose-600;
+}
+
+.distribution-bar-amber {
+  @apply bg-gradient-to-r from-amber-500 to-amber-600;
+}
+
+.distribution-bar-blue {
+  @apply bg-gradient-to-r from-blue-500 to-blue-600;
+}
+
+.distribution-percentage {
+  @apply text-slate-400 text-xs;
+}
+
+/* Behavior List */
+.behavior-list {
+  @apply space-y-4;
+}
+
+.behavior-item {
+  @apply space-y-2;
+}
+
+.behavior-info {
+  @apply flex items-center justify-between;
+}
+
+.behavior-name {
+  @apply text-white font-medium text-sm;
+}
+
+.behavior-count {
+  @apply text-slate-400 text-xs;
+}
+
+.behavior-bar-container {
+  @apply w-full h-2 bg-slate-800/50 rounded-full overflow-hidden;
+}
+
+.behavior-bar {
+  @apply h-full bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full transition-all duration-500;
+}
+
+.behavior-percentage {
+  @apply text-slate-400 text-xs;
+}
+
+/* Camera Performance */
+.camera-performance-list {
+  @apply space-y-3;
+}
+
+.camera-performance-item {
+  @apply flex items-center justify-between p-3 bg-slate-800/30 rounded-lg hover:bg-slate-800/50 transition-all duration-300;
+}
+
+.camera-info {
+  @apply flex-1;
+}
+
+.camera-name {
+  @apply text-white font-medium text-sm mb-1;
+}
+
+.camera-metrics {
+  @apply flex items-center gap-3 text-slate-400 text-xs;
+}
+
+.camera-metric {
+  @apply flex items-center gap-1;
+}
+
+.camera-uptime {
+  @apply flex-shrink-0;
+}
+
+.uptime-badge {
+  @apply px-2 py-1 rounded-md text-xs font-medium;
+}
+
+.uptime-excellent {
+  @apply bg-emerald-500/10 text-emerald-400;
+}
+
+.uptime-good {
+  @apply bg-amber-500/10 text-amber-400;
+}

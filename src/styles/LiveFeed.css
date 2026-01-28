@@ -1,0 +1,205 @@
+/* LiveFeed.css */
+
+/* Container */
+.livefeed-container {
+  @apply min-h-screen bg-slate-950 flex;
+}
+
+/* Main Content */
+.livefeed-main {
+  @apply flex-1 ml-0 lg:ml-64 p-6 lg:p-8;
+}
+
+/* Header */
+.livefeed-header {
+  @apply mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4;
+}
+
+.livefeed-header-content {
+  @apply space-y-1;
+}
+
+.livefeed-title {
+  @apply text-3xl lg:text-4xl font-bold text-white;
+}
+
+.livefeed-subtitle {
+  @apply text-slate-400 text-sm lg:text-base;
+}
+
+.livefeed-view-toggle {
+  @apply flex items-center gap-3;
+}
+
+.view-toggle-buttons {
+  @apply flex gap-2 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-xl p-1;
+}
+
+.view-toggle-btn {
+  @apply w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300 text-slate-400 hover:text-white;
+}
+
+.view-toggle-btn-active {
+  @apply bg-gradient-to-br from-cyan-500 to-blue-600 text-white shadow-lg;
+}
+
+/* Status Banner */
+.livefeed-status-banner {
+  @apply mb-6 px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl backdrop-blur-sm flex items-center gap-3;
+}
+
+.status-indicator {
+  @apply w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50 animate-pulse;
+}
+
+.status-text {
+  @apply text-emerald-400 text-sm font-medium;
+}
+
+.status-count {
+  @apply text-emerald-400/70 text-sm ml-auto;
+}
+
+/* Camera Grid */
+.camera-grid {
+  @apply grid gap-6;
+}
+
+.camera-grid-view {
+  @apply grid-cols-1 md:grid-cols-2 lg:grid-cols-3;
+}
+
+.camera-list-view {
+  @apply grid-cols-1;
+}
+
+/* Camera Card */
+.camera-card {
+  @apply bg-gradient-to-br from-slate-900/80 to-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden hover:border-cyan-500/30 hover:shadow-xl hover:shadow-cyan-500/10 transition-all duration-300 cursor-pointer;
+  animation: cardFadeIn 0.6s ease-out backwards;
+}
+
+.camera-card-header {
+  @apply p-4 flex items-center justify-between;
+}
+
+.camera-status {
+  @apply flex items-center gap-2 text-xs font-medium text-emerald-400;
+}
+
+.camera-status-dot {
+  @apply w-2 h-2 rounded-full bg-emerald-400 animate-pulse;
+}
+
+.camera-menu-btn {
+  @apply w-8 h-8 rounded-lg hover:bg-white/5 text-slate-400 hover:text-white flex items-center justify-center transition-all duration-300;
+}
+
+/* Camera Video */
+.camera-video-container {
+  @apply relative aspect-video bg-slate-800/50;
+}
+
+.camera-video-placeholder {
+  @apply w-full h-full flex items-center justify-center text-slate-600;
+}
+
+.camera-video-overlay {
+  @apply absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-300;
+}
+
+.camera-play-button-container {
+  @apply absolute bottom-2 left-2 right-2 flex items-center justify-center gap-2;
+}
+
+.camera-play-button {
+  @apply w-10 h-10 rounded-lg bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 flex items-center justify-center transition-all duration-300;
+}
+
+/* Camera Info */
+.camera-card-info {
+  @apply p-4;
+}
+
+.camera-name {
+  @apply text-white font-bold text-lg mb-1;
+}
+
+.camera-location {
+  @apply text-slate-400 text-sm mb-3;
+}
+
+.camera-specs {
+  @apply flex items-center gap-4 text-xs text-slate-400;
+}
+
+.camera-spec {
+  @apply flex items-center gap-2;
+}
+
+/* Modal */
+.camera-modal-overlay {
+  @apply fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4;
+}
+
+.camera-modal {
+  @apply bg-slate-900 border border-white/10 rounded-2xl w-full max-w-5xl shadow-2xl;
+}
+
+.camera-modal-header {
+  @apply p-6 border-b border-white/10 flex items-start justify-between;
+}
+
+.camera-modal-title {
+  @apply text-2xl font-bold text-white;
+}
+
+.camera-modal-location {
+  @apply text-slate-400 text-sm mt-1;
+}
+
+.camera-modal-close {
+  @apply w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition-all duration-300;
+}
+
+.camera-modal-body {
+  @apply p-6;
+}
+
+.camera-modal-video {
+  @apply w-full aspect-video bg-slate-800 rounded-xl flex items-center justify-center text-slate-600;
+}
+
+.camera-modal-footer {
+  @apply p-6 border-t border-white/10;
+}
+
+.camera-modal-stats {
+  @apply flex items-center justify-around;
+}
+
+.modal-stat-item {
+  @apply flex flex-col items-center gap-1;
+}
+
+.modal-stat-label {
+  @apply text-slate-400 text-sm;
+}
+
+.modal-stat-value {
+  @apply text-white font-semibold;
+}
+
+.modal-stat-value-active {
+  @apply text-emerald-400 font-semibold;
+}
+
+/* Animations */
+@keyframes cardFadeIn {
+  from {
+    @apply opacity-0 translate-y-4;
+  }
+  to {
+    @apply opacity-100 translate-y-0;
+  }
+}
