@@ -1,0 +1,5413 @@
+[
+  {
+    "timestamp": "2025-10-29T15:40:56.603100",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T15:43:32.182905",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T15:43:39.005082",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T15:53:47.012293",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:02:21.089235",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.3009279668331146,
+        "box": {
+          "x1": 0,
+          "y1": 433,
+          "x2": 151,
+          "y2": 720
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.29659411311149597,
+        "box": {
+          "x1": 1053,
+          "y1": 172,
+          "x2": 1280,
+          "y2": 381
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.29224276542663574,
+        "box": {
+          "x1": 1094,
+          "y1": 547,
+          "x2": 1279,
+          "y2": 720
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:30:00.816948",
+    "model": "weapon",
+    "detections": [
+      {
+        "class": "weapon",
+        "confidence": 0.4213828444480896,
+        "box": {
+          "x1": 253,
+          "y1": 96,
+          "x2": 591,
+          "y2": 332
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:30:15.849306",
+    "model": "weapon",
+    "detections": [
+      {
+        "class": "weapon",
+        "confidence": 0.5739437341690063,
+        "box": {
+          "x1": 159,
+          "y1": 54,
+          "x2": 222,
+          "y2": 108
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:31:24.901862",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:31:39.260383",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.5036353468894958,
+        "box": {
+          "x1": 19,
+          "y1": 93,
+          "x2": 117,
+          "y2": 198
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:49:59.522209",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:00.026370",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:00.415150",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:00.845792",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:01.339695",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:01.779740",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:02.289676",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:02.776316",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:03.259071",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:03.769666",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:04.413351",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:04.960763",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:05.611041",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:06.182326",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:06.622026",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:07.059082",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.4194622039794922,
+        "box": {
+          "x1": 255,
+          "y1": 400,
+          "x2": 393,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:07.501981",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5396528840065002,
+        "box": {
+          "x1": 0,
+          "y1": 420,
+          "x2": 20,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.29615920782089233,
+        "box": {
+          "x1": 261,
+          "y1": 425,
+          "x2": 314,
+          "y2": 478
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:07.973773",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5133586525917053,
+        "box": {
+          "x1": 0,
+          "y1": 422,
+          "x2": 17,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:08.406561",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.6316213011741638,
+        "box": {
+          "x1": 0,
+          "y1": 377,
+          "x2": 22,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:09.061077",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5623680353164673,
+        "box": {
+          "x1": 0,
+          "y1": 378,
+          "x2": 21,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:09.628668",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:10.167350",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:10.632579",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:11.050822",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:11.420822",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:11.811484",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:12.265384",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:12.770524",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:13.265619",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:13.776670",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:14.276438",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:14.777058",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:15.435798",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:15.822429",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:16.295954",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:16.758087",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:17.279206",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:17.770106",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:18.281016",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:18.760160",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:19.297310",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:19.780783",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:20.289851",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:20.765555",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:21.322224",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:21.838128",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:22.424574",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:23.021975",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:23.387564",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:23.781581",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:24.281443",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:24.789782",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:25.279676",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:25.786363",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:26.272987",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:26.768983",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:27.268679",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:27.801860",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:28.271675",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:28.766881",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:29.263961",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:29.776023",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:30.284452",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:30.761575",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:31.280797",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:31.773493",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:32.363514",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:32.823816",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:33.285049",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:33.826424",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:34.325043",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:34.800287",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:35.299610",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:35.786909",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:36.281711",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:36.768118",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:37.280084",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:37.800150",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:38.293148",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:38.794171",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:39.303564",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:39.913996",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5569636821746826,
+        "box": {
+          "x1": 0,
+          "y1": 390,
+          "x2": 19,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.2856334149837494,
+        "box": {
+          "x1": 270,
+          "y1": 391,
+          "x2": 320,
+          "y2": 453
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:40.560683",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:41.076361",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.25170907378196716,
+        "box": {
+          "x1": 578,
+          "y1": 295,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:41.796399",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:42.639992",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:43.106700",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:43.697111",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:44.248768",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:44.747630",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:45.288600",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:45.723609",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:46.259817",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:46.809439",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:50:47.258551",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.2925918400287628,
+        "box": {
+          "x1": 515,
+          "y1": 445,
+          "x2": 591,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:50:47.694415",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.3698500096797943,
+        "box": {
+          "x1": 224,
+          "y1": 455,
+          "x2": 240,
+          "y2": 479
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:35.539567",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:36.126156",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:36.684636",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:37.538672",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:38.061535",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:38.543158",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:38.922628",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:39.379641",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.35626035928726196,
+        "box": {
+          "x1": 368,
+          "y1": 446,
+          "x2": 447,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:39.818236",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:40.304295",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:40.840092",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:41.322413",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:41.775293",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:42.268661",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:42.750778",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:43.226824",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:43.685476",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:44.224945",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.33526939153671265,
+        "box": {
+          "x1": 248,
+          "y1": 441,
+          "x2": 319,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:44.700163",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.3675861358642578,
+        "box": {
+          "x1": 316,
+          "y1": 270,
+          "x2": 359,
+          "y2": 308
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.3363955318927765,
+        "box": {
+          "x1": 294,
+          "y1": 448,
+          "x2": 359,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.30167248845100403,
+        "box": {
+          "x1": 288,
+          "y1": 447,
+          "x2": 358,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:45.185386",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:45.691306",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.7841171622276306,
+        "box": {
+          "x1": 349,
+          "y1": 226,
+          "x2": 404,
+          "y2": 293
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.5993510484695435,
+        "box": {
+          "x1": 353,
+          "y1": 439,
+          "x2": 438,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.4905830919742584,
+        "box": {
+          "x1": 343,
+          "y1": 14,
+          "x2": 539,
+          "y2": 238
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:46.171386",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5649408102035522,
+        "box": {
+          "x1": 84,
+          "y1": 208,
+          "x2": 153,
+          "y2": 261
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.4899961054325104,
+        "box": {
+          "x1": 500,
+          "y1": 336,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:46.643557",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.7717616558074951,
+        "box": {
+          "x1": 0,
+          "y1": 221,
+          "x2": 48,
+          "y2": 292
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.3666291832923889,
+        "box": {
+          "x1": 489,
+          "y1": 424,
+          "x2": 583,
+          "y2": 477
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:47.194461",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:47.661046",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:48.178019",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:48.638743",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.4802979826927185,
+        "box": {
+          "x1": 109,
+          "y1": 296,
+          "x2": 157,
+          "y2": 374
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:49.111050",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.6037877202033997,
+        "box": {
+          "x1": 545,
+          "y1": 385,
+          "x2": 640,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.5156763792037964,
+        "box": {
+          "x1": 530,
+          "y1": 445,
+          "x2": 581,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.32098835706710815,
+        "box": {
+          "x1": 577,
+          "y1": 383,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:49.598731",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.42898115515708923,
+        "box": {
+          "x1": 362,
+          "y1": 274,
+          "x2": 504,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.3334563374519348,
+        "box": {
+          "x1": 47,
+          "y1": 396,
+          "x2": 134,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:50.119289",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:50.723370",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:51.471666",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:51.991597",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-29T16:51:52.395423",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:52.800314",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:53.267140",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:53.692549",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:54.109870",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:54.516007",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:54.935115",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:55.364772",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:56.062942",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:56.538471",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:56.961523",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:57.370381",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:57.807556",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-29T16:51:58.391739",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.601235032081604,
+        "box": {
+          "x1": 151,
+          "y1": 386,
+          "x2": 204,
+          "y2": 476
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-30T09:07:50.687166",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-30T23:57:39.314025",
+    "model": "weapon",
+    "detections": [
+      {
+        "class": "weapon",
+        "confidence": 0.4213828444480896,
+        "box": {
+          "x1": 253,
+          "y1": 96,
+          "x2": 591,
+          "y2": 332
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-30T23:58:15.198603",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.5036353468894958,
+        "box": {
+          "x1": 19,
+          "y1": 93,
+          "x2": 117,
+          "y2": 198
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-30T23:58:55.283964",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.5036353468894958,
+        "box": {
+          "x1": 19,
+          "y1": 93,
+          "x2": 117,
+          "y2": 198
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-30T23:59:21.834745",
+    "model": "weapon",
+    "detections": [
+      {
+        "class": "weapon",
+        "confidence": 0.4213828444480896,
+        "box": {
+          "x1": 253,
+          "y1": 96,
+          "x2": 591,
+          "y2": 332
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:12:39.879726",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:12:41.754985",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:12:44.206558",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:12:45.467235",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:12:46.678940",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.2706913948059082,
+        "box": {
+          "x1": 432,
+          "y1": 258,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:12:47.931952",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:12:49.270003",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:12:50.564389",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:12:51.865829",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.4102528691291809,
+        "box": {
+          "x1": 420,
+          "y1": 259,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:12:53.195333",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.5154539942741394,
+        "box": {
+          "x1": 436,
+          "y1": 262,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:12:54.829596",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.3959420919418335,
+        "box": {
+          "x1": 446,
+          "y1": 279,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:12:57.213179",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.4917013645172119,
+        "box": {
+          "x1": 441,
+          "y1": 263,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:12:59.664288",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.6597512364387512,
+        "box": {
+          "x1": 438,
+          "y1": 262,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:01.490919",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.4353567063808441,
+        "box": {
+          "x1": 433,
+          "y1": 260,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:03.157867",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.7540985941886902,
+        "box": {
+          "x1": 82,
+          "y1": 406,
+          "x2": 166,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:05.641552",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.2717515826225281,
+        "box": {
+          "x1": 446,
+          "y1": 310,
+          "x2": 602,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:07.291325",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.3593682050704956,
+        "box": {
+          "x1": 219,
+          "y1": 247,
+          "x2": 464,
+          "y2": 422
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:08.147340",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:09.538202",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:10.545400",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:11.795755",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:13.333272",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:15.148915",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.29258400201797485,
+        "box": {
+          "x1": 37,
+          "y1": 109,
+          "x2": 196,
+          "y2": 333
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:16.793078",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:18.440533",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:19.925434",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:21.281707",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:22.872792",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.37677624821662903,
+        "box": {
+          "x1": 363,
+          "y1": 299,
+          "x2": 600,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:24.586770",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.4982384741306305,
+        "box": {
+          "x1": 0,
+          "y1": 203,
+          "x2": 166,
+          "y2": 350
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.47834739089012146,
+        "box": {
+          "x1": 436,
+          "y1": 276,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:26.267442",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.5252834558486938,
+        "box": {
+          "x1": 375,
+          "y1": 276,
+          "x2": 608,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:27.309300",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.45813441276550293,
+        "box": {
+          "x1": 80,
+          "y1": 378,
+          "x2": 164,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:28.571424",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.7365627288818359,
+        "box": {
+          "x1": 331,
+          "y1": 185,
+          "x2": 411,
+          "y2": 295
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.3729603588581085,
+        "box": {
+          "x1": 473,
+          "y1": 332,
+          "x2": 639,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.34239962697029114,
+        "box": {
+          "x1": 330,
+          "y1": 184,
+          "x2": 490,
+          "y2": 295
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.28127801418304443,
+        "box": {
+          "x1": 151,
+          "y1": 32,
+          "x2": 322,
+          "y2": 246
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:29.788044",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.30440622568130493,
+        "box": {
+          "x1": 66,
+          "y1": 120,
+          "x2": 216,
+          "y2": 315
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:31.324119",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:32.673294",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:33.965461",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:35.090174",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:36.342575",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:37.278076",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.7001304030418396,
+        "box": {
+          "x1": 454,
+          "y1": 289,
+          "x2": 633,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:38.285496",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.45258471369743347,
+        "box": {
+          "x1": 458,
+          "y1": 303,
+          "x2": 629,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:39.373353",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.45258471369743347,
+        "box": {
+          "x1": 458,
+          "y1": 303,
+          "x2": 629,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:40.490460",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.7543236613273621,
+        "box": {
+          "x1": 462,
+          "y1": 282,
+          "x2": 637,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:41.684842",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.712711751461029,
+        "box": {
+          "x1": 467,
+          "y1": 319,
+          "x2": 627,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:42.826372",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.7267611026763916,
+        "box": {
+          "x1": 460,
+          "y1": 270,
+          "x2": 640,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.32888710498809814,
+        "box": {
+          "x1": 471,
+          "y1": 355,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:44.091733",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.7008901238441467,
+        "box": {
+          "x1": 469,
+          "y1": 305,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:45.130447",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.6745648384094238,
+        "box": {
+          "x1": 475,
+          "y1": 291,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:46.022302",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.27410945296287537,
+        "box": {
+          "x1": 422,
+          "y1": 323,
+          "x2": 620,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:13:47.157470",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:48.293957",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:49.496560",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:50.613049",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:51.701060",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:52.608130",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:53.584850",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:55.176742",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:56.190088",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:57.213196",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:58.194971",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:13:59.301319",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:00.497350",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:01.677221",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:02.725787",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:03.781970",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:04.798296",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:05.955014",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:06.957510",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:07.936849",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:09.038139",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:10.119078",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:11.367597",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:12.970918",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:14.549248",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:14:15.998871",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:13.816584",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:14.245850",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:14.747368",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:15.240549",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:15.721753",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:16.202451",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:16.714629",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:17.223425",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:17.933524",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:18.465523",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:18.970467",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:19.782552",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:20.369290",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:20.866701",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:21.265593",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:21.658742",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:22.071608",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:22.489416",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:22.901997",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:23.309883",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:23.737601",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:24.224790",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:24.757202",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:25.295315",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:25.791771",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:26.220412",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:26.728065",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.4606267511844635,
+        "box": {
+          "x1": 278,
+          "y1": 393,
+          "x2": 413,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:27.241689",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.544058620929718,
+        "box": {
+          "x1": 266,
+          "y1": 389,
+          "x2": 402,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:27.746876",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:28.237095",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5563695430755615,
+        "box": {
+          "x1": 1,
+          "y1": 426,
+          "x2": 92,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.28087255358695984,
+        "box": {
+          "x1": 0,
+          "y1": 149,
+          "x2": 189,
+          "y2": 386
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:28.742792",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:29.240146",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:29.743570",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.2824952304363251,
+        "box": {
+          "x1": 298,
+          "y1": 0,
+          "x2": 458,
+          "y2": 240
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:30.239440",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.4178464710712433,
+        "box": {
+          "x1": 587,
+          "y1": 368,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:30.737766",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.5555940866470337,
+        "box": {
+          "x1": 0,
+          "y1": 436,
+          "x2": 48,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:31.228352",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:31.775152",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:32.253173",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.37766435742378235,
+        "box": {
+          "x1": 0,
+          "y1": 444,
+          "x2": 55,
+          "y2": 479
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:32.732413",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.2685485780239105,
+        "box": {
+          "x1": 0,
+          "y1": 443,
+          "x2": 57,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:33.235506",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:33.875510",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:34.483978",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:34.936174",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:35.326853",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:35.753628",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:36.232974",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:36.730684",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:37.252075",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:37.729304",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:38.248445",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.27370065450668335,
+        "box": {
+          "x1": 264,
+          "y1": 429,
+          "x2": 339,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:38.728605",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.666901171207428,
+        "box": {
+          "x1": 0,
+          "y1": 399,
+          "x2": 70,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:39.231935",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.3547486364841461,
+        "box": {
+          "x1": 582,
+          "y1": 358,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:39.745060",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.6600279211997986,
+        "box": {
+          "x1": 14,
+          "y1": 272,
+          "x2": 193,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.38481852412223816,
+        "box": {
+          "x1": 580,
+          "y1": 355,
+          "x2": 639,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.2567293643951416,
+        "box": {
+          "x1": 580,
+          "y1": 306,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:40.234026",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.4343888461589813,
+        "box": {
+          "x1": 580,
+          "y1": 347,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:40.790832",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.25401049852371216,
+        "box": {
+          "x1": 578,
+          "y1": 320,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:41.412642",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:41.822843",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:42.255352",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:42.746961",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:43.244897",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:43.755183",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.42898088693618774,
+        "box": {
+          "x1": 0,
+          "y1": 195,
+          "x2": 44,
+          "y2": 295
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:44.252781",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:44.763830",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:45.240269",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:45.744529",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.26944610476493835,
+        "box": {
+          "x1": 578,
+          "y1": 323,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:46.251531",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:46.756485",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:47.259992",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:47.796086",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:48.258810",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:48.776234",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:49.268339",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:49.749629",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:50.247360",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:50.749502",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:51.283713",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:51.754886",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.3108625113964081,
+        "box": {
+          "x1": 577,
+          "y1": 347,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:52.239453",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:52.774635",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:53.254929",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:53.730218",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:54.230949",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.4292214512825012,
+        "box": {
+          "x1": 581,
+          "y1": 351,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:54.758513",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.4597329795360565,
+        "box": {
+          "x1": 579,
+          "y1": 328,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:55.257945",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:55.764699",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:56.251878",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:56.754851",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:57.242704",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:57.749666",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:58.250671",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:58.747239",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:20:59.246085",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.3185367286205292,
+        "box": {
+          "x1": 581,
+          "y1": 348,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:20:59.753263",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.31143784523010254,
+        "box": {
+          "x1": 581,
+          "y1": 355,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:00.260367",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:00.757836",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:01.261214",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:01.920671",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:02.319944",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:02.751550",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:03.244812",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:03.742768",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:04.245080",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:04.752000",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:05.241398",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:05.750187",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:06.248148",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:06.748765",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:07.256784",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:07.757590",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:08.247925",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:08.748784",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:09.258538",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:09.761957",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:10.251531",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:10.755875",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:11.240205",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:11.773603",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.4577936828136444,
+        "box": {
+          "x1": 11,
+          "y1": 315,
+          "x2": 185,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:12.240168",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:12.752352",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:13.252940",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:13.748887",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.25709953904151917,
+        "box": {
+          "x1": 579,
+          "y1": 320,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:14.242095",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:14.753319",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.47151094675064087,
+        "box": {
+          "x1": 585,
+          "y1": 355,
+          "x2": 639,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.4219728708267212,
+        "box": {
+          "x1": 131,
+          "y1": 203,
+          "x2": 285,
+          "y2": 424
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:15.254932",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.354977011680603,
+        "box": {
+          "x1": 586,
+          "y1": 332,
+          "x2": 639,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.282429963350296,
+        "box": {
+          "x1": 575,
+          "y1": 294,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:15.741657",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.38701149821281433,
+        "box": {
+          "x1": 586,
+          "y1": 329,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:16.237828",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:16.752944",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.2640452980995178,
+        "box": {
+          "x1": 575,
+          "y1": 328,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:17.253497",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.5334874391555786,
+        "box": {
+          "x1": 544,
+          "y1": 294,
+          "x2": 639,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.364266574382782,
+        "box": {
+          "x1": 302,
+          "y1": 422,
+          "x2": 381,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:17.744993",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.43314480781555176,
+        "box": {
+          "x1": 562,
+          "y1": 313,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:18.229409",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.4200190007686615,
+        "box": {
+          "x1": 556,
+          "y1": 313,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:18.740513",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.3785591125488281,
+        "box": {
+          "x1": 562,
+          "y1": 358,
+          "x2": 640,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.34680142998695374,
+        "box": {
+          "x1": 547,
+          "y1": 294,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:19.230709",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.455161988735199,
+        "box": {
+          "x1": 542,
+          "y1": 291,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:19.760463",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.389188677072525,
+        "box": {
+          "x1": 547,
+          "y1": 290,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:20.250933",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.3944418132305145,
+        "box": {
+          "x1": 544,
+          "y1": 290,
+          "x2": 639,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.25989171862602234,
+        "box": {
+          "x1": 564,
+          "y1": 354,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:20.751711",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.45906949043273926,
+        "box": {
+          "x1": 539,
+          "y1": 289,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:21.237875",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.40481942892074585,
+        "box": {
+          "x1": 546,
+          "y1": 293,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:21.737827",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.350631982088089,
+        "box": {
+          "x1": 545,
+          "y1": 293,
+          "x2": 639,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.27325233817100525,
+        "box": {
+          "x1": 561,
+          "y1": 347,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:22.236739",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:22.900291",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:23.395315",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:23.832632",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:24.347909",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:24.760179",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:25.247015",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:25.746007",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:26.239630",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:26.747767",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:27.243216",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:27.755819",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.389296293258667,
+        "box": {
+          "x1": 589,
+          "y1": 413,
+          "x2": 639,
+          "y2": 479
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:28.245516",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.3172946870326996,
+        "box": {
+          "x1": 588,
+          "y1": 404,
+          "x2": 639,
+          "y2": 479
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:28.748399",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:29.239247",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:29.761290",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:30.256417",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:30.744221",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:31.259374",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:31.763703",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:32.238980",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:32.750674",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.3204692304134369,
+        "box": {
+          "x1": 310,
+          "y1": 281,
+          "x2": 455,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:33.266084",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.28446975350379944,
+        "box": {
+          "x1": 584,
+          "y1": 359,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:33.741186",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.49637502431869507,
+        "box": {
+          "x1": 580,
+          "y1": 348,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:34.238722",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.35788682103157043,
+        "box": {
+          "x1": 581,
+          "y1": 331,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:34.749245",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:35.244987",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.3491956889629364,
+        "box": {
+          "x1": 585,
+          "y1": 330,
+          "x2": 639,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.26963523030281067,
+        "box": {
+          "x1": 43,
+          "y1": 177,
+          "x2": 217,
+          "y2": 385
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:35.739168",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:36.230250",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:36.755240",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:37.230991",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.27644145488739014,
+        "box": {
+          "x1": 586,
+          "y1": 326,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:37.736336",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:38.228510",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-10-31T00:21:38.737119",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.37235507369041443,
+        "box": {
+          "x1": 535,
+          "y1": 285,
+          "x2": 639,
+          "y2": 480
+        }
+      },
+      {
+        "class": "smoke",
+        "confidence": 0.32420676946640015,
+        "box": {
+          "x1": 520,
+          "y1": 335,
+          "x2": 640,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:39.263178",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.33247748017311096,
+        "box": {
+          "x1": 584,
+          "y1": 358,
+          "x2": 639,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:39.833635",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.34984418749809265,
+        "box": {
+          "x1": 383,
+          "y1": 274,
+          "x2": 568,
+          "y2": 480
+        }
+      },
+      {
+        "class": "fire",
+        "confidence": 0.32668548822402954,
+        "box": {
+          "x1": 0,
+          "y1": 448,
+          "x2": 65,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:40.481578",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.5741060972213745,
+        "box": {
+          "x1": 392,
+          "y1": 274,
+          "x2": 609,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-10-31T00:21:40.937184",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.5741060972213745,
+        "box": {
+          "x1": 392,
+          "y1": 274,
+          "x2": 609,
+          "y2": 480
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-11T11:37:20.049042",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:38:04.817286",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.5036353468894958,
+        "box": {
+          "x1": 19,
+          "y1": 93,
+          "x2": 117,
+          "y2": 198
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-11T11:38:27.336168",
+    "model": "weapon",
+    "detections": [
+      {
+        "class": "weapon",
+        "confidence": 0.5739437341690063,
+        "box": {
+          "x1": 159,
+          "y1": 54,
+          "x2": 222,
+          "y2": 108
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-11T11:38:38.986259",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:38:54.970856",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:38:55.424661",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:38:55.949052",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:38:56.518187",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:38:57.093671",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:38:57.700087",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:38:58.351018",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:38:58.922438",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:38:59.384166",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:38:59.811653",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:00.368684",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:00.881828",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:01.360799",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:01.945216",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:02.577315",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:03.074639",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:03.552402",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:03.964080",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:04.376549",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:04.793679",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:05.215268",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:05.648031",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:06.064302",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:06.472186",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:06.887869",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:07.310633",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:07.816351",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:08.307903",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:08.816569",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:09.321253",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:09.812004",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:10.328396",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:10.829137",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:11.321515",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:12.109386",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:12.635500",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:13.143121",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:13.557748",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:13.995908",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:14.422716",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-11T11:39:32.649448",
+    "model": "weapon",
+    "detections": [
+      {
+        "class": "weapon",
+        "confidence": 0.5739437341690063,
+        "box": {
+          "x1": 159,
+          "y1": 54,
+          "x2": 222,
+          "y2": 108
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-15T04:42:57.159044",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-16T19:46:57.034320",
+    "model": "weapon",
+    "detections": [
+      {
+        "class": "weapon",
+        "confidence": 0.5739437341690063,
+        "box": {
+          "x1": 159,
+          "y1": 54,
+          "x2": 222,
+          "y2": 108
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-16T19:47:42.184262",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-16T20:12:40.874135",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "fire",
+        "confidence": 0.6455561518669128,
+        "box": {
+          "x1": 502,
+          "y1": 301,
+          "x2": 584,
+          "y2": 408
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-16T20:13:26.214137",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-16T20:13:42.928042",
+    "model": "weapon",
+    "detections": [
+      {
+        "class": "weapon",
+        "confidence": 0.5739437341690063,
+        "box": {
+          "x1": 159,
+          "y1": 54,
+          "x2": 222,
+          "y2": 108
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T11:48:28.098768",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T11:48:29.177203",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T11:48:30.005827",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T11:48:30.772175",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T11:48:31.592612",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T11:48:32.222407",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T11:48:32.849745",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T11:48:33.494027",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T11:49:19.827132",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.5036353468894958,
+        "box": {
+          "x1": 19,
+          "y1": 93,
+          "x2": 117,
+          "y2": 198
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T11:52:04.021408",
+    "model": "weapon",
+    "detections": [
+      {
+        "class": "weapon",
+        "confidence": 0.5739437341690063,
+        "box": {
+          "x1": 159,
+          "y1": 54,
+          "x2": 222,
+          "y2": 108
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T11:53:32.219544",
+    "model": "weapon",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T11:53:45.324731",
+    "model": "weapon",
+    "detections": [
+      {
+        "class": "weapon",
+        "confidence": 0.6685531735420227,
+        "box": {
+          "x1": 158,
+          "y1": 56,
+          "x2": 223,
+          "y2": 100
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T11:54:56.086551",
+    "model": "weapon",
+    "detections": [
+      {
+        "class": "weapon",
+        "confidence": 0.6685531735420227,
+        "box": {
+          "x1": 158,
+          "y1": 56,
+          "x2": 223,
+          "y2": 100
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T11:55:33.625225",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.5036353468894958,
+        "box": {
+          "x1": 19,
+          "y1": 93,
+          "x2": 117,
+          "y2": 198
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T15:17:52.982503",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T15:17:53.696862",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.6597866415977478,
+        "box": {
+          "x1": 0,
+          "y1": 201,
+          "x2": 207,
+          "y2": 412
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T15:17:54.275471",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T15:17:54.814660",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T15:17:55.280686",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T15:17:55.735752",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T15:18:04.420202",
+    "model": "fire_smoke",
+    "detections": []
+  },
+  {
+    "timestamp": "2025-11-17T15:18:13.563130",
+    "model": "fire_smoke",
+    "detections": [
+      {
+        "class": "smoke",
+        "confidence": 0.5036353468894958,
+        "box": {
+          "x1": 19,
+          "y1": 93,
+          "x2": 117,
+          "y2": 198
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T15:18:28.750321",
+    "model": "weapon",
+    "detections": [
+      {
+        "class": "weapon",
+        "confidence": 0.6685531735420227,
+        "box": {
+          "x1": 158,
+          "y1": 56,
+          "x2": 223,
+          "y2": 100
+        }
+      }
+    ]
+  },
+  {
+    "timestamp": "2025-11-17T15:28:58.231224",
+    "model": "weapon",
+    "detections": []
+  }
+]

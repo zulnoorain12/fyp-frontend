@@ -1,0 +1,215 @@
+import cv2
+import numpy as np
+from fastapi import FastAPI, File, UploadFile, Form, WebSocket, WebSocketDisconnect
+from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
+import torch
+from ultralytics import YOLO
+import io
+from PIL import Image
+import os
+from dotenv import load_dotenv
+import json
+from datetime import datetime
+import base64
+import asyncio
+import logging
+
+# Import our new services
+from services.model_manager import ModelManager
+from services.detection_service import DetectionService
+from services.logging_service import LoggingService
+from services.camera_service import CameraService
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Load environment variables
+load_dotenv()
+
+app = FastAPI(title="YOLO Object Detection API")
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Initialize services
+model_manager = ModelManager()
+detection_service = DetectionService()
+logging_service = LoggingService()
+camera_service = CameraService(model_manager, detection_service)
+
+# Store active WebSocket connections
+active_connections = set()
+
+# Load models on startup
+@app.on_event("startup")
+async def load_models():
+    result = model_manager.load_models()
+    if not result.get("weapon_loaded") and not result.get("fire_smoke_loaded"):
+        logger.error("No models loaded successfully")
+    else:
+        logger.info("Models loaded successfully")
+
+# Health check endpoint
+@app.get("/")
+async def root():
+    return {"message": "YOLO Object Detection API is running"}
+
+# Get available models
+@app.get("/models")
+async def get_models():
+    return {
+        "models": model_manager.get_available_models(),
+        "current_model": model_manager.current_model
+    }
+
+# Switch between models
+@app.post("/models/switch")
+async def switch_model(model_name: str = Form(...)):
+    if model_manager.switch_model(model_name):
+        return {"message": f"Switched to {model_name} model", "current_model": model_name}
+    else:
+        return {"error": "Invalid model name. Use 'weapon' or 'fire_smoke'"}
+
+# Detect objects in an image
+@app.post("/detect")
+async def detect_objects(file: UploadFile = File(...)):
+    # Select model based on current selection
+    model = model_manager.get_current_model()
+    if model is None:
+        return {"error": "Model not loaded"}
+    
+    # Read image file
+    contents = await file.read()
+    nparr = np.frombuffer(contents, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    # Check if image was decoded successfully
+    if img is None:
+        return {"error": "Invalid image file. Please upload a valid image file (JPEG, PNG, etc.)."}
+    
+    # Run object detection using detection service
+    detection_result = detection_service.detect_objects(model, img)
+    
+    if not detection_result["success"]:
+        return {"error": "Detection failed", "details": detection_result.get("error")}
+    
+    detections = detection_result["detections"]
+    
+    # Draw bounding boxes using detection service
+    processed_img = detection_service.draw_detections(img, detections)
+    
+    # Log detections
+    logging_service.log_detection(model_manager.current_model, detections)
+    
+    # Convert image back to bytes
+    _, buffer = cv2.imencode('.jpg', processed_img)
+    img_bytes = buffer.tobytes()
+    
+    return {
+        "detections": detections,
+        "image": base64.b64encode(img_bytes).decode('utf-8'),
+        "model_used": model_manager.current_model
+    }
+
+# Detect with both models
+@app.post("/detect/both")
+async def detect_both_models(file: UploadFile = File(...)):
+    if not model_manager.models_loaded():
+        return {"error": "One or both models not loaded"}
+    
+    # Read image file
+    contents = await file.read()
+    nparr = np.frombuffer(contents, np.uint8)
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    
+    # Check if image was decoded successfully
+    if img is None:
+        return {"error": "Invalid image file. Please upload a valid image file (JPEG, PNG, etc.)."}
+    
+    # Create copies for each model
+    img_weapon = img.copy()
+    img_fire_smoke = img.copy()
+    
+    # Run object detection with weapon model
+    weapon_results = model_manager.get_model("weapon").predict(img_weapon)
+    weapon_detections = []
+    
+    for r in weapon_results:
+        boxes = r.boxes
+        for box in boxes:
+            b = box.xyxy[0].tolist()
+            c = box.cls
+            conf = box.conf
+            class_name = model_manager.get_model("weapon").names[int(c)]
+            
+            weapon_detections.append({
+                "class": class_name,
+                "confidence": float(conf),
+                "box": {
+                    "x1": int(b[0]),
+                    "y1": int(b[1]),
+                    "x2": int(b[2]),
+                    "y2": int(b[3])
+                }
+            })
+            
+            # Draw bounding box (red for weapon)
+            cv2.rectangle(img_weapon, (int(b[0]), int(b[1])), (int(b[2]), int(b[3])), (0, 0, 255), 2)
+            cv2.putText(img_weapon, f"{class_name} {float(conf):.2f}", 
+                       (int(b[0]), int(b[1]) - 10), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+    
+    # Run object detection with fire/smoke model
+    fire_smoke_results = model_manager.get_model("fire_smoke").predict(img_fire_smoke)
+    fire_smoke_detections = []
+    
+    for r in fire_smoke_results:
+        boxes = r.boxes
+        for box in boxes:
+            b = box.xyxy[0].tolist()
+            c = box.cls
+            conf = box.conf
+            class_name = model_manager.get_model("fire_smoke").names[int(c)]
+            
+            fire_smoke_detections.append({
+                "class": class_name,
+                "confidence": float(conf),
+                "box": {
+                    "x1": int(b[0]),
+                    "y1": int(b[1]),
+                    "x2": int(b[2]),
+                    "y2": int(b[3])
+                }
+            })
+            
+            # Draw bounding box (blue for fire/smoke)
+            cv2.rectangle(img_fire_smoke, (int(b[0]), int(b[1])), (int(b[2]), int(b[3])), (255, 0, 0), 2)
+            cv2.putText(img_fire_smoke, f"{class_name} {float(conf):.2f}", 
+                       (int(b[0]), int(b[1]) - 10), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 0, 0), 2)
+    
+    # Convert images back to bytes
+    _, buffer_weapon = cv2.imencode('.jpg', img_weapon)
+    img_bytes_weapon = buffer_weapon.tobytes()
+    
+    _, buffer_fire_smoke = cv2.imencode('.jpg', img_fire_smoke)
+    img_bytes_fire_smoke = buffer_fire_smoke.tobytes()
+    
+    return {
+        "weapon_detections": weapon_detections,
+        "fire_smoke_detections": fire_smoke_detections,
+        "weapon_image": base64.b64encode(img_bytes_weapon).decode('utf-8'),
+        "fire_smoke_image": base64.b64encode(img_bytes_fire_smoke).decode('utf-8')
+    }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host=os.getenv("HOST", "localhost"), port=int(os.getenv("PORT", 8000)))

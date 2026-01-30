@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import '../styles/Settings.css';
+import { apiEndpoints } from '../services/api';
 
 const Settings = ({ onLogout, onNavigate, currentPage }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('notifications');
+  const [models, setModels] = useState([]);
+  const [currentModel, setCurrentModel] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const [notificationSettings, setNotificationSettings] = useState({
     emailAlerts: true,
@@ -63,6 +68,40 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
     }));
   };
 
+  // Fetch available models
+  useEffect(() => {
+    const fetchModels = async () => {
+      try {
+        const response = await apiEndpoints.getModels();
+        setModels(response.data.models || []);
+        setCurrentModel(response.data.current_model || '');
+      } catch (err) {
+        console.error('Error fetching models:', err);
+        setError('Failed to load models');
+      }
+    };
+    
+    fetchModels();
+  }, []);
+
+  const handleModelSwitch = async (modelName) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await apiEndpoints.switchModel(modelName);
+      setCurrentModel(response.data.current_model);
+      
+      // Show success message
+      alert(`Successfully switched to ${modelName} model`);
+    } catch (err) {
+      console.error('Error switching model:', err);
+      setError(err.response?.data?.error || err.message || 'Failed to switch model');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="settings-container">
       <Sidebar 
@@ -71,6 +110,7 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
         onLogout={onLogout}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
+        onClose={setSidebarOpen}
       />
 
       {/* Main Content */}
@@ -105,6 +145,12 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
               </svg>
             )},
             { id: 'detection', label: 'Detection', icon: (
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+              </svg>
+            )},
+            { id: 'models', label: 'Models', icon: (
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2"/>
                 <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
@@ -294,6 +340,110 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
                       <span className="toggle-slider"></span>
                     </button>
                   </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Models Tab */}
+          {activeTab === 'models' && (
+            <div className="settings-section">
+              <div className="settings-card">
+                <div className="settings-card-header">
+                  <h3 className="settings-card-title">AI Models</h3>
+                  <p className="settings-card-description">Switch between different detection models</p>
+                </div>
+                <div className="settings-items">
+                  <div className="mb-6 p-4 bg-gray-800/50 rounded-lg">
+                    <p className="text-sm text-gray-300 mb-2">Current Model:</p>
+                    <p className="text-lg font-semibold capitalize text-blue-400">{currentModel || 'None'}</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="settings-item">
+                      <div className="settings-item-info">
+                        <h4 className="settings-item-title">Weapon Detection</h4>
+                        <p className="settings-item-description">Detect weapons using YOLOv11</p>
+                      </div>
+                      <button 
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                          currentModel === 'weapon' 
+                            ? 'bg-green-600 text-white' 
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
+                        onClick={() => handleModelSwitch('weapon')}
+                        disabled={loading || currentModel === 'weapon'}
+                      >
+                        {currentModel === 'weapon' ? 'Active' : 'Switch'}
+                      </button>
+                    </div>
+                    
+                    <div className="settings-item">
+                      <div className="settings-item-info">
+                        <h4 className="settings-item-title">Fire/Smoke Detection</h4>
+                        <p className="settings-item-description">Detect fire and smoke hazards</p>
+                      </div>
+                      <button 
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                          currentModel === 'fire_smoke' 
+                            ? 'bg-green-600 text-white' 
+                            : 'bg-blue-600 hover:bg-blue-700 text-white'
+                        }`}
+                        onClick={() => handleModelSwitch('fire_smoke')}
+                        disabled={loading || currentModel === 'fire_smoke'}
+                      >
+                        {currentModel === 'fire_smoke' ? 'Active' : 'Switch'}
+                      </button>
+                    </div>
+                    
+                    <div className="settings-item">
+                      <div className="settings-item-info">
+                        <h4 className="settings-item-title">Both Models</h4>
+                        <p className="settings-item-description">Run both weapon and fire/smoke detection</p>
+                      </div>
+                      <button 
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                          currentModel === 'both' 
+                            ? 'bg-green-600 text-white' 
+                            : 'bg-purple-600 hover:bg-purple-700 text-white'
+                        }`}
+                        onClick={() => handleModelSwitch('both')}
+                        disabled={loading || currentModel === 'both'}
+                      >
+                        {currentModel === 'both' ? 'Active' : 'Switch'}
+                      </button>
+                    </div>
+                    
+                    <div className="settings-item">
+                      <div className="settings-item-info">
+                        <h4 className="settings-item-title">Fight Detection</h4>
+                        <p className="settings-item-description">Detect physical altercations</p>
+                      </div>
+                      <button 
+                        className={`px-4 py-2 rounded-lg transition-colors ${
+                          currentModel === 'fight' 
+                            ? 'bg-green-600 text-white' 
+                            : 'bg-red-600 hover:bg-red-700 text-white'
+                        }`}
+                        onClick={() => handleModelSwitch('fight')}
+                        disabled={loading || currentModel === 'fight'}
+                      >
+                        {currentModel === 'fight' ? 'Active' : 'Switch'}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  {error && (
+                    <div className="mt-4 p-3 bg-red-900/50 border border-red-700 rounded text-red-300">
+                      Error: {error}
+                    </div>
+                  )}
+                  
+                  {loading && (
+                    <div className="mt-4 text-center text-gray-400">
+                      Switching model...
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

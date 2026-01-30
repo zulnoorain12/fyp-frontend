@@ -1,14 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import '../styles/dashboard.css';
+import { apiEndpoints } from '../services/api';
 
 const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
-  const [systemStats] = useState({
-    activeCameras: 12,
-    activeAlerts: 3,
-    detectedPeople: 47,
-    systemHealth: 98
+  const [systemStats, setSystemStats] = useState({
+    activeCameras: 0,
+    activeAlerts: 0,
+    detectedPeople: 0,
+    systemHealth: 0
   });
+  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [cameras] = useState([
     { id: 1, name: 'Main Entrance', location: 'Building A - Floor 1', status: 'Active', lastUpdate: '2 min ago' },
@@ -19,19 +23,120 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
     { id: 6, name: 'Hallway West', location: 'Building A - Floor 2', status: 'Active', lastUpdate: '4 min ago' },
   ]);
 
-  const [recentAlerts] = useState([
+  const [recentAlerts, setRecentAlerts] = useState([
     { id: 1, type: 'Unauthorized Access', severity: 'Critical', location: 'Parking Lot', time: '2 min ago' },
     { id: 2, type: 'Unusual Activity', severity: 'Warning', location: 'Main Entrance', time: '15 min ago' },
     { id: 3, type: 'Loitering Detected', severity: 'Info', location: 'Reception', time: '1 hour ago' },
   ]);
+  
+  // Fetch recent alerts for dashboard
+  useEffect(() => {
+    const fetchRecentAlerts = () => {
+      try {
+        // Get recent alerts from localStorage (live alerts)
+        const liveAlerts = JSON.parse(localStorage.getItem('liveAlerts') || '[]');
+        
+        // Get last 3 recent alerts
+        const recentLiveAlerts = liveAlerts
+          .slice(0, 3)
+          .map(alert => ({
+            id: alert.id,
+            type: alert.type,
+            severity: alert.severity,
+            location: alert.location,
+            time: alert.time
+          }));
+        
+        if (recentLiveAlerts.length > 0) {
+          setRecentAlerts(recentLiveAlerts);
+        }
+      } catch (err) {
+        console.error('Error fetching recent alerts:', err);
+      }
+    };
+    
+    fetchRecentAlerts();
+    
+    // Check for new alerts every 3 seconds
+    const interval = setInterval(fetchRecentAlerts, 3000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Fetch system stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch detections
+        const detectionsRes = await apiEndpoints.getDetections(100);
+        const detections = detectionsRes.data.detections || [];
+        
+        // Get live alerts from localStorage
+        const liveAlerts = JSON.parse(localStorage.getItem('liveAlerts') || '[]');
+        
+        // Calculate stats
+        const peopleDetections = detections.filter(d => 
+          d.detection_type === 'person' || d.detection_type.includes('person')
+        ).length;
+        
+        // Count recent alerts (last 24 hours) + live alerts
+        const recentDetections = detections.filter(d => 
+          new Date(d.timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000)
+        ).length;
+        
+        const recentLiveAlerts = liveAlerts.filter(alert => 
+          new Date(alert.timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000)
+        ).length;
+        
+        setSystemStats({
+          activeCameras: 6, // Could be fetched from an API endpoint
+          activeAlerts: recentDetections + recentLiveAlerts,
+          detectedPeople: peopleDetections,
+          systemHealth: 98 // Could be calculated from system metrics
+        });
+      } catch (err) {
+        console.error('Error fetching stats:', err);
+        setError('Failed to load system statistics');
+        // Fallback to mock data
+        setSystemStats({
+          activeCameras: 6,
+          activeAlerts: 3,
+          detectedPeople: 47,
+          systemHealth: 98
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchStats();
+    
+    // Refresh stats every 10 seconds
+    const interval = setInterval(fetchStats, 10000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="dashboard-container">
+        <div className="main-content" style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
+          <div>Loading...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-container">
       <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)}
+        sidebarOpen={sidebarOpen}
+        setSidebarOpen={setSidebarOpen}
         onNavigate={onNavigate}
         currentPage={currentPage}
         onLogout={onLogout}

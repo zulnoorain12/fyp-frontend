@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Sidebar = ({ currentPage, onNavigate, onLogout, sidebarOpen, setSidebarOpen }) => {
+const Sidebar = ({ currentPage, onNavigate, onLogout, sidebarOpen, setSidebarOpen, onClose }) => { // Allow both naming conventions
   const menuItems = [
     { 
       id: 'dashboard', 
@@ -21,6 +21,16 @@ const Sidebar = ({ currentPage, onNavigate, onLogout, sidebarOpen, setSidebarOpe
         <>
           <path d="M23 7l-7 5 7 5V7z" stroke="currentColor" strokeWidth="2"/>
           <rect x="1" y="5" width="15" height="14" rx="2" stroke="currentColor" strokeWidth="2"/>
+        </>
+      )
+    },
+    { 
+      id: 'detection', 
+      label: 'Detection', 
+      icon: (
+        <>
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2"/>
+          <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
         </>
       )
     },
@@ -56,6 +66,24 @@ const Sidebar = ({ currentPage, onNavigate, onLogout, sidebarOpen, setSidebarOpe
     }
   ];
 
+  // Helper function to close sidebar
+  const closeSidebar = () => {
+    if (typeof setSidebarOpen === 'function') {
+      setSidebarOpen(false);
+    } else if (typeof onClose === 'function') {
+      onClose(false);
+    }
+  };
+
+  // Helper function to toggle sidebar
+  const toggleSidebar = () => {
+    if (typeof setSidebarOpen === 'function') {
+      setSidebarOpen(!sidebarOpen);
+    } else if (typeof onClose === 'function') {
+      onClose(!sidebarOpen);
+    }
+  };
+
   return (
     <>
       {/* Desktop & Mobile Sidebar */}
@@ -77,7 +105,7 @@ const Sidebar = ({ currentPage, onNavigate, onLogout, sidebarOpen, setSidebarOpe
           {/* Close button for mobile */}
           <button 
             className="lg:hidden w-8 h-8 text-slate-400 hover:text-white transition-colors duration-300" 
-            onClick={() => setSidebarOpen(false)}
+            onClick={closeSidebar}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
               <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2"/>
@@ -93,7 +121,7 @@ const Sidebar = ({ currentPage, onNavigate, onLogout, sidebarOpen, setSidebarOpe
               key={item.id}
               onClick={() => {
                 onNavigate(item.id);
-                setSidebarOpen(false);
+                closeSidebar();
               }}
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 relative overflow-hidden ${
                 currentPage === item.id 
@@ -139,7 +167,7 @@ const Sidebar = ({ currentPage, onNavigate, onLogout, sidebarOpen, setSidebarOpe
       {/* Mobile Menu Button */}
       <button 
         className="lg:hidden fixed top-4 left-4 z-50 w-12 h-12 bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-xl text-white flex items-center justify-center hover:bg-slate-800 transition-all duration-300"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
+        onClick={toggleSidebar}
       >
         <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
           <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" strokeWidth="2"/>
@@ -152,7 +180,7 @@ const Sidebar = ({ currentPage, onNavigate, onLogout, sidebarOpen, setSidebarOpe
       {sidebarOpen && (
         <div 
           className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-30" 
-          onClick={() => setSidebarOpen(false)}
+          onClick={closeSidebar}
         ></div>
       )}
     </>

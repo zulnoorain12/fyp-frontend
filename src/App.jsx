@@ -5,6 +5,7 @@ import LiveFeed from './components/LiveFeed';
 import Alerts from './components/Alerts';
 import Analytics from './components/Analytics';
 import Settings from './components/Settings';
+import Detection from './components/Detection';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('login');
@@ -28,6 +29,8 @@ function App() {
         return <Dashboard onNavigate={handleNavigate} currentPage={currentPage} onLogout={handleLogout} />;
       case 'live-feed':
         return <LiveFeed onNavigate={handleNavigate} currentPage={currentPage} onLogout={handleLogout} />;
+      case 'detection':
+        return <Detection onNavigate={handleNavigate} currentPage={currentPage} onLogout={handleLogout} />;
       case 'alerts':
         return <Alerts onNavigate={handleNavigate} currentPage={currentPage} onLogout={handleLogout} />;
       case 'analytics':
