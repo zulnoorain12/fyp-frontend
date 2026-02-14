@@ -50,7 +50,7 @@ class DetectionService:
             self.logger.info(f"Image shape: {image.shape}")
             
             # Run object detection with optimized settings
-            results = model(image, verbose=False)  # Disable verbose output
+            results = model(image, verbose=False, conf=self.confidence_threshold)  # Pass confidence threshold to YOLO
             
             self.logger.info(f"Detection completed, processing results")
             

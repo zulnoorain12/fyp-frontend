@@ -14,32 +14,43 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
   const [modelType, setModelType] = useState('single'); // 'single' or 'both'
   const [isVideoMode, setIsVideoMode] = useState(false);
   const [currentModel, setCurrentModel] = useState('weapon'); // Track current model
-  
+  const [availableModels, setAvailableModels] = useState([]); // Track available models
+  const [isSwitchingModel, setIsSwitchingModel] = useState(false);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [isDetecting, setIsDetecting] = useState(false);
+
   const videoRef = useRef(null);
   const streamRef = useRef(null);
-  
+  const detectionIntervalRef = useRef(null);
+  const isDetectingRef = useRef(false);
+
   // Initialize audio on component mount
   useEffect(() => {
     audioAlert.init();
-    
+
     // Fetch current model on component mount
     const fetchCurrentModel = async () => {
       try {
         const response = await apiEndpoints.getModels();
         setCurrentModel(response.data.current_model);
+        setAvailableModels(response.data.models || []);
       } catch (err) {
         console.error('Failed to fetch current model:', err);
       }
     };
-    
+
     fetchCurrentModel();
-    
+
     // Set up interval to periodically check for model changes
     const modelCheckInterval = setInterval(fetchCurrentModel, 5000); // Check every 5 seconds
-    
+
     // Cleanup function
     return () => {
       clearInterval(modelCheckInterval);
+      // Cleanup detection interval on unmount
+      if (detectionIntervalRef.current) {
+        clearInterval(detectionIntervalRef.current);
+      }
       // Cleanup video stream on unmount
       if (streamRef.current) {
         const tracks = streamRef.current.getTracks();
@@ -53,11 +64,11 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
     if (file) {
       setSelectedFile(file);
       setError(null);
-      
+
       // Check if it's a video file
       const isVideo = file.type.startsWith('video/');
       setIsVideoMode(isVideo);
-      
+
       if (isVideo) {
         // For video files, create object URL
         setPreviewUrl(URL.createObjectURL(file));
@@ -71,31 +82,135 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
       }
     }
   };
-  
+
   // Start camera for live video detection
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { width: 1280, height: 720 } 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 1280, height: 720 }
       });
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        streamRef.current = stream;
-        setIsVideoMode(true);
-        setSelectedFile(new File([stream], 'live_camera', { type: 'video/webm' }));
-        
-        // Play system alert
-        await audioAlert.playSystemAlert();
-      }
+
+      // Store the stream and set states to render the video element
+      streamRef.current = stream;
+      setIsCameraActive(true);
+      setIsVideoMode(true);
+      setSelectedFile(new File([], 'live_camera', { type: 'video/webm' }));
+
+      // Play system alert
+      audioAlert.playSystemAlert();
     } catch (err) {
       console.error('Error accessing camera:', err);
       setError('Could not access camera. Please check permissions.');
     }
   };
-  
+
+  // Attach stream to video element and start detection loop once camera renders
+  useEffect(() => {
+    if (isCameraActive && videoRef.current && streamRef.current) {
+      videoRef.current.srcObject = streamRef.current;
+      // Start real-time detection loop
+      startDetectionLoop();
+    }
+    return () => {
+      // Cleanup detection loop when camera stops
+      if (detectionIntervalRef.current) {
+        clearInterval(detectionIntervalRef.current);
+        detectionIntervalRef.current = null;
+      }
+    };
+  }, [isCameraActive]);
+
+  // Real-time detection loop
+  const startDetectionLoop = () => {
+    if (detectionIntervalRef.current) {
+      clearInterval(detectionIntervalRef.current);
+    }
+    detectionIntervalRef.current = setInterval(() => {
+      detectFromCamera();
+    }, 1500); // Detect every 1.5 seconds
+  };
+
+  // Capture frame from camera and run detection
+  const detectFromCamera = async () => {
+    if (!videoRef.current || videoRef.current.readyState !== 4) return;
+    if (isDetectingRef.current) return; // Skip if previous detection still running
+
+    isDetectingRef.current = true;
+    setIsDetecting(true);
+
+    try {
+      // Capture frame from video
+      const canvas = document.createElement('canvas');
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+
+      // Convert to blob
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
+      if (!blob) return;
+
+      const formData = new FormData();
+      formData.append('file', blob, 'frame.jpg');
+      formData.append('camera_id', 'live_detection');
+
+      let response;
+      let allDetections = [];
+
+      // Route to correct endpoint based on selected model
+      if (currentModel === 'fight') {
+        response = await apiEndpoints.detectFight(formData);
+        if (response.data.is_fight) {
+          allDetections = [{
+            class: 'fight',
+            confidence: response.data.fight_probability || 0.8,
+            box: { x1: 0, y1: 0, x2: 0, y2: 0 }
+          }];
+        }
+      } else if (modelType === 'both') {
+        response = await apiEndpoints.detectBoth(formData);
+        // Build a result compatible with the results panel
+        setDetectionResult(response.data);
+        allDetections = [
+          ...(response.data.weapon_detections || []),
+          ...(response.data.fire_smoke_detections || []),
+        ];
+      } else {
+        formData.append('model_type', currentModel);
+        response = await apiEndpoints.detectObjects(formData);
+        allDetections = response.data.detections || [];
+      }
+
+      // Update results panel
+      if (modelType !== 'both') {
+        if (currentModel === 'fight' && allDetections.length > 0) {
+          setDetectionResult({ detections: allDetections });
+        } else {
+          setDetectionResult(response.data);
+        }
+      }
+
+      // Play audio alert if detections found
+      if (allDetections.length > 0) {
+        const maxConfidence = Math.max(...allDetections.map(d => d.confidence));
+        const severity = maxConfidence > 0.8 ? 'Critical' : maxConfidence > 0.6 ? 'Warning' : 'Info';
+        audioAlert.playAlert(severity);
+      }
+    } catch (err) {
+      console.error('Camera detection error:', err);
+    } finally {
+      isDetectingRef.current = false;
+      setIsDetecting(false);
+    }
+  };
+
   // Stop camera
   const stopCamera = () => {
+    // Stop detection loop
+    if (detectionIntervalRef.current) {
+      clearInterval(detectionIntervalRef.current);
+      detectionIntervalRef.current = null;
+    }
     if (streamRef.current) {
       const tracks = streamRef.current.getTracks();
       tracks.forEach(track => track.stop());
@@ -104,14 +219,29 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
     if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
+    setIsCameraActive(false);
+    setIsDetecting(false);
     setIsVideoMode(false);
     setSelectedFile(null);
     setPreviewUrl(null);
   };
 
+  // Handle model switch directly from Detection page
+  const handleModelSwitch = async (newModel) => {
+    setIsSwitchingModel(true);
+    try {
+      await apiEndpoints.switchModel(newModel);
+      setCurrentModel(newModel);
+    } catch (err) {
+      console.error('Failed to switch model:', err);
+    } finally {
+      setIsSwitchingModel(false);
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+
     if (!selectedFile) {
       setError('Please select a file or start camera first');
       return;
@@ -125,7 +255,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
       const formData = new FormData();
       formData.append('file', selectedFile);
       formData.append('camera_id', isVideoMode ? 'live_video' : 'web_upload');
-      
+
       let response;
       if (modelType === 'both') {
         response = await apiEndpoints.detectBoth(formData);
@@ -136,12 +266,18 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
       }
 
       setDetectionResult(response.data);
-      
-      // Play audio alert if detections found
-      if (response.data.detections && response.data.detections.length > 0) {
-        const maxConfidence = Math.max(...response.data.detections.map(d => d.confidence));
+
+      // Play audio alert if detections found (works for both single and dual model modes)
+      const allDetections = [
+        ...(response.data.detections || []),
+        ...(response.data.weapon_detections || []),
+        ...(response.data.fire_smoke_detections || []),
+      ];
+
+      if (allDetections.length > 0) {
+        const maxConfidence = Math.max(...allDetections.map(d => d.confidence));
         const severity = maxConfidence > 0.8 ? 'Critical' : maxConfidence > 0.6 ? 'Warning' : 'Info';
-        await audioAlert.playAlert(severity);
+        audioAlert.playAlert(severity);
       }
     } catch (err) {
       console.error('Detection error:', err);
@@ -158,7 +294,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
     setError(null);
     setIsVideoMode(false);
     document.getElementById('fileInput').value = '';
-    
+
     // Stop camera if active
     if (streamRef.current) {
       stopCamera();
@@ -167,7 +303,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
 
   return (
     <div className="livefeed-container">
-      <Sidebar 
+      <Sidebar
         currentPage={currentPage}
         onNavigate={onNavigate}
         onLogout={onLogout}
@@ -194,7 +330,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
           {/* Upload Panel */}
           <div className="w-1/2 bg-gray-800 rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Upload Media</h2>
-            
+
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">
@@ -225,6 +361,35 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                   </label>
                 </div>
               </div>
+
+              {/* Model Selector - shown in single model mode */}
+              {modelType === 'single' && (
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2">
+                    Active Model
+                  </label>
+                  <select
+                    value={currentModel}
+                    onChange={(e) => handleModelSwitch(e.target.value)}
+                    disabled={isSwitchingModel}
+                    className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
+                  >
+                    {availableModels.filter(m => m !== 'both').map((model) => (
+                      <option key={model} value={model}>
+                        {model === 'weapon' ? '🔫 Weapon Detection' :
+                          model === 'fire_smoke' ? '🔥 Fire/Smoke Detection' :
+                            model === 'fight' ? '👊 Fight Detection' : model}
+                      </option>
+                    ))}
+                  </select>
+                  {isSwitchingModel && (
+                    <p className="text-xs text-yellow-400 mt-1">Switching model...</p>
+                  )}
+                  <p className="text-xs text-gray-400 mt-1">
+                    Select the model that matches your image content
+                  </p>
+                </div>
+              )}
 
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">
@@ -268,24 +433,55 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                 </p>
               </div>
 
-              {previewUrl && (
+              {/* Camera Live Feed - renders when camera is active */}
+              {isCameraActive && (
+                <div className="mb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="block text-sm font-medium">
+                      Live Camera Feed
+                    </label>
+                    {isDetecting && (
+                      <div className="flex items-center gap-2 text-xs text-yellow-400">
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                        Detecting...
+                      </div>
+                    )}
+                  </div>
+                  <div className="border border-green-600 rounded p-2 bg-black relative">
+                    <video
+                      ref={videoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="max-w-full max-h-64 mx-auto"
+                    />
+                    {/* Live detection overlay */}
+                    {detectionResult && isCameraActive && (
+                      <div className="absolute top-2 left-2 bg-red-600/90 text-white px-3 py-1 rounded-lg text-xs font-semibold">
+                        {(() => {
+                          const count = (detectionResult.detections || []).length +
+                            (detectionResult.weapon_detections || []).length +
+                            (detectionResult.fire_smoke_detections || []).length;
+                          return count > 0 ? `⚠️ ${count} object${count > 1 ? 's' : ''} detected!` : '✅ No threats';
+                        })()}
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">Real-time detection running every 1.5 seconds</p>
+                </div>
+              )}
+
+              {/* File Preview - for uploaded images/videos */}
+              {previewUrl && !isCameraActive && (
                 <div className="mb-4">
                   <label className="block text-sm font-medium mb-2">
-                    {isVideoMode ? 'Live Camera Feed' : 'Preview'}
+                    Preview
                   </label>
                   <div className="border border-gray-600 rounded p-2 bg-black">
-                    {isVideoMode ? (
-                      <video
-                        ref={videoRef}
-                        autoPlay
-                        playsInline
-                        muted
-                        className="max-w-full max-h-64 mx-auto"
-                      />
-                    ) : selectedFile.type.startsWith('image/') ? (
-                      <img 
-                        src={previewUrl} 
-                        alt="Preview" 
+                    {selectedFile && selectedFile.type.startsWith('image/') ? (
+                      <img
+                        src={previewUrl}
+                        alt="Preview"
                         className="max-w-full max-h-64 mx-auto"
                       />
                     ) : (
@@ -300,13 +496,22 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
               )}
 
               <div className="flex gap-3">
-                <button
-                  type="submit"
-                  disabled={isLoading || !selectedFile}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 py-2 px-4 rounded transition-colors"
-                >
-                  {isLoading ? 'Processing...' : 'Run Detection'}
-                </button>
+                {/* Hide 'Run Detection' when camera is active (auto-detecting) */}
+                {!isCameraActive && (
+                  <button
+                    type="submit"
+                    disabled={isLoading || !selectedFile}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 py-2 px-4 rounded transition-colors"
+                  >
+                    {isLoading ? 'Processing...' : 'Run Detection'}
+                  </button>
+                )}
+                {isCameraActive && (
+                  <div className="flex-1 bg-green-600/20 border border-green-600 py-2 px-4 rounded text-center text-green-400 text-sm flex items-center justify-center gap-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    Auto-detecting in real-time
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={handleReset}
@@ -327,12 +532,12 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
           {/* Results Panel */}
           <div className="w-1/2 bg-gray-800 rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Detection Results</h2>
-            
+
             {!detectionResult && !isLoading && (
               <div className="text-center py-12 text-gray-400">
                 <svg className="w-16 h-16 mx-auto mb-4 opacity-50" viewBox="0 0 24 24" fill="none">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2"/>
-                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" />
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
                 </svg>
                 <p>Results will appear here after detection</p>
               </div>
@@ -359,11 +564,11 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                           </span>
                         </div>
                         <div className="text-sm text-gray-400 mt-1">
-                          Box: [{detection.box.map(n => n.toFixed(0)).join(', ')}]
+                          Box: [{Object.values(detection.box).map(n => typeof n === 'number' ? n.toFixed(0) : n).join(', ')}]
                         </div>
                       </div>
                     ))}
-                    
+
                     {/* For dual model detection */}
                     {(detectionResult.weapon_detections || []).length > 0 && (
                       <div>
@@ -380,7 +585,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                         ))}
                       </div>
                     )}
-                    
+
                     {(detectionResult.fire_smoke_detections || []).length > 0 && (
                       <div>
                         <h4 className="font-medium mt-3 mb-2 text-blue-400">Fire/Smoke Detections:</h4>
@@ -403,7 +608,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                   <div>
                     <h3 className="font-medium mb-2">Processed Image:</h3>
                     <div className="border border-gray-600 rounded p-2 bg-black">
-                      <img 
+                      <img
                         src={`data:image/jpeg;base64,${detectionResult.image}`}
                         alt="Detection result"
                         className="max-w-full"
@@ -417,7 +622,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                   <div className="mt-4">
                     <h3 className="font-medium mb-2 text-red-400">Weapon Detection Result:</h3>
                     <div className="border border-red-700 rounded p-2 bg-black">
-                      <img 
+                      <img
                         src={`data:image/jpeg;base64,${detectionResult.weapon_image}`}
                         alt="Weapon detection result"
                         className="max-w-full"
@@ -430,7 +635,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                   <div className="mt-4">
                     <h3 className="font-medium mb-2 text-blue-400">Fire/Smoke Detection Result:</h3>
                     <div className="border border-blue-700 rounded p-2 bg-black">
-                      <img 
+                      <img
                         src={`data:image/jpeg;base64,${detectionResult.fire_smoke_image}`}
                         alt="Fire/Smoke detection result"
                         className="max-w-full"

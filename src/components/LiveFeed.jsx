@@ -11,11 +11,14 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
   const [detectedObjects, setDetectedObjects] = useState([]);
   const [lastDetectionTime, setLastDetectionTime] = useState(null);
   const [isDetecting, setIsDetecting] = useState(false);
-  
+  const [currentModel, setCurrentModel] = useState('weapon');
+  const [availableModels, setAvailableModels] = useState([]);
+  const [isSwitchingModel, setIsSwitchingModel] = useState(false);
+
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const detectionIntervalRef = useRef(null);
-  
+
   const [cameras, setCameras] = useState([
     { id: 1, name: 'Entrance', location: 'Building A - Floor 1', status: 'Active', fps: 30, resolution: '1920x1080' },
     { id: 2, name: 'Parking Lot', location: 'Building A - Outdoor', status: 'Active', fps: 30, resolution: '1920x1080' },
@@ -26,26 +29,50 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
   ]);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  
-  // Initialize audio on component mount
+
+  // Initialize audio and fetch models on component mount
   useEffect(() => {
     audioAlert.init();
+
+    const fetchModels = async () => {
+      try {
+        const response = await apiEndpoints.getModels();
+        setCurrentModel(response.data.current_model);
+        setAvailableModels(response.data.models || []);
+      } catch (err) {
+        console.error('Failed to fetch models:', err);
+      }
+    };
+    fetchModels();
   }, []);
-  
+
+  // Handle model switch
+  const handleModelSwitch = async (newModel) => {
+    setIsSwitchingModel(true);
+    try {
+      await apiEndpoints.switchModel(newModel);
+      setCurrentModel(newModel);
+    } catch (err) {
+      console.error('Failed to switch model:', err);
+    } finally {
+      setIsSwitchingModel(false);
+    }
+  };
+
   // Start camera stream
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { width: 1280, height: 720, facingMode: 'environment' } 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 1280, height: 720, facingMode: 'environment' }
       });
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         setIsStreaming(true);
-        
+
         // Play system alert for successful camera start
-        await audioAlert.playSystemAlert();
-        
+        audioAlert.playSystemAlert(); // Removed await to prevent blocking camera functionality
+
         // Start detection interval
         startDetectionLoop();
       }
@@ -54,7 +81,7 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
       alert('Could not access camera. Please check permissions.');
     }
   };
-  
+
   // Stop camera stream
   const stopCamera = () => {
     if (videoRef.current && videoRef.current.srcObject) {
@@ -62,7 +89,7 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
       tracks.forEach(track => track.stop());
       videoRef.current.srcObject = null;
       setIsStreaming(false);
-      
+
       // Clear detection interval
       if (detectionIntervalRef.current) {
         clearInterval(detectionIntervalRef.current);
@@ -70,26 +97,26 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
       }
     }
   };
-  
+
   // Start detection loop
   const startDetectionLoop = () => {
     if (detectionIntervalRef.current) {
       clearInterval(detectionIntervalRef.current);
     }
-    
+
     detectionIntervalRef.current = setInterval(async () => {
       if (isStreaming && videoRef.current) {
         await detectFromFrame();
       }
     }, 1000); // Run detection every second
   };
-  
+
   // Detect objects from current frame
   const detectFromFrame = async () => {
     if (!videoRef.current || videoRef.current.readyState !== 4) return;
-    
+
     setIsDetecting(true);
-    
+
     try {
       // Capture frame from video
       const canvas = document.createElement('canvas');
@@ -97,22 +124,46 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
       canvas.height = videoRef.current.videoHeight;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-      
+
       // Convert to blob for API call
       canvas.toBlob(async (blob) => {
         const formData = new FormData();
         formData.append('file', blob, 'frame.jpg');
         formData.append('camera_id', 'live_feed');
-        
+
         try {
-          const response = await apiEndpoints.detectObjects(formData);
-          
-          if (response.data.detections && response.data.detections.length > 0) {
-            setDetectedObjects(response.data.detections);
+          let response;
+          let allDetections = [];
+
+          // Route to correct endpoint based on selected model
+          if (currentModel === 'fight') {
+            response = await apiEndpoints.detectFight(formData);
+            // Fight detection returns different format
+            if (response.data.is_fight) {
+              allDetections = [{
+                class: 'fight',
+                confidence: response.data.fight_probability || response.data.confidence || 0.8
+              }];
+            }
+          } else if (currentModel === 'both') {
+            response = await apiEndpoints.detectBoth(formData);
+            // Combine weapon and fire/smoke detections
+            allDetections = [
+              ...(response.data.weapon_detections || []),
+              ...(response.data.fire_smoke_detections || []),
+            ];
+          } else {
+            // weapon or fire_smoke — uses the current backend model
+            response = await apiEndpoints.detectObjects(formData);
+            allDetections = response.data.detections || [];
+          }
+
+          if (allDetections.length > 0) {
+            setDetectedObjects(allDetections);
             setLastDetectionTime(new Date());
-            
+
             // Create alert for detected objects
-            createAlertFromDetection(response.data.detections);
+            createAlertFromDetection(allDetections);
           } else {
             setDetectedObjects([]);
           }
@@ -127,12 +178,12 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
       setIsDetecting(false);
     }
   };
-  
+
   // Create alert from detection
   const createAlertFromDetection = (detections) => {
-    detections.forEach(async detection => {
+    detections.forEach(detection => {
       const severity = detection.confidence > 0.8 ? 'Critical' : detection.confidence > 0.6 ? 'Warning' : 'Info';
-      
+
       const alert = {
         id: Date.now() + Math.random(),
         type: `${detection.class.charAt(0).toUpperCase() + detection.class.slice(1)} Detected`,
@@ -143,17 +194,17 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
         status: 'Active',
         timestamp: new Date().toISOString()
       };
-      
+
       // Store alert in localStorage for other components to access
       const existingAlerts = JSON.parse(localStorage.getItem('liveAlerts') || '[]');
       existingAlerts.unshift(alert);
       localStorage.setItem('liveAlerts', JSON.stringify(existingAlerts.slice(0, 50))); // Keep last 50 alerts
-      
+
       // Play audio alert based on severity
-      await audioAlert.playAlert(severity);
+      audioAlert.playAlert(severity); // Removed await to prevent blocking detection flow
     });
   };
-  
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -168,7 +219,7 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
 
   return (
     <div className="livefeed-container">
-      <Sidebar 
+      <Sidebar
         currentPage={currentPage}
         onNavigate={onNavigate}
         onLogout={onLogout}
@@ -187,28 +238,28 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
           </div>
           <div className="livefeed-view-toggle">
             <div className="view-toggle-buttons">
-              <button 
+              <button
                 className={`view-toggle-btn ${viewMode === 'grid' ? 'view-toggle-btn-active' : ''}`}
                 onClick={() => setViewMode('grid')}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                  <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
-                  <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
-                  <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
-                  <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
+                  <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                  <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                  <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
+                  <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2" />
                 </svg>
               </button>
-              <button 
+              <button
                 className={`view-toggle-btn ${viewMode === 'list' ? 'view-toggle-btn-active' : ''}`}
                 onClick={() => setViewMode('list')}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                  <line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" strokeWidth="2"/>
-                  <line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" strokeWidth="2"/>
-                  <line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" strokeWidth="2"/>
-                  <line x1="3" y1="6" x2="3.01" y2="6" stroke="currentColor" strokeWidth="2"/>
-                  <line x1="3" y1="12" x2="3.01" y2="12" stroke="currentColor" strokeWidth="2"/>
-                  <line x1="3" y1="18" x2="3.01" y2="18" stroke="currentColor" strokeWidth="2"/>
+                  <line x1="8" y1="6" x2="21" y2="6" stroke="currentColor" strokeWidth="2" />
+                  <line x1="8" y1="12" x2="21" y2="12" stroke="currentColor" strokeWidth="2" />
+                  <line x1="8" y1="18" x2="21" y2="18" stroke="currentColor" strokeWidth="2" />
+                  <line x1="3" y1="6" x2="3.01" y2="6" stroke="currentColor" strokeWidth="2" />
+                  <line x1="3" y1="12" x2="3.01" y2="12" stroke="currentColor" strokeWidth="2" />
+                  <line x1="3" y1="18" x2="3.01" y2="18" stroke="currentColor" strokeWidth="2" />
                 </svg>
               </button>
             </div>
@@ -234,7 +285,7 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
             </div>
             <div className="flex gap-3">
               {!isStreaming ? (
-                <button 
+                <button
                   onClick={startCamera}
                   className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors flex items-center gap-2"
                 >
@@ -245,7 +296,7 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
                   Start Camera
                 </button>
               ) : (
-                <button 
+                <button
                   onClick={stopCamera}
                   className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors flex items-center gap-2"
                 >
@@ -263,10 +314,33 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
               )}
             </div>
           </div>
-          
+
+          {/* Model Selector */}
+          <div className="mt-4 flex items-center gap-4">
+            <label className="text-sm font-medium text-gray-300">Detection Model:</label>
+            <select
+              value={currentModel}
+              onChange={(e) => handleModelSwitch(e.target.value)}
+              disabled={isSwitchingModel}
+              className="flex-1 max-w-xs p-2 bg-gray-700 border border-gray-600 rounded-lg text-white text-sm"
+            >
+              {availableModels.filter(m => m !== 'both').map((model) => (
+                <option key={model} value={model}>
+                  {model === 'weapon' ? '🔫 Weapon Detection' :
+                    model === 'fire_smoke' ? '🔥 Fire/Smoke Detection' :
+                      model === 'fight' ? '👊 Fight Detection' : model}
+                </option>
+              ))}
+              <option value="both">🔄 All Models (Weapon + Fire/Smoke)</option>
+            </select>
+            {isSwitchingModel && (
+              <span className="text-xs text-yellow-400">Switching...</span>
+            )}
+          </div>
+
           {/* Live Camera Display */}
           <div className="mt-4 relative bg-black rounded-lg overflow-hidden">
-            <video 
+            <video
               ref={videoRef}
               autoPlay
               playsInline
@@ -285,7 +359,7 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
                 </div>
               </div>
             )}
-            
+
             {/* Detection Overlay */}
             {isStreaming && detectedObjects.length > 0 && (
               <div className="absolute top-2 left-2 bg-red-600 text-white px-3 py-1 rounded-lg text-sm font-semibold">
@@ -293,19 +367,18 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
               </div>
             )}
           </div>
-          
+
           {/* Detection Results */}
           {detectedObjects.length > 0 && (
             <div className="mt-4">
               <h4 className="font-medium mb-2">Recent Detections:</h4>
               <div className="flex flex-wrap gap-2">
                 {detectedObjects.map((obj, index) => (
-                  <div 
+                  <div
                     key={index}
-                    className={`px-3 py-1 rounded-full text-sm font-medium ${
-                      obj.confidence > 0.8 ? 'bg-red-600 text-white' :
-                      obj.confidence > 0.6 ? 'bg-yellow-600 text-white' : 'bg-blue-600 text-white'
-                    }`}
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${obj.confidence > 0.8 ? 'bg-red-600 text-white' :
+                        obj.confidence > 0.6 ? 'bg-yellow-600 text-white' : 'bg-blue-600 text-white'
+                      }`}
                   >
                     {obj.class} ({(obj.confidence * 100).toFixed(1)}%)
                   </div>
@@ -314,15 +387,15 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
             </div>
           )}
         </div>
-        
+
         {/* Camera Grid */}
         <div className="text-lg font-semibold mb-4">Predefined Camera Feeds</div>
         <div className={`camera-grid ${viewMode === 'grid' ? 'camera-grid-view' : 'camera-list-view'}`}>
           {cameras.map((camera, index) => (
-            <div 
-              key={camera.id} 
+            <div
+              key={camera.id}
               className="camera-card"
-              style={{animationDelay: `${0.1 + index * 0.05}s`}}
+              style={{ animationDelay: `${0.1 + index * 0.05}s` }}
               onClick={() => setSelectedCamera(camera)}
             >
               <div className="camera-card-header">
@@ -332,9 +405,9 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
                 </div>
                 <button className="camera-menu-btn">
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <circle cx="12" cy="12" r="1" fill="currentColor"/>
-                    <circle cx="12" cy="5" r="1" fill="currentColor"/>
-                    <circle cx="12" cy="19" r="1" fill="currentColor"/>
+                    <circle cx="12" cy="12" r="1" fill="currentColor" />
+                    <circle cx="12" cy="5" r="1" fill="currentColor" />
+                    <circle cx="12" cy="19" r="1" fill="currentColor" />
                   </svg>
                 </button>
               </div>
@@ -342,15 +415,15 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
               <div className="camera-video-container">
                 <div className="camera-video-placeholder">
                   <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2"/>
-                    <circle cx="12" cy="13" r="4" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" />
+                    <circle cx="12" cy="13" r="4" stroke="currentColor" strokeWidth="2" />
                   </svg>
                 </div>
                 <div className="camera-video-overlay">
                   <div className="camera-play-button-container">
                     <button className="camera-play-button">
                       <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z"/>
+                        <path d="M8 5v14l11-7z" />
                       </svg>
                     </button>
                   </div>
@@ -363,16 +436,16 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
                 <div className="camera-specs">
                   <span className="camera-spec">
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2"/>
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                      <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" />
                     </svg>
                     {camera.fps} FPS
                   </span>
                   <span className="camera-spec">
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                      <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/>
-                      <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" strokeWidth="2"/>
-                      <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" strokeWidth="2"/>
+                      <rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2" />
+                      <line x1="8" y1="21" x2="16" y2="21" stroke="currentColor" strokeWidth="2" />
+                      <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" strokeWidth="2" />
                     </svg>
                     {camera.resolution}
                   </span>
@@ -391,21 +464,21 @@ const LiveFeed = ({ onLogout, onNavigate, currentPage }) => {
                   <h2 className="camera-modal-title">{selectedCamera.name}</h2>
                   <p className="camera-modal-location">{selectedCamera.location}</p>
                 </div>
-                <button 
+                <button
                   className="camera-modal-close"
                   onClick={() => setSelectedCamera(null)}
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2"/>
-                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2"/>
+                    <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" strokeWidth="2" />
+                    <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" strokeWidth="2" />
                   </svg>
                 </button>
               </div>
               <div className="camera-modal-body">
                 <div className="camera-modal-video">
                   <svg className="w-24 h-24" viewBox="0 0 24 24" fill="none">
-                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2"/>
-                    <circle cx="12" cy="13" r="4" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" />
+                    <circle cx="12" cy="13" r="4" stroke="currentColor" strokeWidth="2" />
                   </svg>
                 </div>
               </div>

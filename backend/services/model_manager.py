@@ -38,6 +38,7 @@ class ModelManager:
                 try:
                     self.weapon_model = YOLO(weapon_model_path)
                     self.logger.info(f"Weapon model loaded successfully from {weapon_model_path}")
+                    self.logger.info(f"Weapon model class names: {self.weapon_model.names}")
                 except Exception as e:
                     self.logger.error(f"Failed to load weapon model from {weapon_model_path}: {e}")
                     self.weapon_model = None
@@ -49,6 +50,7 @@ class ModelManager:
                 try:
                     self.fire_smoke_model = YOLO(fire_smoke_model_path)
                     self.logger.info(f"Fire/Smoke model loaded successfully from {fire_smoke_model_path}")
+                    self.logger.info(f"Fire/Smoke model class names: {self.fire_smoke_model.names}")
                 except Exception as e:
                     self.logger.error(f"Failed to load fire/smoke model from {fire_smoke_model_path}: {e}")
                     self.fire_smoke_model = None

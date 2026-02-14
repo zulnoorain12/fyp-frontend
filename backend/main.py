@@ -363,7 +363,30 @@ async def detect_both_models(
         weapon_detections = results["weapon_detections"]
         fire_smoke_detections = results["fire_smoke_detections"]
         
-        logger.info(f"Weapon detections: {len(weapon_detections)}, Fire/Smoke detections: {len(fire_smoke_detections)}")
+        # Filter detections to only include relevant classes per model
+        # This prevents cross-contamination (e.g., weapon model detecting "fire")
+        WEAPON_CLASSES = {'weapon', 'gun', 'knife', 'pistol', 'rifle', 'handgun', 'sword', 'bomb', 'grenade', 'firearm'}
+        FIRE_SMOKE_CLASSES = {'fire', 'smoke', 'flame', 'blaze'}
+        
+        # Filter weapon detections: keep only weapon-related classes
+        filtered_weapon = [d for d in weapon_detections if d["class"].lower() in WEAPON_CLASSES]
+        # Filter fire/smoke detections: keep only fire/smoke-related classes
+        filtered_fire_smoke = [d for d in fire_smoke_detections if d["class"].lower() in FIRE_SMOKE_CLASSES]
+        
+        # If a model has classes not in either known set, keep them under their original model
+        # (in case models have custom class names we didn't list)
+        unknown_weapon = [d for d in weapon_detections if d["class"].lower() not in WEAPON_CLASSES and d["class"].lower() not in FIRE_SMOKE_CLASSES]
+        unknown_fire_smoke = [d for d in fire_smoke_detections if d["class"].lower() not in FIRE_SMOKE_CLASSES and d["class"].lower() not in WEAPON_CLASSES]
+        
+        # Also move any fire/smoke detections from weapon model to fire_smoke list
+        misplaced_fire = [d for d in weapon_detections if d["class"].lower() in FIRE_SMOKE_CLASSES]
+        # And any weapon detections from fire_smoke model to weapon list
+        misplaced_weapon = [d for d in fire_smoke_detections if d["class"].lower() in WEAPON_CLASSES]
+        
+        weapon_detections = filtered_weapon + unknown_weapon + misplaced_weapon
+        fire_smoke_detections = filtered_fire_smoke + unknown_fire_smoke + misplaced_fire
+        
+        logger.info(f"Filtered - Weapon detections: {len(weapon_detections)}, Fire/Smoke detections: {len(fire_smoke_detections)}")
         
         # Draw weapon detections (red)
         img_weapon = detection_service.draw_detections(

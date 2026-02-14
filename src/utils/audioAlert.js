@@ -1,6 +1,6 @@
 /**
  * Audio Alert System
- * Plays different sounds based on alert severity
+ * Plays professional, polished sounds based on alert severity
  */
 
 class AudioAlert {
@@ -13,11 +13,11 @@ class AudioAlert {
   // Initialize audio context (required for modern browsers)
   async init() {
     if (this.isInitialized) return;
-    
+
     try {
       this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
       this.isInitialized = true;
-      
+
       // Resume audio context on first user interaction (required by browsers)
       const resumeContext = () => {
         if (this.audioContext.state === 'suspended') {
@@ -26,7 +26,7 @@ class AudioAlert {
         document.removeEventListener('click', resumeContext);
         document.removeEventListener('touchstart', resumeContext);
       };
-      
+
       document.addEventListener('click', resumeContext);
       document.addEventListener('touchstart', resumeContext);
     } catch (err) {
@@ -34,75 +34,86 @@ class AudioAlert {
     }
   }
 
+  // Helper: play a single tone with smooth envelope
+  _playTone(frequency, type, volume, startTime, duration) {
+    const osc = this.audioContext.createOscillator();
+    const gain = this.audioContext.createGain();
+
+    osc.connect(gain);
+    gain.connect(this.audioContext.destination);
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(frequency, startTime);
+
+    // Smooth fade in and fade out to avoid clicks
+    gain.gain.setValueAtTime(0.001, startTime);
+    gain.gain.linearRampToValueAtTime(volume, startTime + 0.02);
+    gain.gain.setValueAtTime(volume, startTime + duration - 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+
+    osc.start(startTime);
+    osc.stop(startTime + duration);
+  }
+
   // Play alert sound based on severity
   async playAlert(severity = 'info') {
     if (!this.isEnabled || !this.isInitialized) return;
-    
+
     try {
-      // Create oscillator for sound generation
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
-      
-      // Configure sound based on severity
+      // Resume audio context if suspended (browser autoplay policy)
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+
+      const now = this.audioContext.currentTime;
+
       switch (severity.toLowerCase()) {
         case 'critical':
-          // High frequency, urgent sound
-          oscillator.type = 'sawtooth';
-          oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
-          gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.5);
-          oscillator.stop(this.audioContext.currentTime + 0.5);
+          // 🚨 Urgent 3-tone descending alarm — like a security siren
+          this._playTone(880, 'sine', 0.25, now, 0.15);
+          this._playTone(660, 'sine', 0.25, now + 0.18, 0.15);
+          this._playTone(440, 'sine', 0.25, now + 0.36, 0.2);
+          // Repeat pattern for urgency
+          this._playTone(880, 'sine', 0.2, now + 0.6, 0.15);
+          this._playTone(660, 'sine', 0.2, now + 0.78, 0.15);
+          this._playTone(440, 'sine', 0.2, now + 0.96, 0.25);
           break;
-          
+
         case 'warning':
-          // Medium frequency, attention sound
-          oscillator.type = 'triangle';
-          oscillator.frequency.setValueAtTime(500, this.audioContext.currentTime);
-          gainNode.gain.setValueAtTime(0.2, this.audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
-          oscillator.stop(this.audioContext.currentTime + 0.3);
+          // ⚠️ Two-tone attention chime — clean and clear
+          this._playTone(523.25, 'sine', 0.2, now, 0.2);        // C5
+          this._playTone(659.25, 'sine', 0.2, now + 0.22, 0.2); // E5
+          this._playTone(523.25, 'sine', 0.15, now + 0.46, 0.2); // C5 again
+          this._playTone(659.25, 'sine', 0.15, now + 0.68, 0.25); // E5 again
           break;
-          
+
         case 'info':
         default:
-          // Low frequency, notification sound
-          oscillator.type = 'sine';
-          oscillator.frequency.setValueAtTime(300, this.audioContext.currentTime);
-          gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
-          gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
-          oscillator.stop(this.audioContext.currentTime + 0.2);
+          // ℹ️ Gentle ascending notification — soft and pleasant
+          this._playTone(392, 'sine', 0.12, now, 0.15);        // G4
+          this._playTone(523.25, 'sine', 0.12, now + 0.17, 0.2); // C5
           break;
       }
-      
-      // Start the sound
-      oscillator.start();
     } catch (err) {
       console.error('Error playing audio alert:', err);
     }
   }
 
-  // Play system alert (for successful detection)
+  // Play system alert (for successful actions like camera start)
   async playSystemAlert() {
     if (!this.isEnabled || !this.isInitialized) return;
-    
+
     try {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
-      
-      // Pleasant notification sound
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(600, this.audioContext.currentTime);
-      gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
-      
-      oscillator.start();
-      oscillator.stop(this.audioContext.currentTime + 0.1);
+      // Resume audio context if suspended (browser autoplay policy)
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+
+      const now = this.audioContext.currentTime;
+
+      // Pleasant ascending two-note chime
+      this._playTone(440, 'sine', 0.1, now, 0.12);       // A4
+      this._playTone(554.37, 'sine', 0.1, now + 0.13, 0.15); // C#5
     } catch (err) {
       console.error('Error playing system alert:', err);
     }
@@ -114,7 +125,7 @@ class AudioAlert {
   }
 
   // Check if audio is enabled
-  isEnabled() {
+  getEnabled() {
     return this.isEnabled;
   }
 }

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Sidebar from './Sidebar';
 import '../styles/Alerts.css';
 import { apiEndpoints } from '../services/api';
+import audioAlert from '../utils/audioAlert';
 
 const Alerts = ({ onLogout, onNavigate, currentPage }) => {
   const [activeTab, setActiveTab] = useState('all');
@@ -21,17 +22,17 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
       'car': 'Vehicle Detected',
       'truck': 'Vehicle Detected'
     };
-    
+
     const severityMap = {
       'high': 'Critical',
       'medium': 'Warning',
       'low': 'Info'
     };
-    
+
     const timeAgo = (timestamp) => {
       // Handle different timestamp formats
       let then;
-      
+
       // If timestamp is already a Date object, use it directly
       if (timestamp instanceof Date) {
         then = timestamp;
@@ -51,25 +52,25 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
           then = new Date(timestamp);
         }
       }
-      
+
       const now = new Date();
       const diffMs = now - then;
-      
+
       // Handle invalid dates
       if (isNaN(then.getTime())) {
         return 'Unknown';
       }
-      
+
       const diffMins = Math.floor(diffMs / 60000);
       const diffHours = Math.floor(diffMins / 60);
       const diffDays = Math.floor(diffHours / 24);
-      
+
       if (diffMins < 1) return 'Just now';
       if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
       if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
       return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
     };
-    
+
     return {
       id: detection.id,
       type: typeMap[detection.detection_type] || `${detection.detection_type.charAt(0).toUpperCase() + detection.detection_type.slice(1)} Detected`,
@@ -81,28 +82,28 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
       timestamp: detection.timestamp
     };
   };
-  
+
   // Combine backend alerts with live camera alerts
   const combineAlerts = (backendAlerts, liveAlerts) => {
     // Merge both arrays and sort by timestamp (newest first)
     const allAlerts = [...backendAlerts, ...liveAlerts];
     return allAlerts.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
   };
-  
+
   // Mark alert as read
   const markAsRead = (alertId) => {
-    const updatedAlerts = alerts.map(alert => 
+    const updatedAlerts = alerts.map(alert =>
       alert.id === alertId ? { ...alert, status: 'Acknowledged' } : alert
     );
     setAlerts(updatedAlerts);
-    
+
     // Update unread count
-    const newUnreadCount = updatedAlerts.filter(alert => 
+    const newUnreadCount = updatedAlerts.filter(alert =>
       alert.status === 'Active' || alert.status === 'Investigating'
     ).length;
     setUnreadCount(newUnreadCount);
   };
-  
+
   // Mark all as read
   const markAllAsRead = () => {
     const updatedAlerts = alerts.map(alert => ({
@@ -112,7 +113,7 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
     setAlerts(updatedAlerts);
     setUnreadCount(0);
   };
-  
+
   // Get alert severity badge class
   const getSeverityBadgeClass = (severity) => {
     switch (severity.toLowerCase()) {
@@ -124,6 +125,12 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
   };
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const previousAlertIdsRef = useRef(new Set());
+
+  // Initialize audio on component mount
+  useEffect(() => {
+    audioAlert.init();
+  }, []);
 
   // Fetch alerts
   useEffect(() => {
@@ -131,19 +138,34 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
       try {
         setLoading(true);
         setError(null);
-        
+
         const response = await apiEndpoints.getDetections(50);
         const detections = response.data.detections || [];
-        
+
         // Convert detections to alerts
         const backendAlerts = detections.map(mapDetectionToAlert);
-        
+
         // Get live alerts from localStorage
         const liveAlerts = JSON.parse(localStorage.getItem('liveAlerts') || '[]');
-        
+
         // Combine backend and live alerts
         const combinedAlerts = combineAlerts(backendAlerts, liveAlerts);
-        
+
+        // Play sound for NEW active alerts only
+        const currentIds = new Set(combinedAlerts.map(a => a.id));
+        const newActiveAlerts = combinedAlerts.filter(
+          a => (a.status === 'Active' || a.status === 'Investigating') && !previousAlertIdsRef.current.has(a.id)
+        );
+
+        if (newActiveAlerts.length > 0 && previousAlertIdsRef.current.size > 0) {
+          // Determine the highest severity among new alerts
+          const hasCritical = newActiveAlerts.some(a => a.severity === 'Critical');
+          const hasWarning = newActiveAlerts.some(a => a.severity === 'Warning');
+          const severity = hasCritical ? 'Critical' : hasWarning ? 'Warning' : 'Info';
+          audioAlert.playAlert(severity);
+        }
+
+        previousAlertIdsRef.current = currentIds;
         setAlerts(combinedAlerts);
       } catch (err) {
         console.error('Error fetching alerts:', err);
@@ -157,37 +179,37 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
           { id: 5, type: 'System Notification', severity: 'Info', description: 'Camera maintenance scheduled for tomorrow', location: 'Server Room – Camera 04', time: '2 hours ago', status: 'Acknowledged' },
           { id: 6, type: 'Motion Detected', severity: 'Info', description: 'Motion detected in low-traffic area during off-hours', location: 'Hallway East – Camera 05', time: '3 hours ago', status: 'Resolved' },
         ];
-        
+
         // Add any live alerts from localStorage
         const liveAlerts = JSON.parse(localStorage.getItem('liveAlerts') || '[]');
         const combinedAlerts = combineAlerts(fallbackAlerts, liveAlerts);
-        
+
         setAlerts(combinedAlerts);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchAlerts();
-    
+
     // Set up interval to periodically check for new live alerts
     const interval = setInterval(fetchAlerts, 5000); // Refresh every 5 seconds
-    
+
     return () => clearInterval(interval);
   }, []);
 
   // Update unread count when alerts change
   useEffect(() => {
-    const count = alerts.filter(alert => 
+    const count = alerts.filter(alert =>
       alert.status === 'Active' || alert.status === 'Investigating'
     ).length;
     setUnreadCount(count);
   }, [alerts]);
-  
+
   if (loading) {
     return (
       <div className="alerts-container">
-        <div className="alerts-main" style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
+        <div className="alerts-main" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
           <div>Loading alerts...</div>
         </div>
       </div>
@@ -196,7 +218,7 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
 
   const filterAlerts = () => {
     if (activeTab === 'all') return alerts;
-    if (activeTab === 'unread') return alerts.filter(alert => 
+    if (activeTab === 'unread') return alerts.filter(alert =>
       alert.status === 'Active' || alert.status === 'Investigating'
     );
     return alerts.filter(alert => alert.severity.toLowerCase() === activeTab.toLowerCase());
@@ -209,7 +231,7 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
 
   return (
     <div className="alerts-container">
-      <Sidebar 
+      <Sidebar
         currentPage={currentPage}
         onNavigate={onNavigate}
         onLogout={onLogout}
@@ -228,20 +250,20 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
           </div>
           <div className="alerts-actions">
             {unreadCount > 0 && (
-              <button 
+              <button
                 onClick={markAllAsRead}
                 className="px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm flex items-center gap-2 transition-colors"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="2"/>
-                  <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" strokeWidth="2"/>
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="2" />
+                  <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" strokeWidth="2" />
                 </svg>
                 <span>Mark All Read ({unreadCount})</span>
               </button>
             )}
             <button className="alerts-action-btn">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2"/>
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" strokeWidth="2" />
               </svg>
               <span>Export</span>
             </button>
@@ -283,21 +305,20 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
         {/* Alerts List */}
         <div className="alerts-list">
           {filterAlerts().map((alert, index) => (
-            <div 
-              key={alert.id} 
+            <div
+              key={alert.id}
               className="alert-card"
-              style={{animationDelay: `${index * 0.05}s`}}
+              style={{ animationDelay: `${index * 0.05}s` }}
             >
               <div className="alert-icon-container">
-                <div className={`alert-icon ${
-                  alert.severity === 'Critical' ? 'alert-icon-critical' :
-                  alert.severity === 'Warning' ? 'alert-icon-warning' :
-                  'alert-icon-info'
-                }`}>
+                <div className={`alert-icon ${alert.severity === 'Critical' ? 'alert-icon-critical' :
+                    alert.severity === 'Warning' ? 'alert-icon-warning' :
+                      'alert-icon-info'
+                  }`}>
                   <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" strokeWidth="2"/>
-                    <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" strokeWidth="2"/>
-                    <circle cx="12" cy="17" r="1" fill="currentColor"/>
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" strokeWidth="2" />
+                    <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" strokeWidth="2" />
+                    <circle cx="12" cy="17" r="1" fill="currentColor" />
                   </svg>
                 </div>
               </div>
@@ -320,24 +341,23 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
                 <div className="alert-metadata">
                   <span className="alert-meta-item">
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2"/>
-                      <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2" />
+                      <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2" />
                     </svg>
                     {alert.location}
                   </span>
                   <span className="alert-meta-item">
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
-                      <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2"/>
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                      <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" />
                     </svg>
                     {alert.time}
                   </span>
-                  <span className={`alert-status-badge ${
-                    alert.status === 'Active' ? 'alert-status-active' :
-                    alert.status === 'Acknowledged' ? 'alert-status-acknowledged' :
-                    alert.status === 'Investigating' ? 'alert-status-investigating' :
-                    'alert-status-resolved'
-                  }`}>
+                  <span className={`alert-status-badge ${alert.status === 'Active' ? 'alert-status-active' :
+                      alert.status === 'Acknowledged' ? 'alert-status-acknowledged' :
+                        alert.status === 'Investigating' ? 'alert-status-investigating' :
+                          'alert-status-resolved'
+                    }`}>
                     {alert.status}
                   </span>
                 </div>
@@ -345,21 +365,21 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
 
               <div className="alert-actions">
                 {(alert.status === 'Active' || alert.status === 'Investigating') && (
-                  <button 
+                  <button
                     className="alert-action-acknowledge"
                     onClick={() => markAsRead(alert.id)}
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="2"/>
-                      <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" strokeWidth="2"/>
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="2" />
+                      <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" strokeWidth="2" />
                     </svg>
                     Mark as Read
                   </button>
                 )}
                 <button className="alert-action-view">
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2"/>
-                    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" />
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
                   </svg>
                   Details
                 </button>
