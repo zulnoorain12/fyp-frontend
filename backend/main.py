@@ -122,8 +122,8 @@ async def detect_fight(file: UploadFile = File(...)):
         if frame is None:
             return {"error": "Invalid video frame. Please upload a valid image file (JPEG, PNG, etc.)."}
         
-        # Run fight detection
-        fight_result = fight_detection_service.detect_fight(frame)
+        # Run fight detection with force_predict for single image uploads
+        fight_result = fight_detection_service.detect_fight(frame, force_predict=True)
         
         if not fight_result["success"]:
             return {"error": "Fight detection failed", "details": fight_result.get("error")}
@@ -150,6 +150,12 @@ async def detect_fight(file: UploadFile = File(...)):
                     detection_id=detection_id,
                     severity=severity
                 )
+        
+        # Encode annotated frame as base64 image
+        annotated_frame = fight_result.pop("annotated_frame", None)
+        if annotated_frame is not None:
+            _, buffer = cv2.imencode('.jpg', annotated_frame, [cv2.IMWRITE_JPEG_QUALITY, 80])
+            fight_result["image"] = base64.b64encode(buffer.tobytes()).decode('utf-8')
         
         return fight_result
     except Exception as e:
@@ -215,6 +221,47 @@ async def detect_objects(
     global current_model
     
     logger.info(f"Detecting objects with current model: {model_manager.current_model}")
+    
+    # Handle fight model separately - it uses pose estimation, not YOLO
+    if model_manager.current_model == "fight":
+        logger.info("Redirecting to fight detection for fight model")
+        try:
+            contents = await file.read()
+            if len(contents) > 10 * 1024 * 1024:
+                return {"error": "File too large. Maximum size is 10MB."}
+            nparr = np.frombuffer(contents, np.uint8)
+            frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+            if frame is None:
+                return {"error": "Invalid image file."}
+            fight_result = fight_detection_service.detect_fight(frame, force_predict=True)
+            if not fight_result["success"]:
+                return {"error": "Fight detection failed", "details": fight_result.get("error")}
+            # Convert fight result to standard detection format for consistency
+            detections = []
+            box = fight_result.get("box") or {"x1": 0, "y1": 0, "x2": frame.shape[1], "y2": frame.shape[0]}
+            if fight_result.get("is_fight", False):
+                detections.append({
+                    "class": "fight",
+                    "confidence": fight_result["fight_probability"],
+                    "box": box
+                })
+            # Encode annotated image (with pose + bounding box drawn)
+            annotated_frame = fight_result.get("annotated_frame")
+            img_to_encode = annotated_frame if annotated_frame is not None else frame
+            _, buffer = cv2.imencode('.jpg', img_to_encode, [cv2.IMWRITE_JPEG_QUALITY, 80])
+            img_bytes = buffer.tobytes()
+            return {
+                "detections": detections,
+                "image": base64.b64encode(img_bytes).decode('utf-8'),
+                "model_used": "fight",
+                "fight_probability": fight_result.get("fight_probability", 0.0),
+                "no_fight_probability": fight_result.get("no_fight_probability", 1.0),
+                "is_fight": fight_result.get("is_fight", False),
+                "message": fight_result.get("message", "")
+            }
+        except Exception as e:
+            logger.error(f"Error in fight detection via /detect: {e}", exc_info=True)
+            return {"error": "Fight detection failed", "details": str(e)}
     
     # Select model based on current selection
     model = model_manager.get_current_model()

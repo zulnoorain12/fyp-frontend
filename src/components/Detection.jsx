@@ -6,24 +6,24 @@ import { apiEndpoints } from '../services/api';
 import audioAlert from '../utils/audioAlert';
 
 const Detection = ({ onLogout, onNavigate, currentPage }) => {
-  const [sidebarOpen, setSidebarOpen]         = useState(false);
-  const [selectedFile, setSelectedFile]       = useState(null);
-  const [previewUrl, setPreviewUrl]           = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [detectionResult, setDetectionResult] = useState(null);
-  const [isLoading, setIsLoading]             = useState(false);
-  const [error, setError]                     = useState(null);
-  const [modelType, setModelType]             = useState('single');
-  const [isVideoMode, setIsVideoMode]         = useState(false);
-  const [currentModel, setCurrentModel]       = useState('weapon');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [modelType, setModelType] = useState('single');
+  const [isVideoMode, setIsVideoMode] = useState(false);
+  const [currentModel, setCurrentModel] = useState('weapon');
   const [availableModels, setAvailableModels] = useState([]);
   const [isSwitchingModel, setIsSwitchingModel] = useState(false);
-  const [isCameraActive, setIsCameraActive]   = useState(false);
-  const [isDetecting, setIsDetecting]         = useState(false);
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const [isDetecting, setIsDetecting] = useState(false);
 
-  const videoRef             = useRef(null);
-  const streamRef            = useRef(null);
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
   const detectionIntervalRef = useRef(null);
-  const isDetectingRef       = useRef(false);
+  const isDetectingRef = useRef(false);
 
   useEffect(() => {
     audioAlert.init();
@@ -100,7 +100,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
     setIsDetecting(true);
     try {
       const canvas = document.createElement('canvas');
-      canvas.width  = videoRef.current.videoWidth;
+      canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
       canvas.getContext('2d').drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
@@ -111,7 +111,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
       let response, allDetections = [];
       if (currentModel === 'fight') {
         response = await apiEndpoints.detectFight(formData);
-        if (response.data.is_fight) allDetections = [{ class: 'fight', confidence: response.data.fight_probability || 0.8, box: {} }];
+        if (response.data.is_fight) allDetections = [{ class: 'fight', confidence: response.data.fight_probability || 0.8, box: response.data.box || {} }];
       } else if (modelType === 'both') {
         response = await apiEndpoints.detectBoth(formData);
         setDetectionResult(response.data);
@@ -122,8 +122,18 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
         allDetections = response.data.detections || [];
       }
       if (modelType !== 'both') {
-        setDetectionResult(currentModel === 'fight' && allDetections.length > 0
-          ? { detections: allDetections } : response.data);
+        if (currentModel === 'fight') {
+          setDetectionResult({
+            detections: allDetections,
+            image: response.data.image,
+            model_used: 'fight',
+            fight_probability: response.data.fight_probability,
+            is_fight: response.data.is_fight,
+            message: response.data.message
+          });
+        } else {
+          setDetectionResult(response.data);
+        }
       }
       if (allDetections.length > 0) {
         const max = Math.max(...allDetections.map(d => d.confidence));
@@ -140,7 +150,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
   const stopCamera = () => {
     if (detectionIntervalRef.current) { clearInterval(detectionIntervalRef.current); detectionIntervalRef.current = null; }
     if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; }
-    if (videoRef.current)  { videoRef.current.srcObject = null; }
+    if (videoRef.current) { videoRef.current.srcObject = null; }
     setIsCameraActive(false);
     setIsDetecting(false);
     setIsVideoMode(false);
@@ -171,20 +181,40 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
       formData.append('file', selectedFile);
       formData.append('camera_id', isVideoMode ? 'live_video' : 'web_upload');
       let response;
-      if (modelType === 'both') {
+      let allDetections = [];
+
+      if (currentModel === 'fight' && modelType === 'single') {
+        // Fight detection uses a different API endpoint (pose estimation + LSTM)
+        response = await apiEndpoints.detectFight(formData);
+        if (response.data.is_fight) {
+          allDetections = [{ class: 'fight', confidence: response.data.fight_probability || 0.8, box: response.data.box || {} }];
+        }
+        // Format fight result to match standard detection result structure
+        setDetectionResult({
+          detections: allDetections,
+          image: response.data.image, // annotated image with pose skeleton + bounding box
+          model_used: 'fight',
+          fight_probability: response.data.fight_probability,
+          no_fight_probability: response.data.no_fight_probability,
+          is_fight: response.data.is_fight,
+          message: response.data.message || (response.data.is_fight ? 'Fight detected!' : 'No fight detected')
+        });
+      } else if (modelType === 'both') {
         response = await apiEndpoints.detectBoth(formData);
+        setDetectionResult(response.data);
+        allDetections = [
+          ...(response.data.weapon_detections || []),
+          ...(response.data.fire_smoke_detections || []),
+        ];
       } else {
         formData.append('model_type', currentModel);
         response = await apiEndpoints.detectObjects(formData);
+        setDetectionResult(response.data);
+        allDetections = response.data.detections || [];
       }
-      setDetectionResult(response.data);
-      const all = [
-        ...(response.data.detections || []),
-        ...(response.data.weapon_detections || []),
-        ...(response.data.fire_smoke_detections || []),
-      ];
-      if (all.length > 0) {
-        const max = Math.max(...all.map(d => d.confidence));
+
+      if (allDetections.length > 0) {
+        const max = Math.max(...allDetections.map(d => d.confidence));
         audioAlert.playAlert(max > 0.8 ? 'Critical' : max > 0.6 ? 'Warning' : 'Info');
       }
     } catch (err) {
@@ -299,9 +329,9 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                   >
                     {availableModels.filter(m => m !== 'both').map((model) => (
                       <option key={model} value={model}>
-                        {model === 'weapon'     ? '🔫 Weapon Detection'     :
-                         model === 'fire_smoke' ? '🔥 Fire/Smoke Detection' :
-                         model === 'fight'      ? '👊 Fight Detection'       : model}
+                        {model === 'weapon' ? '🔫 Weapon Detection' :
+                          model === 'fire_smoke' ? '🔥 Fire/Smoke Detection' :
+                            model === 'fight' ? '👊 Fight Detection' : model}
                       </option>
                     ))}
                   </select>
