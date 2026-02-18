@@ -1,121 +1,137 @@
 /* Analytics.css */
 
-/* Container */
+/* ── Container ───────────────────────────────────── */
 .analytics-container {
   @apply min-h-screen bg-slate-950 flex;
 }
 
-/* Main Content */
+/* ── Main Content ────────────────────────────────── */
 .analytics-main {
-  @apply flex-1 ml-0 lg:ml-64 p-6 lg:p-8;
+  @apply flex-1 ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8;
 }
 
-/* Header */
+/* ── Header ──────────────────────────────────────────
+   Mobile  : hamburger + actions on top row, title below
+   Desktop : title left, actions right — single row
+──────────────────────────────────────────────────── */
 .analytics-header {
-  @apply mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4;
+  @apply mb-5 sm:mb-6;
+}
+
+.analytics-mobile-bar {
+  @apply flex items-center justify-between mb-3 md:hidden;
+}
+
+.analytics-menu-btn {
+  @apply p-2 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-slate-600
+         text-white transition-colors touch-manipulation;
+}
+
+.analytics-title-mobile {
+  @apply md:hidden space-y-0.5 mb-1;
+}
+
+.analytics-desktop-row {
+  @apply hidden md:flex md:items-center md:justify-between gap-4;
 }
 
 .analytics-header-content {
-  @apply space-y-1;
+  @apply space-y-0.5 sm:space-y-1;
 }
 
 .analytics-title {
-  @apply text-3xl lg:text-4xl font-bold text-white;
+  @apply text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight;
 }
 
 .analytics-subtitle {
-  @apply text-slate-400 text-sm lg:text-base;
+  @apply text-slate-400 text-xs sm:text-sm lg:text-base;
 }
 
 .analytics-actions {
-  @apply flex items-center gap-3;
+  @apply flex items-center gap-2 sm:gap-3 flex-wrap;
 }
 
 .analytics-date-select {
-  @apply px-4 py-2.5 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-xl text-slate-300 focus:outline-none focus:border-cyan-500/30 text-sm font-medium transition-all duration-300;
+  @apply px-3 py-2 sm:px-4 sm:py-2.5
+         bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-xl
+         text-slate-300 focus:outline-none focus:border-cyan-500/30
+         text-xs sm:text-sm font-medium transition-all duration-300;
 }
 
 .analytics-export-btn {
-  @apply px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl flex items-center gap-2 text-sm font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300;
+  @apply flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5
+         bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl
+         text-xs sm:text-sm font-medium
+         hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300
+         touch-manipulation whitespace-nowrap;
 }
 
-/* Status Banner */
+/* ── Status Banner ───────────────────────────────── */
 .analytics-status-banner {
-  @apply mb-6 px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl backdrop-blur-sm flex items-center gap-3;
+  @apply mb-5 sm:mb-6 px-3 py-2.5 sm:px-4 sm:py-3
+         bg-emerald-500/10 border border-emerald-500/20 rounded-xl
+         backdrop-blur-sm flex items-center gap-2 sm:gap-3;
 }
 
 .analytics-status-indicator {
-  @apply w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50 animate-pulse;
+  @apply w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400
+         shadow-lg shadow-emerald-500/50 animate-pulse shrink-0;
 }
 
 .analytics-status-text {
-  @apply text-emerald-400 text-sm font-medium;
+  @apply text-emerald-400 text-xs sm:text-sm font-medium;
 }
 
-/* Stats Grid */
+/* ── Stats Grid ──────────────────────────────────── */
 .analytics-stats-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8;
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 mb-6 sm:mb-8;
 }
 
 .analytics-stat-card {
-  @apply bg-gradient-to-br from-slate-900/80 to-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6 hover:border-white/10 transition-all duration-300;
+  @apply bg-gradient-to-br from-slate-900/80 to-slate-900/40 backdrop-blur-xl
+         border border-white/5 rounded-2xl p-4 sm:p-6
+         hover:border-white/10 transition-all duration-300
+         flex items-start gap-4 sm:block;
 }
 
 .stat-icon {
-  @apply w-12 h-12 rounded-xl flex items-center justify-center mb-4;
+  @apply w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center
+         shrink-0 sm:mb-4;
 }
 
-.stat-icon-cyan {
-  @apply bg-cyan-500/10 text-cyan-400;
-}
-
-.stat-icon-purple {
-  @apply bg-purple-500/10 text-purple-400;
-}
-
-.stat-icon-blue {
-  @apply bg-blue-500/10 text-blue-400;
-}
-
-.stat-icon-emerald {
-  @apply bg-emerald-500/10 text-emerald-400;
-}
+.stat-icon-cyan    { @apply bg-cyan-500/10 text-cyan-400; }
+.stat-icon-purple  { @apply bg-purple-500/10 text-purple-400; }
+.stat-icon-blue    { @apply bg-blue-500/10 text-blue-400; }
+.stat-icon-emerald { @apply bg-emerald-500/10 text-emerald-400; }
 
 .stat-content {
-  @apply space-y-2;
+  @apply space-y-1 sm:space-y-2 min-w-0;
 }
 
 .stat-label {
-  @apply text-slate-400 text-sm;
+  @apply text-slate-400 text-xs sm:text-sm;
 }
 
 .stat-value {
-  @apply text-white text-3xl font-bold;
+  @apply text-white text-2xl sm:text-3xl font-bold;
 }
 
 .stat-change {
-  @apply text-sm font-medium;
+  @apply text-xs sm:text-sm font-medium;
 }
 
-.stat-change-positive {
-  @apply text-emerald-400;
-}
+.stat-change-positive { @apply text-emerald-400; }
+.stat-change-negative { @apply text-rose-400; }
+.stat-change-neutral  { @apply text-slate-400; }
 
-.stat-change-negative {
-  @apply text-rose-400;
-}
-
-.stat-change-neutral {
-  @apply text-slate-400;
-}
-
-/* Charts Grid */
+/* ── Charts Grid ─────────────────────────────────── */
 .analytics-charts-grid {
-  @apply grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8;
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8;
 }
 
 .analytics-chart-card {
-  @apply bg-gradient-to-br from-slate-900/80 to-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6;
+  @apply bg-gradient-to-br from-slate-900/80 to-slate-900/40 backdrop-blur-xl
+         border border-white/5 rounded-2xl p-4 sm:p-6;
 }
 
 .analytics-chart-large {
@@ -123,28 +139,29 @@
 }
 
 .chart-header {
-  @apply mb-6;
+  @apply mb-4 sm:mb-6;
 }
 
 .chart-title {
-  @apply text-xl font-bold text-white mb-1;
+  @apply text-base sm:text-xl font-bold text-white mb-0.5 sm:mb-1;
 }
 
 .chart-subtitle {
-  @apply text-slate-400 text-sm;
+  @apply text-slate-400 text-xs sm:text-sm;
 }
 
 .chart-content {
-  @apply mt-4;
+  @apply mt-3 sm:mt-4;
 }
 
-/* Bar Chart */
+/* ── Bar Chart ───────────────────────────────────── */
+/* Height shrinks on mobile so bars don't overflow */
 .bar-chart {
-  @apply flex items-end justify-between gap-3 h-64;
+  @apply flex items-end justify-between gap-1.5 sm:gap-3 h-44 sm:h-64;
 }
 
 .bar-chart-item {
-  @apply flex-1 flex flex-col items-center gap-2;
+  @apply flex-1 flex flex-col items-center gap-1 sm:gap-2;
 }
 
 .bar-container {
@@ -152,93 +169,82 @@
 }
 
 .bar-fill {
-  @apply w-full bg-gradient-to-t from-cyan-500 to-blue-600 rounded-t-lg relative flex items-start justify-center pt-2 transition-all duration-500;
+  @apply w-full bg-gradient-to-t from-cyan-500 to-blue-600 rounded-t-lg relative
+         flex items-start justify-center pt-1 sm:pt-2 transition-all duration-500;
 }
 
 .bar-value {
-  @apply text-white text-xs font-bold;
+  @apply text-white text-xs font-bold hidden sm:block;
 }
 
 .bar-label {
   @apply text-slate-400 text-xs;
+  font-size: 0.6rem;
 }
 
-/* Distribution Chart */
+@media (min-width: 640px) {
+  .bar-label {
+    font-size: 0.75rem;
+  }
+}
+
+/* ── Distribution Chart ──────────────────────────── */
 .distribution-chart {
-  @apply space-y-4;
+  @apply space-y-3 sm:space-y-4;
 }
 
 .distribution-item {
-  @apply space-y-2;
+  @apply space-y-1.5 sm:space-y-2;
 }
 
 .distribution-header {
   @apply flex items-center justify-between;
 }
 
-.distribution-label {
-  @apply text-sm font-medium;
-}
-
-.distribution-label-rose {
-  @apply text-rose-400;
-}
-
-.distribution-label-amber {
-  @apply text-amber-400;
-}
-
-.distribution-label-blue {
-  @apply text-blue-400;
-}
+.distribution-label      { @apply text-xs sm:text-sm font-medium; }
+.distribution-label-rose  { @apply text-rose-400; }
+.distribution-label-amber { @apply text-amber-400; }
+.distribution-label-blue  { @apply text-blue-400; }
 
 .distribution-count {
-  @apply text-white font-bold;
+  @apply text-white font-bold text-sm sm:text-base;
 }
 
 .distribution-bar-container {
-  @apply w-full h-3 bg-slate-800/50 rounded-full overflow-hidden;
+  @apply w-full h-2.5 sm:h-3 bg-slate-800/50 rounded-full overflow-hidden;
 }
 
 .distribution-bar {
   @apply h-full rounded-full transition-all duration-500;
 }
 
-.distribution-bar-rose {
-  @apply bg-gradient-to-r from-rose-500 to-rose-600;
-}
-
-.distribution-bar-amber {
-  @apply bg-gradient-to-r from-amber-500 to-amber-600;
-}
-
-.distribution-bar-blue {
-  @apply bg-gradient-to-r from-blue-500 to-blue-600;
-}
+.distribution-bar-rose  { @apply bg-gradient-to-r from-rose-500 to-rose-600; }
+.distribution-bar-amber { @apply bg-gradient-to-r from-amber-500 to-amber-600; }
+.distribution-bar-blue  { @apply bg-gradient-to-r from-blue-500 to-blue-600; }
 
 .distribution-percentage {
   @apply text-slate-400 text-xs;
 }
 
-/* Behavior List */
+/* ── Behavior List ───────────────────────────────── */
 .behavior-list {
-  @apply space-y-4;
+  @apply space-y-3 sm:space-y-4;
 }
 
 .behavior-item {
-  @apply space-y-2;
+  @apply space-y-1.5 sm:space-y-2;
 }
 
 .behavior-info {
-  @apply flex items-center justify-between;
+  @apply flex items-center justify-between gap-2;
 }
 
 .behavior-name {
-  @apply text-white font-medium text-sm;
+  @apply text-white font-medium text-xs sm:text-sm truncate;
 }
 
 .behavior-count {
-  @apply text-slate-400 text-xs;
+  @apply text-slate-400 text-xs shrink-0;
 }
 
 .behavior-bar-container {
@@ -246,32 +252,35 @@
 }
 
 .behavior-bar {
-  @apply h-full bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full transition-all duration-500;
+  @apply h-full bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full
+         transition-all duration-500;
 }
 
 .behavior-percentage {
   @apply text-slate-400 text-xs;
 }
 
-/* Camera Performance */
+/* ── Camera Performance ──────────────────────────── */
 .camera-performance-list {
-  @apply space-y-3;
+  @apply space-y-2 sm:space-y-3;
 }
 
 .camera-performance-item {
-  @apply flex items-center justify-between p-3 bg-slate-800/30 rounded-lg hover:bg-slate-800/50 transition-all duration-300;
+  @apply flex items-center justify-between p-2.5 sm:p-3
+         bg-slate-800/30 rounded-lg hover:bg-slate-800/50
+         transition-all duration-300 gap-2;
 }
 
 .camera-info {
-  @apply flex-1;
+  @apply flex-1 min-w-0;
 }
 
 .camera-name {
-  @apply text-white font-medium text-sm mb-1;
+  @apply text-white font-medium text-xs sm:text-sm mb-0.5 sm:mb-1 truncate;
 }
 
 .camera-metrics {
-  @apply flex items-center gap-3 text-slate-400 text-xs;
+  @apply flex items-center gap-2 sm:gap-3 text-slate-400 text-xs flex-wrap;
 }
 
 .camera-metric {
@@ -279,17 +288,12 @@
 }
 
 .camera-uptime {
-  @apply flex-shrink-0;
+  @apply shrink-0;
 }
 
 .uptime-badge {
-  @apply px-2 py-1 rounded-md text-xs font-medium;
+  @apply px-2 py-0.5 sm:py-1 rounded-md text-xs font-medium whitespace-nowrap;
 }
 
-.uptime-excellent {
-  @apply bg-emerald-500/10 text-emerald-400;
-}
-
-.uptime-good {
-  @apply bg-amber-500/10 text-amber-400;
-}
+.uptime-excellent { @apply bg-emerald-500/10 text-emerald-400; }
+.uptime-good      { @apply bg-amber-500/10 text-amber-400; }

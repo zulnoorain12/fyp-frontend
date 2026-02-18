@@ -1,112 +1,167 @@
 /* Settings.css */
 
-/* Container */
+/* ── Container ───────────────────────────────────── */
 .settings-container {
-  @apply min-h-screen bg-slate-950 flex;
+  @apply min-h-screen bg-slate-950 flex w-full overflow-x-hidden;
 }
 
-/* Main Content */
+/* ── Main Content ────────────────────────────────── */
 .settings-main {
-  @apply flex-1 ml-0 lg:ml-64 p-6 lg:p-8;
+  @apply flex-1 min-w-0 w-full ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8;
 }
 
-/* Header */
+/* ── Header ──────────────────────────────────────────
+   Mobile  : hamburger + save button on top row, title below
+   Desktop : title left, save button right — single row
+──────────────────────────────────────────────────── */
 .settings-header {
-  @apply mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4;
+  @apply mb-5 sm:mb-6 w-full;
+}
+
+/* Mobile top bar — hamburger left, Save right */
+.settings-mobile-bar {
+  @apply flex items-center justify-between mb-3 md:hidden w-full;
+}
+
+.settings-menu-btn {
+  @apply p-2 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-slate-600
+         text-white transition-colors touch-manipulation shrink-0;
+}
+
+/* Mobile title block (below the bar) */
+.settings-title-mobile {
+  @apply md:hidden space-y-0.5 mb-1;
+}
+
+/* Desktop: title left, save right — single row */
+.settings-desktop-row {
+  @apply hidden md:flex md:items-center md:justify-between gap-4 w-full;
 }
 
 .settings-header-content {
-  @apply space-y-1;
+  @apply space-y-0.5 sm:space-y-1 min-w-0;
 }
 
 .settings-title {
-  @apply text-3xl lg:text-4xl font-bold text-white;
+  @apply text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight;
 }
 
 .settings-subtitle {
-  @apply text-slate-400 text-sm lg:text-base;
+  @apply text-slate-400 text-xs sm:text-sm lg:text-base;
 }
 
+/* Save button — compact on mobile, full on sm+ */
 .settings-save-btn {
-  @apply px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl flex items-center gap-2 font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all duration-300;
+  @apply shrink-0 flex items-center gap-1.5
+         px-3 py-2 sm:px-5 sm:py-2.5
+         bg-gradient-to-r from-cyan-500 to-blue-600
+         text-white rounded-xl
+         text-xs sm:text-sm font-medium
+         hover:shadow-lg hover:shadow-cyan-500/50
+         transition-all duration-300 touch-manipulation;
 }
 
-/* Status Banner */
+/* ── Status Banner ───────────────────────────────── */
 .settings-status-banner {
-  @apply mb-6 px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl backdrop-blur-sm flex items-center gap-3;
+  @apply mb-5 sm:mb-6 px-3 py-2.5 sm:px-4 sm:py-3
+         bg-emerald-500/10 border border-emerald-500/20 rounded-xl
+         backdrop-blur-sm flex items-center gap-2 sm:gap-3
+         w-full overflow-hidden;
 }
 
 .settings-status-indicator {
-  @apply w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50 animate-pulse;
+  @apply w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400
+         shadow-lg shadow-emerald-500/50 animate-pulse shrink-0;
 }
 
 .settings-status-text {
-  @apply text-emerald-400 text-sm font-medium;
+  @apply text-emerald-400 text-xs sm:text-sm font-medium truncate;
 }
 
-/* Tabs */
+/* ── Tabs ────────────────────────────────────────── */
 .settings-tabs {
-  @apply mb-6 flex gap-2 overflow-x-auto pb-2;
+  @apply mb-5 sm:mb-6 flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 w-full;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.settings-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .settings-tab {
-  @apply px-6 py-3 rounded-xl font-medium whitespace-nowrap flex items-center gap-3 transition-all duration-300 bg-slate-900/50 border border-white/5 text-slate-400 hover:text-white hover:border-white/10;
+  @apply px-3 py-2 sm:px-5 sm:py-3 rounded-xl
+         text-xs sm:text-sm font-medium whitespace-nowrap
+         flex items-center gap-1.5 sm:gap-2
+         transition-all duration-300
+         bg-slate-900/50 border border-white/5
+         text-slate-400 hover:text-white hover:border-white/10
+         touch-manipulation shrink-0;
 }
 
 .settings-tab-active {
-  @apply bg-gradient-to-r from-cyan-500/10 to-blue-600/10 border-cyan-500/30 text-white border;
+  @apply bg-gradient-to-r from-cyan-500/10 to-blue-600/10
+         border-cyan-500/30 text-white;
 }
 
-/* Content */
+/* hide tab icons on small screens */
+.settings-tab svg {
+  @apply hidden sm:block shrink-0;
+}
+
+/* ── Content ─────────────────────────────────────── */
 .settings-content {
-  @apply space-y-6;
+  @apply space-y-4 sm:space-y-6 w-full;
 }
 
 .settings-section {
-  @apply space-y-6;
+  @apply space-y-4 sm:space-y-6;
 }
 
-/* Settings Card */
+/* ── Settings Card ───────────────────────────────── */
 .settings-card {
-  @apply bg-gradient-to-br from-slate-900/80 to-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-6;
+  @apply bg-gradient-to-br from-slate-900/80 to-slate-900/40 backdrop-blur-xl
+         border border-white/5 rounded-2xl p-4 sm:p-6 w-full;
 }
 
 .settings-card-header {
-  @apply mb-6 pb-4 border-b border-white/10;
+  @apply mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-white/10;
 }
 
 .settings-card-title {
-  @apply text-xl font-bold text-white mb-1;
+  @apply text-base sm:text-xl font-bold text-white mb-0.5 sm:mb-1;
 }
 
 .settings-card-description {
-  @apply text-slate-400 text-sm;
+  @apply text-slate-400 text-xs sm:text-sm;
 }
 
-/* Settings Items */
+/* ── Settings Items ──────────────────────────────── */
 .settings-items {
-  @apply space-y-4;
+  @apply space-y-3 sm:space-y-4;
 }
 
 .settings-item {
-  @apply flex items-center justify-between p-4 bg-slate-800/30 rounded-xl hover:bg-slate-800/50 transition-all duration-300;
+  @apply flex items-center justify-between gap-3 p-3 sm:p-4
+         bg-slate-800/30 rounded-xl hover:bg-slate-800/50
+         transition-all duration-300 w-full;
 }
 
 .settings-item-info {
-  @apply flex-1;
+  @apply flex-1 min-w-0;
 }
 
 .settings-item-title {
-  @apply text-white font-medium mb-1;
+  @apply text-white font-medium text-sm sm:text-base mb-0.5 sm:mb-1;
 }
 
 .settings-item-description {
-  @apply text-slate-400 text-sm;
+  @apply text-slate-400 text-xs sm:text-sm;
 }
 
-/* Toggle Button */
+/* ── Toggle Button ───────────────────────────────── */
 .toggle-button {
-  @apply relative w-14 h-7 bg-slate-700 rounded-full transition-all duration-300 flex-shrink-0;
+  @apply relative w-11 h-6 sm:w-14 sm:h-7 bg-slate-700 rounded-full
+         transition-all duration-300 shrink-0;
 }
 
 .toggle-active {
@@ -114,24 +169,39 @@
 }
 
 .toggle-slider {
-  @apply absolute top-1 left-1 w-5 h-5 bg-white rounded-full shadow-lg transition-transform duration-300;
+  @apply absolute top-1 left-1 w-4 h-4 bg-white rounded-full
+         shadow-lg transition-transform duration-300;
 }
 
 .toggle-active .toggle-slider {
-  @apply translate-x-7;
+  transform: translateX(1.25rem);
 }
 
-/* Slider Items */
+@media (min-width: 640px) {
+  .toggle-button {
+    width: 3.5rem;
+    height: 1.75rem;
+  }
+  .toggle-slider {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .toggle-active .toggle-slider {
+    transform: translateX(1.75rem);
+  }
+}
+
+/* ── Slider Items ────────────────────────────────── */
 .settings-slider-item {
-  @apply p-4 bg-slate-800/30 rounded-xl space-y-4;
+  @apply p-3 sm:p-4 bg-slate-800/30 rounded-xl space-y-3 sm:space-y-4 w-full;
 }
 
 .settings-slider-header {
-  @apply flex items-start justify-between gap-4;
+  @apply flex items-start justify-between gap-3;
 }
 
 .settings-slider-value {
-  @apply text-cyan-400 font-bold text-lg flex-shrink-0;
+  @apply text-cyan-400 font-bold text-sm sm:text-lg shrink-0;
 }
 
 .settings-slider {
@@ -139,35 +209,56 @@
 }
 
 .settings-slider::-webkit-slider-thumb {
-  @apply appearance-none w-5 h-5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full cursor-pointer shadow-lg;
+  appearance: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  background: linear-gradient(to right, #06b6d4, #2563eb);
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
 
 .settings-slider::-moz-range-thumb {
-  @apply w-5 h-5 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full cursor-pointer border-0 shadow-lg;
+  width: 1.125rem;
+  height: 1.125rem;
+  background: linear-gradient(to right, #06b6d4, #2563eb);
+  border-radius: 9999px;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
 
-/* Info Items */
+/* ── Info Items ──────────────────────────────────── */
 .settings-info-item {
-  @apply flex items-center justify-between p-4 bg-slate-800/30 rounded-xl;
+  @apply flex items-center justify-between gap-3 p-3 sm:p-4
+         bg-slate-800/30 rounded-xl w-full;
 }
 
 .settings-input-container {
-  @apply flex items-center gap-2;
+  @apply flex items-center gap-2 shrink-0;
 }
 
 .settings-input {
-  @apply w-24 px-3 py-2 bg-slate-900 border border-white/10 rounded-lg text-white text-center focus:outline-none focus:border-cyan-500/50 transition-all duration-300;
+  @apply w-14 sm:w-24 px-2 py-1.5
+         bg-slate-900 border border-white/10 rounded-lg
+         text-white text-center text-xs sm:text-sm
+         focus:outline-none focus:border-cyan-500/50 transition-all duration-300;
 }
 
 .settings-input-suffix {
-  @apply text-slate-400 text-sm;
+  @apply text-slate-400 text-xs sm:text-sm;
 }
 
-/* Danger Zone */
+/* ── Danger Zone ─────────────────────────────────── */
 .settings-danger-actions {
-  @apply flex flex-col gap-3;
+  @apply flex flex-col sm:flex-row gap-3;
 }
 
 .settings-danger-btn {
-  @apply px-4 py-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl flex items-center gap-2 font-medium hover:bg-rose-500/20 hover:border-rose-500/30 transition-all duration-300;
+  @apply flex-1 sm:flex-none flex items-center justify-center gap-2
+         px-4 py-2.5
+         bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl
+         text-xs sm:text-sm font-medium
+         hover:bg-rose-500/20 hover:border-rose-500/30
+         transition-all duration-300 touch-manipulation;
 }

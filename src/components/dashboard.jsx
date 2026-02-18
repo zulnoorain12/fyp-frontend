@@ -10,7 +10,7 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
     detectedPeople: 0,
     systemHealth: 0
   });
-  
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -28,104 +28,70 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
     { id: 2, type: 'Unusual Activity', severity: 'Warning', location: 'Main Entrance', time: '15 min ago' },
     { id: 3, type: 'Loitering Detected', severity: 'Info', location: 'Reception', time: '1 hour ago' },
   ]);
-  
-  // Fetch recent alerts for dashboard
+
   useEffect(() => {
     const fetchRecentAlerts = () => {
       try {
-        // Get recent alerts from localStorage (live alerts)
         const liveAlerts = JSON.parse(localStorage.getItem('liveAlerts') || '[]');
-        
-        // Get last 3 recent alerts
-        const recentLiveAlerts = liveAlerts
-          .slice(0, 3)
-          .map(alert => ({
-            id: alert.id,
-            type: alert.type,
-            severity: alert.severity,
-            location: alert.location,
-            time: alert.time
-          }));
-        
-        if (recentLiveAlerts.length > 0) {
-          setRecentAlerts(recentLiveAlerts);
-        }
+        const recentLiveAlerts = liveAlerts.slice(0, 3).map(alert => ({
+          id: alert.id,
+          type: alert.type,
+          severity: alert.severity,
+          location: alert.location,
+          time: alert.time
+        }));
+        if (recentLiveAlerts.length > 0) setRecentAlerts(recentLiveAlerts);
       } catch (err) {
         console.error('Error fetching recent alerts:', err);
       }
     };
-    
     fetchRecentAlerts();
-    
-    // Check for new alerts every 3 seconds
     const interval = setInterval(fetchRecentAlerts, 3000);
-    
     return () => clearInterval(interval);
   }, []);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Fetch system stats
   useEffect(() => {
     const fetchStats = async () => {
       try {
         setLoading(true);
         setError(null);
-        
-        // Fetch detections
         const detectionsRes = await apiEndpoints.getDetections(100);
         const detections = detectionsRes.data.detections || [];
-        
-        // Get live alerts from localStorage
         const liveAlerts = JSON.parse(localStorage.getItem('liveAlerts') || '[]');
-        
-        // Calculate stats
-        const peopleDetections = detections.filter(d => 
+        const peopleDetections = detections.filter(d =>
           d.detection_type === 'person' || d.detection_type.includes('person')
         ).length;
-        
-        // Count recent alerts (last 24 hours) + live alerts
-        const recentDetections = detections.filter(d => 
+        const recentDetections = detections.filter(d =>
           new Date(d.timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000)
         ).length;
-        
-        const recentLiveAlerts = liveAlerts.filter(alert => 
+        const recentLiveAlerts = liveAlerts.filter(alert =>
           new Date(alert.timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000)
         ).length;
-        
         setSystemStats({
-          activeCameras: 6, // Could be fetched from an API endpoint
+          activeCameras: 6,
           activeAlerts: recentDetections + recentLiveAlerts,
           detectedPeople: peopleDetections,
-          systemHealth: 98 // Could be calculated from system metrics
+          systemHealth: 98
         });
       } catch (err) {
         console.error('Error fetching stats:', err);
         setError('Failed to load system statistics');
-        // Fallback to mock data
-        setSystemStats({
-          activeCameras: 6,
-          activeAlerts: 3,
-          detectedPeople: 47,
-          systemHealth: 98
-        });
+        setSystemStats({ activeCameras: 6, activeAlerts: 3, detectedPeople: 47, systemHealth: 98 });
       } finally {
         setLoading(false);
       }
     };
-    
     fetchStats();
-    
-    // Refresh stats every 10 seconds
     const interval = setInterval(fetchStats, 10000);
-    
     return () => clearInterval(interval);
   }, []);
 
   if (loading) {
     return (
       <div className="dashboard-container">
-        <div className="main-content" style={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh'}}>
+        <div className="main-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
           <div>Loading...</div>
         </div>
       </div>
@@ -134,7 +100,7 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
 
   return (
     <div className="dashboard-container">
-      <Sidebar 
+      <Sidebar
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
         onNavigate={onNavigate}
@@ -142,51 +108,62 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
         onLogout={onLogout}
       />
 
-      {/* Main Content */}
       <div className="main-content">
-        {/* Header */}
+
+        {/* ── Header ── */}
         <div className="dashboard-header">
-          <button 
-            onClick={() => setSidebarOpen(true)}
-            className="menu-button"
-          >
-            <svg className="icon-menu" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          
-          <div>
+
+          {/* Mobile: top bar with hamburger on left, badge on right */}
+          <div className="header-mobile-bar">
+            <button onClick={() => setSidebarOpen(true)} className="menu-button">
+              <svg className="icon-menu" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <div className="status-badge">
+              <span className="status-indicator"></span>
+              System Online
+            </div>
+          </div>
+
+          {/* Mobile: title block below the bar */}
+          <div className="header-title-mobile">
             <h1 className="header-title">Dashboard</h1>
             <p className="header-subtitle">Real-time system monitoring and overview</p>
           </div>
-          
-          <div className="status-badge">
-            <span className="status-indicator"></span>
-            System Online / All Cameras Operational
+
+          {/* Desktop: title left, badge right — single row */}
+          <div className="header-desktop-row">
+            <div>
+              <h1 className="header-title">Dashboard</h1>
+              <p className="header-subtitle">Real-time system monitoring and overview</p>
+            </div>
+            <div className="status-badge">
+              <span className="status-indicator"></span>
+              System Online / All Cameras Operational
+            </div>
           </div>
+
         </div>
 
-        {/* Stats Grid */}
+        {/* ── Stats Grid ── */}
         <div className="stats-grid">
           {[
-            { label: 'Active Cameras', value: systemStats.activeCameras, change: '↑ 2 from yesterday', positive: true, icon: <></>, color: 'cyan' },
-            { label: 'Active Alerts', value: systemStats.activeAlerts, change: '↓ 5 from yesterday', positive: false, icon: <></>, color: 'amber' },
-            { label: 'Detected People', value: systemStats.detectedPeople, change: '↑ 12 from last hour', positive: true, icon: <></>, color: 'purple' },
-            { label: 'System Health', value: `${systemStats.systemHealth}%`, change: 'Excellent', positive: true, icon: <></>, color: 'emerald' }
+            { label: 'Active Cameras',  value: systemStats.activeCameras,        change: '↑ 2 from yesterday',  positive: true,  color: 'cyan' },
+            { label: 'Active Alerts',   value: systemStats.activeAlerts,          change: '↓ 5 from yesterday',  positive: false, color: 'amber' },
+            { label: 'Detected People', value: systemStats.detectedPeople,        change: '↑ 12 from last hour', positive: true,  color: 'purple' },
+            { label: 'System Health',   value: `${systemStats.systemHealth}%`,    change: 'Excellent',           positive: true,  color: 'emerald' },
           ].map((stat, index) => {
             const colorClasses = {
-              cyan: 'bg-cyan-500/10 text-cyan-400',
-              amber: 'bg-amber-500/10 text-amber-400',
-              purple: 'bg-purple-500/10 text-purple-400',
-              emerald: 'bg-emerald-500/10 text-emerald-400'
+              cyan:    'bg-cyan-500/10 text-cyan-400',
+              amber:   'bg-amber-500/10 text-amber-400',
+              purple:  'bg-purple-500/10 text-purple-400',
+              emerald: 'bg-emerald-500/10 text-emerald-400',
             };
-
             return (
               <div key={index} className="stat-card">
                 <div className="stat-header">
-                  <div className={`stat-icon ${colorClasses[stat.color]}`}>
-                    {stat.icon}
-                  </div>
+                  <div className={`stat-icon ${colorClasses[stat.color]}`} />
                   <span className="stat-label">{stat.label}</span>
                 </div>
                 <div className="stat-value">{stat.value}</div>
@@ -198,9 +175,10 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
           })}
         </div>
 
-        {/* Content Grid */}
+        {/* ── Content Grid ── */}
         <div className="content-grid">
-          {/* Camera Overview */}
+
+          {/* Camera Status */}
           <div className="content-card">
             <div className="card-header">
               <h2 className="card-title">Camera Status</h2>
@@ -222,7 +200,7 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
             </div>
           </div>
 
-          {/* Alerts */}
+          {/* Recent Alerts */}
           <div className="content-card">
             <div className="card-header">
               <h2 className="card-title">Recent Alerts</h2>
@@ -234,21 +212,20 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
                   <div className="alert-info">
                     <span className={`alert-severity ${
                       alert.severity === 'Critical' ? 'alert-severity-critical' :
-                      alert.severity === 'Warning' ? 'alert-severity-warning' :
+                      alert.severity === 'Warning'  ? 'alert-severity-warning'  :
                       'alert-severity-info'
                     }`}>
                       {alert.severity}
                     </span>
                     <h3 className="alert-type">{alert.type}</h3>
-                    <p className="alert-details">
-                      {alert.location} • {alert.time}
-                    </p>
+                    <p className="alert-details">{alert.location} • {alert.time}</p>
                   </div>
                   <button className="alert-view-button">View</button>
                 </div>
               ))}
             </div>
           </div>
+
         </div>
       </div>
     </div>

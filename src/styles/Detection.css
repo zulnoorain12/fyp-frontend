@@ -1,0 +1,295 @@
+/* Detection.css */
+
+/* ── Container & Layout ──────────────────────────── */
+/* Reuses livefeed-container / livefeed-main from LiveFeed.css */
+
+/* ── Header (same mobile-first pattern as all pages) ─
+   Mobile  : hamburger left, title below
+   Desktop : title only (no extra actions needed)
+──────────────────────────────────────────────────── */
+.detection-header {
+  @apply mb-5 sm:mb-6;
+}
+
+.detection-mobile-bar {
+  @apply flex items-center mb-3 md:hidden;
+}
+
+.detection-menu-btn {
+  @apply p-2 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-slate-600
+         text-white transition-colors touch-manipulation shrink-0;
+}
+
+.detection-title-mobile {
+  @apply md:hidden space-y-0.5 mb-1;
+}
+
+.detection-desktop-row {
+  @apply hidden md:block;
+}
+
+/* ── Body: two-panel layout ──────────────────────── */
+/*
+  Mobile  : stacked — upload panel on top, results below
+  Desktop : side-by-side 50/50
+*/
+.detection-body {
+  @apply flex flex-col lg:flex-row gap-4 sm:gap-6;
+}
+
+/* ── Panels ──────────────────────────────────────── */
+.detection-panel {
+  @apply w-full lg:w-1/2 bg-gray-800/80 rounded-xl p-4 sm:p-6
+         border border-white/5;
+}
+
+.detection-panel-title {
+  @apply text-base sm:text-xl font-semibold text-white mb-4;
+}
+
+/* ── Detection Mode Radio Row ────────────────────── */
+.detection-mode-group {
+  @apply mb-4;
+}
+
+.detection-mode-label {
+  @apply block text-xs sm:text-sm font-medium text-gray-300 mb-2;
+}
+
+.detection-mode-options {
+  @apply flex gap-4 flex-wrap;
+}
+
+.detection-radio-label {
+  @apply flex items-center gap-2 text-sm text-gray-300 cursor-pointer;
+}
+
+.detection-radio-label input[type="radio"] {
+  @apply accent-cyan-500;
+}
+
+/* ── Model Selector ──────────────────────────────── */
+.detection-model-group {
+  @apply mb-4;
+}
+
+.detection-select {
+  @apply w-full p-2 bg-gray-700 border border-gray-600 rounded-lg
+         text-white text-xs sm:text-sm
+         focus:outline-none focus:border-cyan-500 transition-colors;
+}
+
+.detection-model-hint {
+  @apply text-xs text-gray-400 mt-1;
+}
+
+.detection-switching-hint {
+  @apply text-xs text-yellow-400 mt-1;
+}
+
+/* ── File Input Row ──────────────────────────────── */
+.detection-file-group {
+  @apply mb-4;
+}
+
+.detection-file-row {
+  @apply flex flex-col sm:flex-row gap-2 mb-1.5;
+}
+
+.detection-file-input {
+  @apply flex-1 p-2 bg-gray-700 border border-gray-600 rounded-lg
+         text-white text-xs sm:text-sm
+         file:mr-2 file:py-1 file:px-2 file:rounded file:border-0
+         file:bg-gray-600 file:text-white file:text-xs
+         focus:outline-none;
+}
+
+.detection-file-hint {
+  @apply text-xs text-gray-400;
+}
+
+/* Camera buttons */
+.detection-btn-camera {
+  @apply flex items-center justify-center gap-2
+         px-3 py-2 sm:px-4 bg-green-600 hover:bg-green-700 active:bg-green-800
+         rounded-lg text-white text-xs sm:text-sm font-medium
+         transition-colors touch-manipulation whitespace-nowrap;
+}
+
+.detection-btn-stop {
+  @apply flex items-center justify-center gap-2
+         px-3 py-2 sm:px-4 bg-red-600 hover:bg-red-700 active:bg-red-800
+         rounded-lg text-white text-xs sm:text-sm font-medium
+         transition-colors touch-manipulation whitespace-nowrap;
+}
+
+/* ── Live Camera Feed ────────────────────────────── */
+.detection-live-section {
+  @apply mb-4;
+}
+
+.detection-live-header {
+  @apply flex items-center justify-between mb-2;
+}
+
+.detection-live-label {
+  @apply block text-xs sm:text-sm font-medium text-gray-300;
+}
+
+.detection-detecting-badge {
+  @apply flex items-center gap-1.5 text-xs text-yellow-400;
+}
+
+.detection-live-wrap {
+  @apply border border-green-600 rounded-lg p-2 bg-black relative overflow-hidden;
+}
+
+.detection-video {
+  @apply w-full max-h-48 sm:max-h-64 object-contain mx-auto block;
+}
+
+.detection-live-overlay {
+  @apply absolute top-2 left-2 bg-red-600/90 text-white
+         px-2.5 py-1 rounded-lg text-xs font-semibold;
+}
+
+.detection-live-hint {
+  @apply text-xs text-gray-400 mt-1;
+}
+
+/* ── File Preview ────────────────────────────────── */
+.detection-preview-section {
+  @apply mb-4;
+}
+
+.detection-preview-label {
+  @apply block text-xs sm:text-sm font-medium text-gray-300 mb-2;
+}
+
+.detection-preview-wrap {
+  @apply border border-gray-600 rounded-lg p-2 bg-black;
+}
+
+.detection-preview-img,
+.detection-preview-video {
+  @apply w-full max-h-48 sm:max-h-64 object-contain mx-auto block;
+}
+
+/* ── Form Actions ────────────────────────────────── */
+.detection-form-actions {
+  @apply flex gap-2 sm:gap-3;
+}
+
+.detection-btn-run {
+  @apply flex-1 py-2 px-4 bg-blue-600 hover:bg-blue-700
+         disabled:bg-gray-600 disabled:cursor-not-allowed
+         text-white text-sm font-medium rounded-lg
+         transition-colors touch-manipulation;
+}
+
+.detection-btn-auto {
+  @apply flex-1 py-2 px-4 bg-green-600/20 border border-green-600
+         text-green-400 text-xs sm:text-sm rounded-lg
+         flex items-center justify-center gap-2;
+}
+
+.detection-btn-reset {
+  @apply px-3 py-2 sm:px-4 bg-gray-600 hover:bg-gray-700 active:bg-gray-800
+         text-white text-sm rounded-lg transition-colors touch-manipulation;
+}
+
+/* ── Error ───────────────────────────────────────── */
+.detection-error {
+  @apply mt-4 p-3 bg-red-900/50 border border-red-700 rounded-lg
+         text-red-300 text-xs sm:text-sm;
+}
+
+/* ── Results Panel ───────────────────────────────── */
+.detection-empty {
+  @apply text-center py-8 sm:py-12 text-gray-400;
+}
+
+.detection-loading {
+  @apply text-center py-8 sm:py-12;
+}
+
+.detection-spinner {
+  @apply inline-block animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12
+         border-t-2 border-b-2 border-blue-500 mb-4;
+}
+
+/* Detection result blocks */
+.detection-results-group {
+  @apply mb-4;
+}
+
+.detection-results-heading {
+  @apply font-medium text-white text-sm sm:text-base mb-2;
+}
+
+.detection-results-list {
+  @apply space-y-2;
+}
+
+.detection-result-item {
+  @apply bg-gray-700 p-3 rounded-lg;
+}
+
+.detection-result-row {
+  @apply flex items-center justify-between;
+}
+
+.detection-result-class {
+  @apply font-medium capitalize text-white text-sm;
+}
+
+.detection-result-confidence {
+  @apply text-green-400 text-sm font-medium;
+}
+
+.detection-result-box {
+  @apply text-xs text-gray-400 mt-1;
+}
+
+/* Weapon / fire sub-sections */
+.detection-sub-heading-weapon {
+  @apply font-medium text-red-400 text-sm mt-3 mb-2;
+}
+
+.detection-sub-heading-fire {
+  @apply font-medium text-blue-400 text-sm mt-3 mb-2;
+}
+
+.detection-result-item-weapon {
+  @apply bg-red-900/30 p-3 rounded-lg border border-red-700;
+}
+
+.detection-result-item-fire {
+  @apply bg-blue-900/30 p-3 rounded-lg border border-blue-700;
+}
+
+.detection-confidence-weapon { @apply text-red-400 text-sm font-medium; }
+.detection-confidence-fire   { @apply text-blue-400 text-sm font-medium; }
+
+/* Processed images */
+.detection-image-section {
+  @apply mt-4;
+}
+
+.detection-image-heading {
+  @apply font-medium text-white text-sm mb-2;
+}
+
+.detection-image-heading-weapon { @apply font-medium text-red-400 text-sm mb-2; }
+.detection-image-heading-fire   { @apply font-medium text-blue-400 text-sm mb-2; }
+
+.detection-image-wrap {
+  @apply border border-gray-600 rounded-lg p-2 bg-black;
+}
+
+.detection-image-wrap-weapon { @apply border border-red-700 rounded-lg p-2 bg-black; }
+.detection-image-wrap-fire   { @apply border border-blue-700 rounded-lg p-2 bg-black; }
+
+.detection-result-img {
+  @apply w-full h-auto rounded;
+}

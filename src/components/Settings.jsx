@@ -12,63 +12,27 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
   const [error, setError] = useState(null);
 
   const [notificationSettings, setNotificationSettings] = useState({
-    emailAlerts: true,
-    pushNotifications: true,
-    smsAlerts: false,
-    alertSound: true
+    emailAlerts: true, pushNotifications: true, smsAlerts: false, alertSound: true
   });
 
   const [detectionSettings, setDetectionSettings] = useState({
-    motionDetection: true,
-    objectDetection: true,
-    poseEstimation: true,
-    behaviorAnalysis: true,
-    fireDetection: true,
-    weaponDetection: true
+    motionDetection: true, objectDetection: true, poseEstimation: true,
+    behaviorAnalysis: true, fireDetection: true, weaponDetection: true
   });
 
   const [alertThresholds, setAlertThresholds] = useState({
-    detectionConfidence: 75,
-    behaviorConfidence: 80,
-    alertCooldown: 30
+    detectionConfidence: 75, behaviorConfidence: 80, alertCooldown: 30
   });
 
   const [systemSettings, setSystemSettings] = useState({
-    recordingEnabled: true,
-    autoArchive: true,
-    retentionDays: 30,
-    storageLimit: 100
+    recordingEnabled: true, autoArchive: true, retentionDays: 30, storageLimit: 100
   });
 
-  const handleNotificationToggle = (key) => {
-    setNotificationSettings(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
-  };
+  const handleNotificationToggle = (key) => setNotificationSettings(p => ({ ...p, [key]: !p[key] }));
+  const handleDetectionToggle    = (key) => setDetectionSettings(p => ({ ...p, [key]: !p[key] }));
+  const handleSystemToggle       = (key) => setSystemSettings(p => ({ ...p, [key]: !p[key] }));
+  const handleThresholdChange    = (key, value) => setAlertThresholds(p => ({ ...p, [key]: parseInt(value) }));
 
-  const handleDetectionToggle = (key) => {
-    setDetectionSettings(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
-  };
-
-  const handleSystemToggle = (key) => {
-    setSystemSettings(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
-  };
-
-  const handleThresholdChange = (key, value) => {
-    setAlertThresholds(prev => ({
-      ...prev,
-      [key]: parseInt(value)
-    }));
-  };
-
-  // Fetch available models
   useEffect(() => {
     const fetchModels = async () => {
       try {
@@ -80,7 +44,6 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
         setError('Failed to load models');
       }
     };
-    
     fetchModels();
   }, []);
 
@@ -88,11 +51,8 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
     try {
       setLoading(true);
       setError(null);
-      
       const response = await apiEndpoints.switchModel(modelName);
       setCurrentModel(response.data.current_model);
-      
-      // Show success message
       alert(`Successfully switched to ${modelName} model`);
     } catch (err) {
       console.error('Error switching model:', err);
@@ -102,9 +62,30 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
     }
   };
 
+  const tabs = [
+    { id: 'notifications', label: 'Notifications', icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2"/></svg> },
+    { id: 'detection',     label: 'Detection',     icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/></svg> },
+    { id: 'models',        label: 'Models',        icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" strokeWidth="2"/><path d="M8 21h8M12 17v4" stroke="currentColor" strokeWidth="2"/></svg> },
+    { id: 'thresholds',    label: 'Thresholds',    icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><line x1="4" y1="21" x2="4" y2="14" stroke="currentColor" strokeWidth="2"/><line x1="4" y1="10" x2="4" y2="3" stroke="currentColor" strokeWidth="2"/><line x1="12" y1="21" x2="12" y2="12" stroke="currentColor" strokeWidth="2"/><line x1="12" y1="8" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/><line x1="20" y1="21" x2="20" y2="16" stroke="currentColor" strokeWidth="2"/><line x1="20" y1="12" x2="20" y2="3" stroke="currentColor" strokeWidth="2"/><line x1="1" y1="14" x2="7" y2="14" stroke="currentColor" strokeWidth="2"/><line x1="9" y1="8" x2="15" y2="8" stroke="currentColor" strokeWidth="2"/><line x1="17" y1="16" x2="23" y2="16" stroke="currentColor" strokeWidth="2"/></svg> },
+    { id: 'system',        label: 'System',        icon: <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/><path d="M12 1v6m0 6v6m8.66-15.66l-4.24 4.24m-4.24 4.24l-4.24 4.24M23 12h-6m-6 0H1m19.66 3.66l-4.24-4.24m-4.24-4.24l-4.24-4.24" stroke="currentColor" strokeWidth="2"/></svg> },
+  ];
+
+  /* Save button — reused in both bars */
+  const SaveBtn = () => (
+    <button className="settings-save-btn">
+      <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" strokeWidth="2"/>
+        <polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" strokeWidth="2"/>
+        <polyline points="7 3 7 8 15 8" stroke="currentColor" strokeWidth="2"/>
+      </svg>
+      <span className="hidden sm:inline">Save Changes</span>
+      <span className="sm:hidden">Save</span>
+    </button>
+  );
+
   return (
     <div className="settings-container">
-      <Sidebar 
+      <Sidebar
         currentPage={currentPage}
         onNavigate={onNavigate}
         onLogout={onLogout}
@@ -113,69 +94,47 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
         onClose={setSidebarOpen}
       />
 
-      {/* Main Content */}
       <div className="settings-main">
-        {/* Header */}
+
+        {/* ── Header ─────────────────────────────────────── */}
         <div className="settings-header">
-          <div className="settings-header-content">
+
+          {/* Mobile: hamburger left, save button right */}
+          <div className="settings-mobile-bar">
+            <button onClick={() => setSidebarOpen(true)} className="settings-menu-btn">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <SaveBtn />
+          </div>
+
+          {/* Mobile: title below bar */}
+          <div className="settings-title-mobile">
             <h1 className="settings-title">Settings</h1>
             <p className="settings-subtitle">Configure your surveillance system</p>
           </div>
-          <button className="settings-save-btn">
-            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" stroke="currentColor" strokeWidth="2"/>
-              <polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" strokeWidth="2"/>
-              <polyline points="7 3 7 8 15 8" stroke="currentColor" strokeWidth="2"/>
-            </svg>
-            <span>Save Changes</span>
-          </button>
+
+          {/* Desktop: title left, save button right */}
+          <div className="settings-desktop-row">
+            <div className="settings-header-content">
+              <h1 className="settings-title">Settings</h1>
+              <p className="settings-subtitle">Configure your surveillance system</p>
+            </div>
+            <SaveBtn />
+          </div>
+
         </div>
 
+        {/* ── Status Banner ─── */}
         <div className="settings-status-banner">
           <div className="settings-status-indicator"></div>
           <span className="settings-status-text">System Online / All cameras operational</span>
         </div>
 
-        {/* Settings Tabs */}
+        {/* ── Tabs ─── */}
         <div className="settings-tabs">
-          {[
-            { id: 'notifications', label: 'Notifications', icon: (
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            )},
-            { id: 'detection', label: 'Detection', icon: (
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2"/>
-                <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            )},
-            { id: 'models', label: 'Models', icon: (
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2"/>
-                <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            )},
-            { id: 'thresholds', label: 'Thresholds', icon: (
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                <line x1="4" y1="21" x2="4" y2="14" stroke="currentColor" strokeWidth="2"/>
-                <line x1="4" y1="10" x2="4" y2="3" stroke="currentColor" strokeWidth="2"/>
-                <line x1="12" y1="21" x2="12" y2="12" stroke="currentColor" strokeWidth="2"/>
-                <line x1="12" y1="8" x2="12" y2="3" stroke="currentColor" strokeWidth="2"/>
-                <line x1="20" y1="21" x2="20" y2="16" stroke="currentColor" strokeWidth="2"/>
-                <line x1="20" y1="12" x2="20" y2="3" stroke="currentColor" strokeWidth="2"/>
-                <line x1="1" y1="14" x2="7" y2="14" stroke="currentColor" strokeWidth="2"/>
-                <line x1="9" y1="8" x2="15" y2="8" stroke="currentColor" strokeWidth="2"/>
-                <line x1="17" y1="16" x2="23" y2="16" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            )},
-            { id: 'system', label: 'System', icon: (
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2"/>
-                <path d="M12 1v6m0 6v6m8.66-15.66l-4.24 4.24m-4.24 4.24l-4.24 4.24M23 12h-6m-6 0H1m19.66 3.66l-4.24-4.24m-4.24-4.24l-4.24-4.24" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            )}
-          ].map(tab => (
+          {tabs.map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
@@ -187,9 +146,10 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
           ))}
         </div>
 
-        {/* Settings Content */}
+        {/* ── Settings Content ─── */}
         <div className="settings-content">
-          {/* Notifications Tab */}
+
+          {/* Notifications */}
           {activeTab === 'notifications' && (
             <div className="settings-section">
               <div className="settings-card">
@@ -198,63 +158,31 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
                   <p className="settings-card-description">Manage how you receive notifications</p>
                 </div>
                 <div className="settings-items">
-                  <div className="settings-item">
-                    <div className="settings-item-info">
-                      <h4 className="settings-item-title">Email Alerts</h4>
-                      <p className="settings-item-description">Receive alerts via email</p>
+                  {[
+                    { key: 'emailAlerts',        title: 'Email Alerts',        desc: 'Receive alerts via email' },
+                    { key: 'pushNotifications',  title: 'Push Notifications',  desc: 'Receive browser notifications' },
+                    { key: 'smsAlerts',          title: 'SMS Alerts',          desc: 'Receive critical alerts via SMS' },
+                    { key: 'alertSound',         title: 'Alert Sound',         desc: 'Play sound for new alerts' },
+                  ].map(({ key, title, desc }) => (
+                    <div key={key} className="settings-item">
+                      <div className="settings-item-info">
+                        <h4 className="settings-item-title">{title}</h4>
+                        <p className="settings-item-description">{desc}</p>
+                      </div>
+                      <button
+                        className={`toggle-button ${notificationSettings[key] ? 'toggle-active' : ''}`}
+                        onClick={() => handleNotificationToggle(key)}
+                      >
+                        <span className="toggle-slider"></span>
+                      </button>
                     </div>
-                    <button 
-                      className={`toggle-button ${notificationSettings.emailAlerts ? 'toggle-active' : ''}`}
-                      onClick={() => handleNotificationToggle('emailAlerts')}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
-
-                  <div className="settings-item">
-                    <div className="settings-item-info">
-                      <h4 className="settings-item-title">Push Notifications</h4>
-                      <p className="settings-item-description">Receive browser notifications</p>
-                    </div>
-                    <button 
-                      className={`toggle-button ${notificationSettings.pushNotifications ? 'toggle-active' : ''}`}
-                      onClick={() => handleNotificationToggle('pushNotifications')}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
-
-                  <div className="settings-item">
-                    <div className="settings-item-info">
-                      <h4 className="settings-item-title">SMS Alerts</h4>
-                      <p className="settings-item-description">Receive critical alerts via SMS</p>
-                    </div>
-                    <button 
-                      className={`toggle-button ${notificationSettings.smsAlerts ? 'toggle-active' : ''}`}
-                      onClick={() => handleNotificationToggle('smsAlerts')}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
-
-                  <div className="settings-item">
-                    <div className="settings-item-info">
-                      <h4 className="settings-item-title">Alert Sound</h4>
-                      <p className="settings-item-description">Play sound for new alerts</p>
-                    </div>
-                    <button 
-                      className={`toggle-button ${notificationSettings.alertSound ? 'toggle-active' : ''}`}
-                      onClick={() => handleNotificationToggle('alertSound')}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Detection Tab */}
+          {/* Detection */}
           {activeTab === 'detection' && (
             <div className="settings-section">
               <div className="settings-card">
@@ -263,89 +191,33 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
                   <p className="settings-card-description">Configure AI-driven detection behaviors</p>
                 </div>
                 <div className="settings-items">
-                  <div className="settings-item">
-                    <div className="settings-item-info">
-                      <h4 className="settings-item-title">Motion Detection</h4>
-                      <p className="settings-item-description">Detect movement in camera feeds</p>
+                  {[
+                    { key: 'motionDetection',  title: 'Motion Detection',              desc: 'Detect movement in camera feeds' },
+                    { key: 'objectDetection',  title: 'Object Detection (YOLOv11)',     desc: 'Detect persons and objects in real-time' },
+                    { key: 'poseEstimation',   title: 'Pose Estimation (BlazePose)',    desc: 'Extract 33 body keypoints for analysis' },
+                    { key: 'behaviorAnalysis', title: 'Behavior Analysis',              desc: 'Classify suspicious behaviors using Random Forest' },
+                    { key: 'fireDetection',    title: 'Fire/Smoke Detection',           desc: 'Detect fire and smoke hazards' },
+                    { key: 'weaponDetection',  title: 'Weapon Detection',               desc: 'Identify weapons in camera feeds' },
+                  ].map(({ key, title, desc }) => (
+                    <div key={key} className="settings-item">
+                      <div className="settings-item-info">
+                        <h4 className="settings-item-title">{title}</h4>
+                        <p className="settings-item-description">{desc}</p>
+                      </div>
+                      <button
+                        className={`toggle-button ${detectionSettings[key] ? 'toggle-active' : ''}`}
+                        onClick={() => handleDetectionToggle(key)}
+                      >
+                        <span className="toggle-slider"></span>
+                      </button>
                     </div>
-                    <button 
-                      className={`toggle-button ${detectionSettings.motionDetection ? 'toggle-active' : ''}`}
-                      onClick={() => handleDetectionToggle('motionDetection')}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
-
-                  <div className="settings-item">
-                    <div className="settings-item-info">
-                      <h4 className="settings-item-title">Object Detection (YOLOv11)</h4>
-                      <p className="settings-item-description">Detect persons and objects in real-time</p>
-                    </div>
-                    <button 
-                      className={`toggle-button ${detectionSettings.objectDetection ? 'toggle-active' : ''}`}
-                      onClick={() => handleDetectionToggle('objectDetection')}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
-
-                  <div className="settings-item">
-                    <div className="settings-item-info">
-                      <h4 className="settings-item-title">Pose Estimation (BlazePose)</h4>
-                      <p className="settings-item-description">Extract 33 body keypoints for analysis</p>
-                    </div>
-                    <button 
-                      className={`toggle-button ${detectionSettings.poseEstimation ? 'toggle-active' : ''}`}
-                      onClick={() => handleDetectionToggle('poseEstimation')}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
-
-                  <div className="settings-item">
-                    <div className="settings-item-info">
-                      <h4 className="settings-item-title">Behavior Analysis</h4>
-                      <p className="settings-item-description">Classify suspicious behaviors using Random Forest</p>
-                    </div>
-                    <button 
-                      className={`toggle-button ${detectionSettings.behaviorAnalysis ? 'toggle-active' : ''}`}
-                      onClick={() => handleDetectionToggle('behaviorAnalysis')}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
-
-                  <div className="settings-item">
-                    <div className="settings-item-info">
-                      <h4 className="settings-item-title">Fire/Smoke Detection</h4>
-                      <p className="settings-item-description">Detect fire and smoke hazards</p>
-                    </div>
-                    <button 
-                      className={`toggle-button ${detectionSettings.fireDetection ? 'toggle-active' : ''}`}
-                      onClick={() => handleDetectionToggle('fireDetection')}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
-
-                  <div className="settings-item">
-                    <div className="settings-item-info">
-                      <h4 className="settings-item-title">Weapon Detection</h4>
-                      <p className="settings-item-description">Identify weapons in camera feeds</p>
-                    </div>
-                    <button 
-                      className={`toggle-button ${detectionSettings.weaponDetection ? 'toggle-active' : ''}`}
-                      onClick={() => handleDetectionToggle('weaponDetection')}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Models Tab */}
+          {/* Models */}
           {activeTab === 'models' && (
             <div className="settings-section">
               <div className="settings-card">
@@ -354,94 +226,43 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
                   <p className="settings-card-description">Switch between different detection models</p>
                 </div>
                 <div className="settings-items">
-                  <div className="mb-6 p-4 bg-gray-800/50 rounded-lg">
-                    <p className="text-sm text-gray-300 mb-2">Current Model:</p>
-                    <p className="text-lg font-semibold capitalize text-blue-400">{currentModel || 'None'}</p>
+                  <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-800/50 rounded-lg">
+                    <p className="text-xs sm:text-sm text-gray-300 mb-1">Current Model:</p>
+                    <p className="text-base sm:text-lg font-semibold capitalize text-blue-400">{currentModel || 'None'}</p>
                   </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="settings-item">
-                      <div className="settings-item-info">
-                        <h4 className="settings-item-title">Weapon Detection</h4>
-                        <p className="settings-item-description">Detect weapons using YOLOv11</p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    {[
+                      { model: 'weapon',     label: 'Weapon Detection',    desc: 'Detect weapons using YOLOv11',             activeColor: 'bg-green-600', inactiveColor: 'bg-blue-600 hover:bg-blue-700' },
+                      { model: 'fire_smoke', label: 'Fire/Smoke Detection', desc: 'Detect fire and smoke hazards',            activeColor: 'bg-green-600', inactiveColor: 'bg-blue-600 hover:bg-blue-700' },
+                      { model: 'both',       label: 'Both Models',          desc: 'Run both weapon and fire/smoke detection', activeColor: 'bg-green-600', inactiveColor: 'bg-purple-600 hover:bg-purple-700' },
+                      { model: 'fight',      label: 'Fight Detection',       desc: 'Detect physical altercations',             activeColor: 'bg-green-600', inactiveColor: 'bg-red-600 hover:bg-red-700' },
+                    ].map(({ model, label, desc, activeColor, inactiveColor }) => (
+                      <div key={model} className="settings-item">
+                        <div className="settings-item-info">
+                          <h4 className="settings-item-title">{label}</h4>
+                          <p className="settings-item-description">{desc}</p>
+                        </div>
+                        <button
+                          className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg transition-colors text-white text-xs sm:text-sm shrink-0
+                            ${currentModel === model ? activeColor : inactiveColor}`}
+                          onClick={() => handleModelSwitch(model)}
+                          disabled={loading || currentModel === model}
+                        >
+                          {currentModel === model ? 'Active' : 'Switch'}
+                        </button>
                       </div>
-                      <button 
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                          currentModel === 'weapon' 
-                            ? 'bg-green-600 text-white' 
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
-                        }`}
-                        onClick={() => handleModelSwitch('weapon')}
-                        disabled={loading || currentModel === 'weapon'}
-                      >
-                        {currentModel === 'weapon' ? 'Active' : 'Switch'}
-                      </button>
-                    </div>
-                    
-                    <div className="settings-item">
-                      <div className="settings-item-info">
-                        <h4 className="settings-item-title">Fire/Smoke Detection</h4>
-                        <p className="settings-item-description">Detect fire and smoke hazards</p>
-                      </div>
-                      <button 
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                          currentModel === 'fire_smoke' 
-                            ? 'bg-green-600 text-white' 
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
-                        }`}
-                        onClick={() => handleModelSwitch('fire_smoke')}
-                        disabled={loading || currentModel === 'fire_smoke'}
-                      >
-                        {currentModel === 'fire_smoke' ? 'Active' : 'Switch'}
-                      </button>
-                    </div>
-                    
-                    <div className="settings-item">
-                      <div className="settings-item-info">
-                        <h4 className="settings-item-title">Both Models</h4>
-                        <p className="settings-item-description">Run both weapon and fire/smoke detection</p>
-                      </div>
-                      <button 
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                          currentModel === 'both' 
-                            ? 'bg-green-600 text-white' 
-                            : 'bg-purple-600 hover:bg-purple-700 text-white'
-                        }`}
-                        onClick={() => handleModelSwitch('both')}
-                        disabled={loading || currentModel === 'both'}
-                      >
-                        {currentModel === 'both' ? 'Active' : 'Switch'}
-                      </button>
-                    </div>
-                    
-                    <div className="settings-item">
-                      <div className="settings-item-info">
-                        <h4 className="settings-item-title">Fight Detection</h4>
-                        <p className="settings-item-description">Detect physical altercations</p>
-                      </div>
-                      <button 
-                        className={`px-4 py-2 rounded-lg transition-colors ${
-                          currentModel === 'fight' 
-                            ? 'bg-green-600 text-white' 
-                            : 'bg-red-600 hover:bg-red-700 text-white'
-                        }`}
-                        onClick={() => handleModelSwitch('fight')}
-                        disabled={loading || currentModel === 'fight'}
-                      >
-                        {currentModel === 'fight' ? 'Active' : 'Switch'}
-                      </button>
-                    </div>
+                    ))}
                   </div>
-                  
+
                   {error && (
-                    <div className="mt-4 p-3 bg-red-900/50 border border-red-700 rounded text-red-300">
+                    <div className="mt-3 sm:mt-4 p-3 bg-red-900/50 border border-red-700 rounded text-red-300 text-xs sm:text-sm">
                       Error: {error}
                     </div>
                   )}
-                  
                   {loading && (
-                    <div className="mt-4 text-center text-gray-400">
-                      Switching model...
+                    <div className="mt-3 sm:mt-4 text-center text-gray-400 text-sm">
+                      Switching model…
                     </div>
                   )}
                 </div>
@@ -449,7 +270,7 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
             </div>
           )}
 
-          {/* Thresholds Tab */}
+          {/* Thresholds */}
           {activeTab === 'thresholds' && (
             <div className="settings-section">
               <div className="settings-card">
@@ -458,65 +279,35 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
                   <p className="settings-card-description">Adjust detection sensitivity and alert parameters</p>
                 </div>
                 <div className="settings-items">
-                  <div className="settings-slider-item">
-                    <div className="settings-slider-header">
-                      <div className="settings-item-info">
-                        <h4 className="settings-item-title">Detection Confidence</h4>
-                        <p className="settings-item-description">Minimum confidence for object detection</p>
+                  {[
+                    { key: 'detectionConfidence', title: 'Detection Confidence', desc: 'Minimum confidence for object detection',        suffix: '%',  min: 0,   max: 100 },
+                    { key: 'behaviorConfidence',  title: 'Behavior Confidence',  desc: 'Minimum confidence for behavior classification', suffix: '%',  min: 0,   max: 100 },
+                    { key: 'alertCooldown',       title: 'Alert Cooldown',       desc: 'Minimum seconds between duplicate alerts',       suffix: 's',  min: 5,   max: 120 },
+                  ].map(({ key, title, desc, suffix, min, max }) => (
+                    <div key={key} className="settings-slider-item">
+                      <div className="settings-slider-header">
+                        <div className="settings-item-info">
+                          <h4 className="settings-item-title">{title}</h4>
+                          <p className="settings-item-description">{desc}</p>
+                        </div>
+                        <span className="settings-slider-value">{alertThresholds[key]}{suffix}</span>
                       </div>
-                      <span className="settings-slider-value">{alertThresholds.detectionConfidence}%</span>
+                      <input
+                        type="range"
+                        min={min}
+                        max={max}
+                        value={alertThresholds[key]}
+                        onChange={(e) => handleThresholdChange(key, e.target.value)}
+                        className="settings-slider"
+                      />
                     </div>
-                    <input 
-                      type="range" 
-                      min="0" 
-                      max="100" 
-                      value={alertThresholds.detectionConfidence}
-                      onChange={(e) => handleThresholdChange('detectionConfidence', e.target.value)}
-                      className="settings-slider"
-                    />
-                  </div>
-
-                  <div className="settings-slider-item">
-                    <div className="settings-slider-header">
-                      <div className="settings-item-info">
-                        <h4 className="settings-item-title">Behavior Confidence</h4>
-                        <p className="settings-item-description">Minimum confidence for behavior classification</p>
-                      </div>
-                      <span className="settings-slider-value">{alertThresholds.behaviorConfidence}%</span>
-                    </div>
-                    <input 
-                      type="range" 
-                      min="0" 
-                      max="100" 
-                      value={alertThresholds.behaviorConfidence}
-                      onChange={(e) => handleThresholdChange('behaviorConfidence', e.target.value)}
-                      className="settings-slider"
-                    />
-                  </div>
-
-                  <div className="settings-slider-item">
-                    <div className="settings-slider-header">
-                      <div className="settings-item-info">
-                        <h4 className="settings-item-title">Alert Cooldown</h4>
-                        <p className="settings-item-description">Minimum seconds between duplicate alerts</p>
-                      </div>
-                      <span className="settings-slider-value">{alertThresholds.alertCooldown}s</span>
-                    </div>
-                    <input 
-                      type="range" 
-                      min="5" 
-                      max="120" 
-                      value={alertThresholds.alertCooldown}
-                      onChange={(e) => handleThresholdChange('alertCooldown', e.target.value)}
-                      className="settings-slider"
-                    />
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>
           )}
 
-          {/* System Tab */}
+          {/* System */}
           {activeTab === 'system' && (
             <div className="settings-section">
               <div className="settings-card">
@@ -525,31 +316,23 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
                   <p className="settings-card-description">Manage recording and storage settings</p>
                 </div>
                 <div className="settings-items">
-                  <div className="settings-item">
-                    <div className="settings-item-info">
-                      <h4 className="settings-item-title">Recording Enabled</h4>
-                      <p className="settings-item-description">Save video recordings of detections</p>
+                  {[
+                    { key: 'recordingEnabled', title: 'Recording Enabled', desc: 'Save video recordings of detections' },
+                    { key: 'autoArchive',      title: 'Auto Archive',      desc: 'Automatically archive old recordings' },
+                  ].map(({ key, title, desc }) => (
+                    <div key={key} className="settings-item">
+                      <div className="settings-item-info">
+                        <h4 className="settings-item-title">{title}</h4>
+                        <p className="settings-item-description">{desc}</p>
+                      </div>
+                      <button
+                        className={`toggle-button ${systemSettings[key] ? 'toggle-active' : ''}`}
+                        onClick={() => handleSystemToggle(key)}
+                      >
+                        <span className="toggle-slider"></span>
+                      </button>
                     </div>
-                    <button 
-                      className={`toggle-button ${systemSettings.recordingEnabled ? 'toggle-active' : ''}`}
-                      onClick={() => handleSystemToggle('recordingEnabled')}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
-
-                  <div className="settings-item">
-                    <div className="settings-item-info">
-                      <h4 className="settings-item-title">Auto Archive</h4>
-                      <p className="settings-item-description">Automatically archive old recordings</p>
-                    </div>
-                    <button 
-                      className={`toggle-button ${systemSettings.autoArchive ? 'toggle-active' : ''}`}
-                      onClick={() => handleSystemToggle('autoArchive')}
-                    >
-                      <span className="toggle-slider"></span>
-                    </button>
-                  </div>
+                  ))}
 
                   <div className="settings-info-item">
                     <div className="settings-item-info">
@@ -557,12 +340,10 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
                       <p className="settings-item-description">Keep recordings for {systemSettings.retentionDays} days</p>
                     </div>
                     <div className="settings-input-container">
-                      <input 
-                        type="number"
-                        min="7"
-                        max="365"
+                      <input
+                        type="number" min="7" max="365"
                         value={systemSettings.retentionDays}
-                        onChange={(e) => setSystemSettings({...systemSettings, retentionDays: parseInt(e.target.value)})}
+                        onChange={(e) => setSystemSettings({ ...systemSettings, retentionDays: parseInt(e.target.value) })}
                         className="settings-input"
                       />
                       <span className="settings-input-suffix">days</span>
@@ -575,12 +356,10 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
                       <p className="settings-item-description">Maximum storage allocation</p>
                     </div>
                     <div className="settings-input-container">
-                      <input 
-                        type="number"
-                        min="10"
-                        max="1000"
+                      <input
+                        type="number" min="10" max="1000"
                         value={systemSettings.storageLimit}
-                        onChange={(e) => setSystemSettings({...systemSettings, storageLimit: parseInt(e.target.value)})}
+                        onChange={(e) => setSystemSettings({ ...systemSettings, storageLimit: parseInt(e.target.value) })}
                         className="settings-input"
                       />
                       <span className="settings-input-suffix">GB</span>
@@ -596,13 +375,13 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
                 </div>
                 <div className="settings-danger-actions">
                   <button className="settings-danger-btn">
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none">
                       <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2"/>
                     </svg>
                     Clear All Data
                   </button>
                   <button className="settings-danger-btn">
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                    <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none">
                       <polyline points="3 6 5 6 21 6" stroke="currentColor" strokeWidth="2"/>
                       <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" strokeWidth="2"/>
                       <line x1="10" y1="11" x2="10" y2="17" stroke="currentColor" strokeWidth="2"/>
@@ -614,6 +393,7 @@ const Settings = ({ onLogout, onNavigate, currentPage }) => {
               </div>
             </div>
           )}
+
         </div>
       </div>
     </div>

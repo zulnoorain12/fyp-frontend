@@ -7,65 +7,91 @@
 
 /* Main Content */
 .main-content {
-  @apply p-6 md:ml-64;
+  @apply p-4 sm:p-6 md:ml-64;
 }
 
-/* Header */
+/* ── Header ────────────────────────────────────────────
+   Mobile layout:
+     Row 1: [☰ menu]  ........  [● System Online badge]
+     Row 2: Dashboard (title)
+     Row 3: subtitle
+   Desktop (md+): single row — title left, badge right
+──────────────────────────────────────────────────────── */
 .dashboard-header {
-  @apply mb-8 flex items-center justify-between flex-wrap gap-4;
+  @apply mb-6 sm:mb-8;
+}
+
+/* Mobile-only top bar: hamburger + badge side by side */
+.header-mobile-bar {
+  @apply flex items-center justify-between mb-3 md:hidden;
 }
 
 .menu-button {
-  @apply md:hidden p-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors;
+  @apply p-2 rounded-lg bg-gray-800 hover:bg-gray-700 active:bg-gray-600
+         transition-colors touch-manipulation;
 }
 
 .icon-menu {
-  @apply w-6 h-6;
+  @apply w-5 h-5;
+}
+
+/* Desktop row: title block on left, badge on right */
+.header-desktop-row {
+  @apply hidden md:flex md:items-center md:justify-between;
 }
 
 .header-title {
-  @apply text-3xl font-bold text-white;
+  @apply text-2xl sm:text-3xl font-bold text-white leading-tight;
 }
 
 .header-subtitle {
-  @apply text-gray-400 mt-1;
+  @apply text-gray-400 mt-1 text-sm sm:text-base;
+}
+
+/* Mobile: title shown below the mobile bar */
+.header-title-mobile {
+  @apply md:hidden;
 }
 
 .status-badge {
-  @apply flex items-center gap-2 px-4 py-2 bg-emerald-500/10 text-emerald-400 rounded-lg text-sm font-medium;
+  @apply flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2
+         bg-emerald-500/10 text-emerald-400 rounded-lg
+         text-xs sm:text-sm font-medium whitespace-nowrap;
 }
 
 .status-indicator {
-  @apply w-2 h-2 bg-emerald-400 rounded-full animate-pulse;
+  @apply w-2 h-2 bg-emerald-400 rounded-full animate-pulse shrink-0;
 }
 
-/* Stats Grid */
+/* ── Stats Grid ──────────────────────────────────────── */
 .stats-grid {
-  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8;
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4
+         gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8;
 }
 
 .stat-card {
-  @apply bg-gray-900/50 backdrop-blur border border-gray-800 rounded-xl p-6 hover:border-gray-700 transition-all;
+  @apply bg-gray-900/50 backdrop-blur border border-gray-800 rounded-xl
+         p-4 sm:p-5 hover:border-gray-700 transition-all;
 }
 
 .stat-header {
-  @apply flex items-center gap-3 mb-4;
+  @apply flex items-center gap-2 sm:gap-3 mb-3;
 }
 
 .stat-icon {
-  @apply p-2 rounded-lg;
+  @apply p-1.5 sm:p-2 rounded-lg shrink-0;
 }
 
 .stat-label {
-  @apply text-gray-400 text-sm;
+  @apply text-gray-400 text-xs sm:text-sm truncate;
 }
 
 .stat-value {
-  @apply text-3xl font-bold text-white mb-2;
+  @apply text-2xl sm:text-3xl font-bold text-white mb-1;
 }
 
 .stat-change {
-  @apply text-sm;
+  @apply text-xs sm:text-sm;
 }
 
 .stat-change-positive {
@@ -76,42 +102,45 @@
   @apply text-amber-400;
 }
 
-/* Content Grid */
+/* ── Content Grid ────────────────────────────────────── */
 .content-grid {
-  @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6;
 }
 
 .content-card {
-  @apply bg-gray-900/50 backdrop-blur border border-gray-800 rounded-xl p-6;
+  @apply bg-gray-900/50 backdrop-blur border border-gray-800 rounded-xl p-4 sm:p-6;
 }
 
 .card-header {
-  @apply flex items-center justify-between mb-6;
+  @apply flex items-center justify-between mb-4 sm:mb-6 gap-2;
 }
 
 .card-title {
-  @apply text-xl font-bold text-white;
+  @apply text-base sm:text-xl font-bold text-white;
 }
 
 .view-all-button {
-  @apply text-cyan-400 hover:text-cyan-300 text-sm font-medium transition-colors;
+  @apply text-cyan-400 hover:text-cyan-300 text-xs sm:text-sm font-medium
+         transition-colors whitespace-nowrap touch-manipulation;
 }
 
-/* Camera List */
+/* ── Camera List ─────────────────────────────────────── */
 .camera-list {
-  @apply space-y-4;
+  @apply space-y-2 sm:space-y-3;
 }
 
 .camera-item {
-  @apply flex items-center justify-between p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors;
+  @apply flex items-center justify-between p-3 sm:p-4
+         bg-gray-800/50 rounded-lg hover:bg-gray-800 active:bg-gray-700
+         transition-colors gap-2 sm:gap-3;
 }
 
 .camera-info {
-  @apply flex-1;
+  @apply flex-1 min-w-0;
 }
 
 .camera-status {
-  @apply inline-block px-2 py-1 text-xs font-medium rounded-full mb-2;
+  @apply inline-block px-2 py-0.5 text-xs font-medium rounded-full mb-1;
 }
 
 .camera-status-active {
@@ -123,32 +152,34 @@
 }
 
 .camera-name {
-  @apply text-white font-medium mb-1;
+  @apply text-white font-medium text-sm sm:text-base truncate mb-0.5;
 }
 
 .camera-location {
-  @apply text-gray-400 text-sm;
+  @apply text-gray-400 text-xs sm:text-sm truncate;
 }
 
 .camera-update {
-  @apply text-gray-500 text-sm;
+  @apply text-gray-500 text-xs sm:text-sm shrink-0;
 }
 
-/* Alert List */
+/* ── Alert List ──────────────────────────────────────── */
 .alert-list {
-  @apply space-y-4;
+  @apply space-y-2 sm:space-y-3;
 }
 
 .alert-item {
-  @apply flex items-center justify-between p-4 bg-gray-800/50 rounded-lg hover:bg-gray-800 transition-colors;
+  @apply flex items-start sm:items-center justify-between p-3 sm:p-4
+         bg-gray-800/50 rounded-lg hover:bg-gray-800 active:bg-gray-700
+         transition-colors gap-2 sm:gap-3;
 }
 
 .alert-info {
-  @apply flex-1;
+  @apply flex-1 min-w-0;
 }
 
 .alert-severity {
-  @apply inline-block px-2 py-1 text-xs font-medium rounded-full mb-2;
+  @apply inline-block px-2 py-0.5 text-xs font-medium rounded-full mb-1;
 }
 
 .alert-severity-critical {
@@ -164,13 +195,15 @@
 }
 
 .alert-type {
-  @apply text-white font-medium mb-1;
+  @apply text-white font-medium text-sm sm:text-base truncate mb-0.5;
 }
 
 .alert-details {
-  @apply text-gray-400 text-sm;
+  @apply text-gray-400 text-xs sm:text-sm truncate;
 }
 
 .alert-view-button {
-  @apply px-4 py-2 bg-cyan-500/10 text-cyan-400 rounded-lg text-sm font-medium hover:bg-cyan-500/20 transition-colors;
+  @apply px-2.5 py-1.5 sm:px-4 sm:py-2 bg-cyan-500/10 text-cyan-400 rounded-lg
+         text-xs sm:text-sm font-medium hover:bg-cyan-500/20 active:bg-cyan-500/30
+         transition-colors shrink-0 touch-manipulation;
 }

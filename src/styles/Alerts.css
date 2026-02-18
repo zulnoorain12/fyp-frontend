@@ -1,68 +1,110 @@
 /* Alerts.css */
 
-/* Container */
+/* ── Container ───────────────────────────────────── */
 .alerts-container {
   @apply min-h-screen bg-slate-950 flex;
 }
 
-/* Main Content */
+/* ── Main Content ────────────────────────────────── */
 .alerts-main {
-  @apply flex-1 ml-0 lg:ml-64 p-6 lg:p-8;
+  @apply flex-1 ml-0 lg:ml-64 p-4 sm:p-6 lg:p-8;
 }
 
-/* Header */
+/* ── Header ──────────────────────────────────────────
+   Mobile  : hamburger + actions on top row, title below
+   Desktop : title left, actions right — single row
+──────────────────────────────────────────────────── */
 .alerts-header {
-  @apply mb-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4;
+  @apply mb-5 sm:mb-6;
+}
+
+/* Mobile-only top bar: hamburger left, action buttons right */
+.alerts-mobile-bar {
+  @apply flex items-center justify-between mb-3 md:hidden;
+}
+
+.alerts-menu-btn {
+  @apply p-2 rounded-lg bg-slate-800 hover:bg-slate-700 active:bg-slate-600
+         text-white transition-colors touch-manipulation;
+}
+
+/* Mobile title block */
+.alerts-title-mobile {
+  @apply md:hidden space-y-0.5 mb-1;
+}
+
+/* Desktop single row */
+.alerts-desktop-row {
+  @apply hidden md:flex md:items-center md:justify-between gap-4;
 }
 
 .alerts-header-content {
-  @apply space-y-1;
+  @apply space-y-0.5 sm:space-y-1;
 }
 
 .alerts-title {
-  @apply text-3xl lg:text-4xl font-bold text-white;
+  @apply text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight;
 }
 
 .alerts-subtitle {
-  @apply text-slate-400 text-sm lg:text-base;
+  @apply text-slate-400 text-xs sm:text-sm lg:text-base;
 }
 
 .alerts-actions {
-  @apply flex items-center gap-3;
+  @apply flex items-center gap-2 sm:gap-3 flex-wrap;
 }
 
 .alerts-action-btn {
-  @apply px-4 py-2.5 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-xl text-slate-300 hover:text-white hover:border-cyan-500/30 flex items-center gap-2 text-sm font-medium transition-all duration-300;
+  @apply px-3 py-2 sm:px-4 sm:py-2.5
+         bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-xl
+         text-slate-300 hover:text-white hover:border-cyan-500/30
+         flex items-center gap-2 text-xs sm:text-sm font-medium
+         transition-all duration-300 touch-manipulation whitespace-nowrap;
 }
 
-/* Status Banner */
+/* ── Status Banner ───────────────────────────────── */
 .alerts-status-banner {
-  @apply mb-6 px-4 py-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl backdrop-blur-sm flex items-center gap-3;
+  @apply mb-5 sm:mb-6 px-3 py-2.5 sm:px-4 sm:py-3
+         bg-emerald-500/10 border border-emerald-500/20 rounded-xl
+         backdrop-blur-sm flex items-center gap-2 sm:gap-3;
 }
 
 .alerts-status-indicator {
-  @apply w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-lg shadow-emerald-500/50 animate-pulse;
+  @apply w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400
+         shadow-lg shadow-emerald-500/50 animate-pulse shrink-0;
 }
 
 .alerts-status-text {
-  @apply text-emerald-400 text-sm font-medium;
+  @apply text-emerald-400 text-xs sm:text-sm font-medium;
 }
 
-/* Tabs */
+/* ── Tabs ────────────────────────────────────────── */
 .alerts-tabs {
-  @apply mb-6 flex gap-2 overflow-x-auto pb-2;
+  @apply mb-5 sm:mb-6 flex gap-1.5 sm:gap-2 overflow-x-auto pb-2;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.alerts-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .alerts-tab {
-  @apply px-6 py-3 rounded-xl text-sm font-medium whitespace-nowrap flex items-center gap-3 transition-all duration-300 bg-slate-900/50 border border-white/5 text-slate-400 hover:text-white hover:border-white/10;
+  @apply px-3 py-2 sm:px-6 sm:py-3 rounded-xl
+         text-xs sm:text-sm font-medium whitespace-nowrap
+         flex items-center gap-2 sm:gap-3
+         transition-all duration-300
+         bg-slate-900/50 border border-white/5
+         text-slate-400 hover:text-white hover:border-white/10
+         touch-manipulation shrink-0;
 }
 
 .alerts-tab-active {
-  @apply bg-gradient-to-r from-cyan-500/10 to-blue-600/10 border-cyan-500/30 text-white border;
+  @apply bg-gradient-to-r from-cyan-500/10 to-blue-600/10
+         border-cyan-500/30 text-white;
 }
 
 .alerts-tab-badge {
-  @apply px-2 py-0.5 rounded-lg text-xs font-bold;
+  @apply px-1.5 py-0.5 sm:px-2 rounded-md text-xs font-bold;
 }
 
 .alerts-tab-badge-critical {
@@ -81,23 +123,30 @@
   @apply bg-slate-700/50 text-slate-300;
 }
 
-/* Alerts List */
+/* ── Alerts List ─────────────────────────────────── */
 .alerts-list {
-  @apply space-y-4;
+  @apply space-y-3 sm:space-y-4;
 }
 
-/* Alert Card */
+/* ── Alert Card ──────────────────────────────────── */
+/*
+  Mobile  : icon hidden, content full width, actions below content
+  Desktop : icon | content | actions side by side
+*/
 .alert-card {
-  @apply bg-gradient-to-br from-slate-900/80 to-slate-900/40 backdrop-blur-xl border border-white/5 rounded-2xl p-5 flex gap-4 hover:border-white/10 hover:shadow-lg transition-all duration-300;
+  @apply bg-gradient-to-br from-slate-900/80 to-slate-900/40 backdrop-blur-xl
+         border border-white/5 rounded-2xl p-4 sm:p-5
+         flex flex-col sm:flex-row gap-3 sm:gap-4
+         hover:border-white/10 hover:shadow-lg transition-all duration-300;
   animation: alertSlideIn 0.6s ease-out backwards;
 }
 
 .alert-icon-container {
-  @apply flex-shrink-0;
+  @apply hidden sm:flex shrink-0;
 }
 
 .alert-icon {
-  @apply w-12 h-12 rounded-xl flex items-center justify-center;
+  @apply w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center;
 }
 
 .alert-icon-critical {
@@ -112,21 +161,22 @@
   @apply bg-blue-500/10 text-blue-400;
 }
 
-/* Alert Content */
+/* ── Alert Content ───────────────────────────────── */
 .alert-content {
   @apply flex-1 min-w-0;
 }
 
 .alert-header {
-  @apply flex items-start justify-between gap-3 mb-2;
+  @apply flex items-start justify-between gap-2 mb-1.5 sm:mb-2;
 }
 
 .alert-type {
-  @apply text-white font-bold text-lg;
+  @apply text-white font-bold text-sm sm:text-lg leading-snug;
 }
 
 .alert-severity-badge {
-  @apply px-3 py-1 rounded-lg text-xs font-bold uppercase whitespace-nowrap flex-shrink-0;
+  @apply px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg
+         text-xs font-bold uppercase whitespace-nowrap shrink-0;
 }
 
 .alert-severity-critical {
@@ -142,19 +192,19 @@
 }
 
 .alert-description {
-  @apply text-slate-300 text-sm mb-3 leading-relaxed;
+  @apply text-slate-300 text-xs sm:text-sm mb-2 sm:mb-3 leading-relaxed;
 }
 
 .alert-metadata {
-  @apply flex flex-wrap items-center gap-4 text-xs text-slate-400;
+  @apply flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-slate-400;
 }
 
 .alert-meta-item {
-  @apply flex items-center gap-1.5;
+  @apply flex items-center gap-1 sm:gap-1.5;
 }
 
 .alert-status-badge {
-  @apply px-2 py-1 rounded-md text-xs font-medium;
+  @apply px-2 py-0.5 sm:py-1 rounded-md text-xs font-medium;
 }
 
 .alert-status-active {
@@ -173,29 +223,50 @@
   @apply bg-emerald-500/10 text-emerald-400;
 }
 
-/* Alert Actions */
+/* ── Alert Actions ───────────────────────────────── */
+/*
+  Mobile  : full-width row of buttons below content
+  Desktop : vertical stack on the right
+*/
 .alert-actions {
-  @apply flex-shrink-0 flex flex-col gap-2;
+  @apply flex sm:flex-col gap-2 shrink-0 flex-wrap;
 }
 
 .alert-action-acknowledge {
-  @apply px-4 py-2 rounded-lg text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 hover:border-amber-500/30 flex items-center gap-2 transition-all duration-300;
+  @apply flex-1 sm:flex-none px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg
+         text-xs font-medium
+         bg-amber-500/10 text-amber-400 border border-amber-500/20
+         hover:bg-amber-500/20 hover:border-amber-500/30
+         flex items-center justify-center gap-2
+         transition-all duration-300 touch-manipulation whitespace-nowrap;
 }
 
 .alert-action-resolve {
-  @apply px-4 py-2 rounded-lg text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 hover:border-emerald-500/30 flex items-center gap-2 transition-all duration-300;
+  @apply flex-1 sm:flex-none px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg
+         text-xs font-medium
+         bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
+         hover:bg-emerald-500/20 hover:border-emerald-500/30
+         flex items-center justify-center gap-2
+         transition-all duration-300 touch-manipulation whitespace-nowrap;
 }
 
 .alert-action-view {
-  @apply px-4 py-2 rounded-lg text-xs font-medium bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/20 hover:border-cyan-500/30 flex items-center gap-2 transition-all duration-300;
+  @apply flex-1 sm:flex-none px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg
+         text-xs font-medium
+         bg-cyan-500/10 text-cyan-400 border border-cyan-500/20
+         hover:bg-cyan-500/20 hover:border-cyan-500/30
+         flex items-center justify-center gap-2
+         transition-all duration-300 touch-manipulation whitespace-nowrap;
 }
 
-/* Animations */
+/* ── Animations ──────────────────────────────────── */
 @keyframes alertSlideIn {
   from {
-    @apply opacity-0 translate-x-[-20px];
+    opacity: 0;
+    transform: translateX(-20px);
   }
   to {
-    @apply opacity-100 translate-x-0;
+    opacity: 1;
+    transform: translateX(0);
   }
 }
