@@ -3,6 +3,7 @@ import Sidebar from './Sidebar';
 import '../styles/Alerts.css';
 import { apiEndpoints } from '../services/api';
 import audioAlert from '../utils/audioAlert';
+import socket from '../services/socket';
 
 const Alerts = ({ onLogout, onNavigate, currentPage }) => {
   const [activeTab, setActiveTab] = useState('all');
@@ -32,30 +33,30 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
         then = new Date(timestamp);
       }
       if (isNaN(then.getTime())) return 'Unknown';
-      const diffMs   = new Date() - then;
-      const diffMins  = Math.floor(diffMs / 60000);
+      const diffMs = new Date() - then;
+      const diffMins = Math.floor(diffMs / 60000);
       const diffHours = Math.floor(diffMins / 60);
-      const diffDays  = Math.floor(diffHours / 24);
-      if (diffMins  < 1)  return 'Just now';
-      if (diffMins  < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+      const diffDays = Math.floor(diffHours / 24);
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
       if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
       return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
     };
 
     return {
-      id: detection.id,
-      type: typeMap[detection.detection_type] || `${detection.detection_type.charAt(0).toUpperCase() + detection.detection_type.slice(1)} Detected`,
-      severity: severityMap[detection.severity] || 'Info',
-      description: `Detected ${detection.detection_type} with ${(detection.confidence * 100).toFixed(1)}% confidence`,
-      location: `Camera ${detection.id % 6 || 1}`,
+      id: detection.detection_id,
+      type: typeMap[detection.type] || `${(detection.type || 'unknown').charAt(0).toUpperCase() + (detection.type || 'unknown').slice(1)} Detected`,
+      severity: detection.confidence >= 0.8 ? 'Critical' : detection.confidence >= 0.6 ? 'Warning' : 'Info',
+      description: `Detected ${detection.type} with ${(detection.confidence * 100).toFixed(1)}% confidence`,
+      location: detection.camera_location || `Camera ${(detection.detection_id % 6) || 1}`,
       time: timeAgo(detection.timestamp),
       status: 'Active',
       timestamp: detection.timestamp
     };
   };
 
-  const combineAlerts = (backendAlerts, liveAlerts) =>
-    [...backendAlerts, ...liveAlerts].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  const combineAlerts = (backendAlerts, socketAlerts) =>
+    [...backendAlerts, ...socketAlerts].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
   const markAsRead = (alertId) => {
     const updated = alerts.map(a => a.id === alertId ? { ...a, status: 'Acknowledged' } : a);
@@ -71,54 +72,68 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
   const getSeverityBadgeClass = (severity) => {
     switch (severity.toLowerCase()) {
       case 'critical': return 'alert-severity-badge alert-severity-critical';
-      case 'warning':  return 'alert-severity-badge alert-severity-warning';
-      case 'info':     return 'alert-severity-badge alert-severity-info';
-      default:         return 'alert-severity-badge';
+      case 'warning': return 'alert-severity-badge alert-severity-warning';
+      case 'info': return 'alert-severity-badge alert-severity-info';
+      default: return 'alert-severity-badge';
     }
   };
 
   useEffect(() => { audioAlert.init(); }, []);
 
+  // ── Socket.IO: receive real-time alerts ─────────────────────
+  useEffect(() => {
+    const handleNewAlert = (alertData) => {
+      console.log('[Alerts] Received new_alert via Socket.IO:', alertData);
+      setAlerts(prev => {
+        // Avoid duplicates
+        if (prev.some(a => a.id === alertData.id)) return prev;
+        const newAlerts = [alertData, ...prev].slice(0, 100);
+        return newAlerts;
+      });
+      // Play audio based on severity
+      audioAlert.playAlert(alertData.severity || 'Info');
+    };
+
+    socket.on('new_alert', handleNewAlert);
+    return () => {
+      socket.off('new_alert', handleNewAlert);
+    };
+  }, []);
+
+  // ── Initial fetch from database (one-time + slow poll as fallback) ──
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
         setLoading(true);
         setError(null);
-        const response   = await apiEndpoints.getDetections(50);
+        const response = await apiEndpoints.getDetections(50);
         const detections = response.data.detections || [];
         const backendAlerts = detections.map(mapDetectionToAlert);
-        const liveAlerts    = JSON.parse(localStorage.getItem('liveAlerts') || '[]');
-        const combined      = combineAlerts(backendAlerts, liveAlerts);
 
-        const newActive = combined.filter(
-          a => (a.status === 'Active' || a.status === 'Investigating') && !previousAlertIdsRef.current.has(a.id)
-        );
-        if (newActive.length > 0 && previousAlertIdsRef.current.size > 0) {
-          const hasCritical = newActive.some(a => a.severity === 'Critical');
-          const hasWarning  = newActive.some(a => a.severity === 'Warning');
-          audioAlert.playAlert(hasCritical ? 'Critical' : hasWarning ? 'Warning' : 'Info');
-        }
-        previousAlertIdsRef.current = new Set(combined.map(a => a.id));
-        setAlerts(combined);
+        setAlerts(prev => {
+          // Merge backend alerts with any socket alerts already in state
+          const socketOnly = prev.filter(a => typeof a.id === 'number' && String(a.id).length > 10);
+          return combineAlerts(backendAlerts, socketOnly);
+        });
       } catch (err) {
         console.error('Error fetching alerts:', err);
         setError('Failed to load alerts');
         const fallback = [
           { id: 1, type: 'Unauthorized Access Detected', severity: 'Critical', description: 'Person detected entering restricted area without proper credentials', location: 'Parking Lot – Camera 02', time: '2 minutes ago', status: 'Active', timestamp: new Date().toISOString() },
-          { id: 2, type: 'Perimeter Breach',              severity: 'Critical', description: 'Movement detected in restricted zone outside operating hours',        location: 'Back Entrance – Camera 08', time: '15 minutes ago', status: 'Active', timestamp: new Date().toISOString() },
-          { id: 3, type: 'Unusual Activity Pattern',      severity: 'Warning',  description: 'Prolonged loitering detected near secured entrance',                  location: 'Main Entrance – Camera 01', time: '45 minutes ago', status: 'Acknowledged', timestamp: new Date().toISOString() },
-          { id: 4, type: 'Object Left Unattended',        severity: 'Warning',  description: 'Suspicious package left unattended in public area',                   location: 'Reception – Camera 03', time: '1 hour ago', status: 'Investigating', timestamp: new Date().toISOString() },
-          { id: 5, type: 'System Notification',           severity: 'Info',     description: 'Camera maintenance scheduled for tomorrow',                           location: 'Server Room – Camera 04', time: '2 hours ago', status: 'Acknowledged', timestamp: new Date().toISOString() },
-          { id: 6, type: 'Motion Detected',               severity: 'Info',     description: 'Motion detected in low-traffic area during off-hours',                location: 'Hallway East – Camera 05', time: '3 hours ago', status: 'Resolved', timestamp: new Date().toISOString() },
+          { id: 2, type: 'Perimeter Breach', severity: 'Critical', description: 'Movement detected in restricted zone outside operating hours', location: 'Back Entrance – Camera 08', time: '15 minutes ago', status: 'Active', timestamp: new Date().toISOString() },
+          { id: 3, type: 'Unusual Activity Pattern', severity: 'Warning', description: 'Prolonged loitering detected near secured entrance', location: 'Main Entrance – Camera 01', time: '45 minutes ago', status: 'Acknowledged', timestamp: new Date().toISOString() },
+          { id: 4, type: 'Object Left Unattended', severity: 'Warning', description: 'Suspicious package left unattended in public area', location: 'Reception – Camera 03', time: '1 hour ago', status: 'Investigating', timestamp: new Date().toISOString() },
+          { id: 5, type: 'System Notification', severity: 'Info', description: 'Camera maintenance scheduled for tomorrow', location: 'Server Room – Camera 04', time: '2 hours ago', status: 'Acknowledged', timestamp: new Date().toISOString() },
+          { id: 6, type: 'Motion Detected', severity: 'Info', description: 'Motion detected in low-traffic area during off-hours', location: 'Hallway East – Camera 05', time: '3 hours ago', status: 'Resolved', timestamp: new Date().toISOString() },
         ];
-        const liveAlerts = JSON.parse(localStorage.getItem('liveAlerts') || '[]');
-        setAlerts(combineAlerts(fallback, liveAlerts));
+        setAlerts(fallback);
       } finally {
         setLoading(false);
       }
     };
     fetchAlerts();
-    const interval = setInterval(fetchAlerts, 5000);
+    // Slow poll as a fallback; real-time updates come via Socket.IO
+    const interval = setInterval(fetchAlerts, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -137,7 +152,7 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
   }
 
   const filterAlerts = () => {
-    if (activeTab === 'all')    return alerts;
+    if (activeTab === 'all') return alerts;
     if (activeTab === 'unread') return alerts.filter(a => a.status === 'Active' || a.status === 'Investigating');
     return alerts.filter(a => a.severity.toLowerCase() === activeTab.toLowerCase());
   };
@@ -229,11 +244,11 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
         {/* ── Tabs ─── */}
         <div className="alerts-tabs">
           {[
-            { id: 'all',      label: 'All Alerts', badge: getAlertCount('all'),      badgeClass: 'alerts-tab-badge-default' },
-            { id: 'critical', label: 'Critical',   badge: getAlertCount('critical'), badgeClass: 'alerts-tab-badge-critical' },
-            { id: 'warning',  label: 'Warning',    badge: getAlertCount('warning'),  badgeClass: 'alerts-tab-badge-warning' },
-            { id: 'info',     label: 'Info',       badge: getAlertCount('info'),     badgeClass: 'alerts-tab-badge-info' },
-            { id: 'unread',   label: 'Unread',     badge: unreadCount,               badgeClass: 'alerts-tab-badge-default' },
+            { id: 'all', label: 'All Alerts', badge: getAlertCount('all'), badgeClass: 'alerts-tab-badge-default' },
+            { id: 'critical', label: 'Critical', badge: getAlertCount('critical'), badgeClass: 'alerts-tab-badge-critical' },
+            { id: 'warning', label: 'Warning', badge: getAlertCount('warning'), badgeClass: 'alerts-tab-badge-warning' },
+            { id: 'info', label: 'Info', badge: getAlertCount('info'), badgeClass: 'alerts-tab-badge-info' },
+            { id: 'unread', label: 'Unread', badge: unreadCount, badgeClass: 'alerts-tab-badge-default' },
           ].map(tab => (
             <button
               key={tab.id}
@@ -256,10 +271,9 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
             >
               {/* Icon — hidden on mobile via CSS */}
               <div className="alert-icon-container">
-                <div className={`alert-icon ${
-                  alert.severity === 'Critical' ? 'alert-icon-critical' :
-                  alert.severity === 'Warning'  ? 'alert-icon-warning'  : 'alert-icon-info'
-                }`}>
+                <div className={`alert-icon ${alert.severity === 'Critical' ? 'alert-icon-critical' :
+                  alert.severity === 'Warning' ? 'alert-icon-warning' : 'alert-icon-info'
+                  }`}>
                   <svg className="w-5 h-5 sm:w-6 sm:h-6" viewBox="0 0 24 24" fill="none">
                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" strokeWidth="2" />
                     <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" strokeWidth="2" />
@@ -295,12 +309,11 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
                     </svg>
                     {alert.time}
                   </span>
-                  <span className={`alert-status-badge ${
-                    alert.status === 'Active'       ? 'alert-status-active'       :
+                  <span className={`alert-status-badge ${alert.status === 'Active' ? 'alert-status-active' :
                     alert.status === 'Acknowledged' ? 'alert-status-acknowledged' :
-                    alert.status === 'Investigating'? 'alert-status-investigating' :
-                    'alert-status-resolved'
-                  }`}>
+                      alert.status === 'Investigating' ? 'alert-status-investigating' :
+                        'alert-status-resolved'
+                    }`}>
                     {alert.status}
                   </span>
                 </div>

@@ -88,6 +88,12 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
     };
   }, [isCameraActive]);
 
+  // Alerts are now emitted by the backend via Socket.IO when detections are saved.
+  // This is a no-op on the frontend – the server broadcasts to all clients.
+  const createAlertFromDetection = (detections) => {
+    // No-op: backend emits 'new_alert' via Socket.IO after saving each detection.
+  };
+
   const startDetectionLoop = () => {
     if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
     detectionIntervalRef.current = setInterval(() => detectFromCamera(), 1500);
@@ -136,6 +142,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
         }
       }
       if (allDetections.length > 0) {
+        createAlertFromDetection(allDetections);
         const max = Math.max(...allDetections.map(d => d.confidence));
         audioAlert.playAlert(max > 0.8 ? 'Critical' : max > 0.6 ? 'Warning' : 'Info');
       }
@@ -214,6 +221,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
       }
 
       if (allDetections.length > 0) {
+        createAlertFromDetection(allDetections);
         const max = Math.max(...allDetections.map(d => d.confidence));
         audioAlert.playAlert(max > 0.8 ? 'Critical' : max > 0.6 ? 'Warning' : 'Info');
       }

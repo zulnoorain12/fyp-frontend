@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Sidebar from './Sidebar';
 import '../styles/dashboard.css';
 import { apiEndpoints } from '../services/api';
+import socket from '../services/socket';
 
 const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
   const [systemStats, setSystemStats] = useState({
@@ -29,24 +30,84 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
     { id: 3, type: 'Loitering Detected', severity: 'Info', location: 'Reception', time: '1 hour ago' },
   ]);
 
+  // ── Socket.IO: receive real-time alerts on Dashboard ────────
   useEffect(() => {
-    const fetchRecentAlerts = () => {
+    const handleNewAlert = (alertData) => {
+      console.log('[Dashboard] Received new_alert via Socket.IO:', alertData);
+      setRecentAlerts(prev => {
+        // Avoid duplicates
+        if (prev.some(a => a.id === alertData.id)) return prev;
+        const formatted = {
+          id: alertData.id,
+          type: alertData.type,
+          severity: alertData.severity,
+          location: alertData.location || 'Detection Page',
+          time: 'Just now',
+          timestamp: alertData.timestamp,
+        };
+        return [formatted, ...prev].slice(0, 5);
+      });
+      // Also bump the active alerts counter
+      setSystemStats(prev => ({
+        ...prev,
+        activeAlerts: prev.activeAlerts + 1
+      }));
+    };
+
+    socket.on('new_alert', handleNewAlert);
+    return () => {
+      socket.off('new_alert', handleNewAlert);
+    };
+  }, []);
+
+  // ── Initial fetch + slow poll as fallback ───────────────────
+  useEffect(() => {
+    const fetchRecentAlerts = async () => {
       try {
-        const liveAlerts = JSON.parse(localStorage.getItem('liveAlerts') || '[]');
-        const recentLiveAlerts = liveAlerts.slice(0, 3).map(alert => ({
-          id: alert.id,
-          type: alert.type,
-          severity: alert.severity,
-          location: alert.location,
-          time: alert.time
-        }));
-        if (recentLiveAlerts.length > 0) setRecentAlerts(recentLiveAlerts);
+        let dbAlerts = [];
+        try {
+          const response = await apiEndpoints.getDetections(10);
+          const detections = response.data.detections || [];
+          dbAlerts = detections.map(d => {
+            const severityMap = { high: 'Critical', medium: 'Warning', low: 'Info' };
+            const typeMap = {
+              weapon: 'Weapon Detected', fire: 'Fire Detected', smoke: 'Smoke Detected',
+              fight: 'Fight Detected', person: 'Person Detected',
+            };
+            const then = new Date(d.timestamp);
+            const diffMs = Date.now() - then.getTime();
+            const diffMins = Math.floor(diffMs / 60000);
+            const diffHours = Math.floor(diffMins / 60);
+            let timeStr = 'Just now';
+            if (diffMins >= 60) timeStr = `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            else if (diffMins >= 1) timeStr = `${diffMins} min${diffMins > 1 ? 's' : ''} ago`;
+
+            return {
+              id: `db-${d.detection_id}`,
+              type: typeMap[d.type] || `${(d.type || 'unknown').charAt(0).toUpperCase() + (d.type || 'unknown').slice(1)} Detected`,
+              severity: d.confidence >= 0.8 ? 'Critical' : d.confidence >= 0.6 ? 'Warning' : 'Info',
+              location: d.camera_location || `Camera ${(d.detection_id % 6) || 1}`,
+              time: timeStr,
+              timestamp: d.timestamp
+            };
+          });
+        } catch (err) {
+          console.error('Error fetching DB alerts for dashboard:', err);
+        }
+
+        // Combine DB alerts with any socket-pushed alerts already in state
+        const combined = dbAlerts
+          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+          .slice(0, 5);
+
+        if (combined.length > 0) setRecentAlerts(combined);
       } catch (err) {
         console.error('Error fetching recent alerts:', err);
       }
     };
     fetchRecentAlerts();
-    const interval = setInterval(fetchRecentAlerts, 3000);
+    // Slow poll as fallback; real-time updates come via Socket.IO
+    const interval = setInterval(fetchRecentAlerts, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -59,32 +120,28 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
         setError(null);
         const detectionsRes = await apiEndpoints.getDetections(100);
         const detections = detectionsRes.data.detections || [];
-        const liveAlerts = JSON.parse(localStorage.getItem('liveAlerts') || '[]');
         const peopleDetections = detections.filter(d =>
-          d.detection_type === 'person' || d.detection_type.includes('person')
+          d.type === 'person' || (d.type && d.type.includes('person'))
         ).length;
         const recentDetections = detections.filter(d =>
           new Date(d.timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000)
         ).length;
-        const recentLiveAlerts = liveAlerts.filter(alert =>
-          new Date(alert.timestamp) > new Date(Date.now() - 24 * 60 * 60 * 1000)
-        ).length;
-        setSystemStats({
+        setSystemStats(prev => ({
           activeCameras: 6,
-          activeAlerts: recentDetections + recentLiveAlerts,
+          activeAlerts: Math.max(prev.activeAlerts, recentDetections),
           detectedPeople: peopleDetections,
           systemHealth: 98
-        });
+        }));
       } catch (err) {
         console.error('Error fetching stats:', err);
         setError('Failed to load system statistics');
-        setSystemStats({ activeCameras: 6, activeAlerts: 3, detectedPeople: 47, systemHealth: 98 });
+        setSystemStats(prev => ({ ...prev, activeCameras: 6, systemHealth: 98 }));
       } finally {
         setLoading(false);
       }
     };
     fetchStats();
-    const interval = setInterval(fetchStats, 10000);
+    const interval = setInterval(fetchStats, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -149,15 +206,15 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
         {/* ── Stats Grid ── */}
         <div className="stats-grid">
           {[
-            { label: 'Active Cameras',  value: systemStats.activeCameras,        change: '↑ 2 from yesterday',  positive: true,  color: 'cyan' },
-            { label: 'Active Alerts',   value: systemStats.activeAlerts,          change: '↓ 5 from yesterday',  positive: false, color: 'amber' },
-            { label: 'Detected People', value: systemStats.detectedPeople,        change: '↑ 12 from last hour', positive: true,  color: 'purple' },
-            { label: 'System Health',   value: `${systemStats.systemHealth}%`,    change: 'Excellent',           positive: true,  color: 'emerald' },
+            { label: 'Active Cameras', value: systemStats.activeCameras, change: '↑ 2 from yesterday', positive: true, color: 'cyan' },
+            { label: 'Active Alerts', value: systemStats.activeAlerts, change: '↓ 5 from yesterday', positive: false, color: 'amber' },
+            { label: 'Detected People', value: systemStats.detectedPeople, change: '↑ 12 from last hour', positive: true, color: 'purple' },
+            { label: 'System Health', value: `${systemStats.systemHealth}%`, change: 'Excellent', positive: true, color: 'emerald' },
           ].map((stat, index) => {
             const colorClasses = {
-              cyan:    'bg-cyan-500/10 text-cyan-400',
-              amber:   'bg-amber-500/10 text-amber-400',
-              purple:  'bg-purple-500/10 text-purple-400',
+              cyan: 'bg-cyan-500/10 text-cyan-400',
+              amber: 'bg-amber-500/10 text-amber-400',
+              purple: 'bg-purple-500/10 text-purple-400',
               emerald: 'bg-emerald-500/10 text-emerald-400',
             };
             return (
@@ -210,11 +267,10 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
               {recentAlerts.map(alert => (
                 <div key={alert.id} className="alert-item">
                   <div className="alert-info">
-                    <span className={`alert-severity ${
-                      alert.severity === 'Critical' ? 'alert-severity-critical' :
-                      alert.severity === 'Warning'  ? 'alert-severity-warning'  :
-                      'alert-severity-info'
-                    }`}>
+                    <span className={`alert-severity ${alert.severity === 'Critical' ? 'alert-severity-critical' :
+                      alert.severity === 'Warning' ? 'alert-severity-warning' :
+                        'alert-severity-info'
+                      }`}>
                       {alert.severity}
                     </span>
                     <h3 className="alert-type">{alert.type}</h3>

@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import asyncio
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from ultralytics import YOLO
@@ -9,6 +10,7 @@ import json
 from datetime import datetime
 import base64
 import logging
+import socketio
 
 # Import our services
 from services.model_manager import ModelManager
@@ -23,7 +25,18 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
+# ── Socket.IO server ──────────────────────────────────────────
+sio = socketio.AsyncServer(
+    async_mode="asgi",
+    cors_allowed_origins="*",
+    logger=False,
+    engineio_logger=False,
+)
+
 app = FastAPI(title="YOLO Object Detection API")
+
+# Wrap FastAPI with Socket.IO ASGI app
+socket_app = socketio.ASGIApp(sio, other_asgi_app=app)
 
 # Add CORS middleware
 app.add_middleware(
@@ -42,6 +55,41 @@ fight_detection_service = FightDetectionService()
 
 # Global variable for current model
 current_model = "weapon"
+
+# ── Socket.IO event handlers ─────────────────────────────────
+@sio.event
+async def connect(sid, environ):
+    logger.info(f"[Socket.IO] Client connected: {sid}")
+
+@sio.event
+async def disconnect(sid):
+    logger.info(f"[Socket.IO] Client disconnected: {sid}")
+
+
+async def emit_alert(detection_type: str, confidence: float, severity: str, detection_id=None):
+    """Broadcast a new_alert event to every connected client."""
+    type_labels = {
+        "weapon": "Weapon Detected", "fire": "Fire Detected",
+        "smoke": "Smoke Detected", "fight": "Fight Detected",
+        "gun": "Weapon Detected", "knife": "Weapon Detected",
+    }
+    severity_label = "Critical" if severity == "high" else "Warning" if severity == "medium" else "Info"
+    alert_payload = {
+        "id": detection_id or int(datetime.now().timestamp() * 1000),
+        "type": type_labels.get(detection_type.lower(),
+                                f"{detection_type.capitalize()} Detected"),
+        "severity": severity_label,
+        "description": f"Detected {detection_type} with {confidence * 100:.1f}% confidence",
+        "location": "Detection Page",
+        "time": "Just now",
+        "status": "Active",
+        "timestamp": datetime.utcnow().isoformat() + "Z",
+        "confidence": confidence,
+        "detection_type": detection_type,
+    }
+    await sio.emit("new_alert", alert_payload)
+    logger.info(f"[Socket.IO] Emitted new_alert: {detection_type} ({confidence:.1%})")
+
 
 # Load models on startup
 @app.on_event("startup")
@@ -150,6 +198,8 @@ async def detect_fight(file: UploadFile = File(...)):
                     detection_id=detection_id,
                     severity=severity
                 )
+                # Emit real-time alert via Socket.IO
+                await emit_alert("fight", confidence, severity, detection_id)
         
         # Encode annotated frame as base64 image
         annotated_frame = fight_result.pop("annotated_frame", None)
@@ -209,6 +259,8 @@ async def detect_fight_stream(file: UploadFile = File(...)):
                 detection_id=detection_id,
                 severity=severity
             )
+            # Emit real-time alert via Socket.IO
+            await emit_alert("fight", confidence, severity, detection_id)
     
     return fight_result
 
@@ -335,6 +387,8 @@ async def detect_objects(
                     detection_id=detection_id,
                     severity=severity
                 )
+                # Emit real-time alert via Socket.IO
+                await emit_alert(detection["class"], confidence, severity, detection_id)
         
         # Convert image back to bytes with compression
         _, buffer = cv2.imencode('.jpg', processed_img, [cv2.IMWRITE_JPEG_QUALITY, 80])
@@ -473,6 +527,8 @@ async def detect_both_models(
                     detection_id=detection_id,
                     severity=severity
                 )
+                # Emit real-time alert via Socket.IO
+                await emit_alert(detection["class"], confidence, severity, detection_id)
         
         # Convert images back to bytes with compression
         _, buffer_weapon = cv2.imencode('.jpg', img_weapon, [cv2.IMWRITE_JPEG_QUALITY, 80])
@@ -512,4 +568,5 @@ async def get_detection(detection_id: int):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host=os.getenv("HOST", "localhost"), port=int(os.getenv("PORT", 8000)))
+    # Use socket_app instead of app so Socket.IO is served alongside FastAPI
+    uvicorn.run(socket_app, host=os.getenv("HOST", "localhost"), port=int(os.getenv("PORT", 8000)))
