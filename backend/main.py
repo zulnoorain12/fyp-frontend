@@ -566,6 +566,24 @@ async def get_detection(detection_id: int):
     else:
         return {"error": "Detection not found"}
 
+# Mark a single detection as read
+@app.patch("/detections/{detection_id}/read")
+async def mark_detection_read(detection_id: int):
+    success = database_manager.mark_detection_read(detection_id)
+    if success:
+        return {"message": f"Detection {detection_id} marked as read"}
+    else:
+        return {"error": "Failed to mark detection as read"}
+
+# Mark all detections as read
+@app.patch("/detections/read-all")
+async def mark_all_detections_read():
+    success = database_manager.mark_all_detections_read()
+    if success:
+        return {"message": "All detections marked as read"}
+    else:
+        return {"error": "Failed to mark all detections as read"}
+
 if __name__ == "__main__":
     import uvicorn
     # Use socket_app instead of app so Socket.IO is served alongside FastAPI

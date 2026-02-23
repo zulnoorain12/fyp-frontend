@@ -43,7 +43,7 @@ api.interceptors.response.use(
 export const apiEndpoints = {
   // Health check
   health: () => api.get('/'),
-  
+
   // Models
   getModels: () => api.get('/models'),
   switchModel: (modelName) => {
@@ -53,7 +53,7 @@ export const apiEndpoints = {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },
-  
+
   // Detection
   detectObjects: (formData) => api.post('/detect', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
@@ -67,13 +67,17 @@ export const apiEndpoints = {
   detectFightStream: (formData) => api.post('/detect/fight/stream', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
-  
+
   // Fight detection control
   resetFightBuffer: () => api.post('/fight/reset'),
-  
+
   // Detections
   getDetections: (limit = 50) => api.get(`/detections?limit=${limit}`),
   getDetectionById: (id) => api.get(`/detections/${id}`),
+
+  // Mark as read
+  markDetectionRead: (id) => api.patch(`/detections/${id}/read`),
+  markAllDetectionsRead: () => api.patch('/detections/read-all'),
 };
 
 export default api;

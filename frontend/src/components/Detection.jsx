@@ -63,7 +63,9 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
 
   const startCamera = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'environment' }
+      });
       streamRef.current = stream;
       setIsCameraActive(true);
       setIsVideoMode(true);
@@ -77,8 +79,31 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
 
   useEffect(() => {
     if (isCameraActive && videoRef.current && streamRef.current) {
-      videoRef.current.srcObject = streamRef.current;
-      startDetectionLoop();
+      const video = videoRef.current;
+      video.srcObject = streamRef.current;
+
+      // Wait until the video has actual frame data before starting detection
+      const onCanPlay = () => {
+        console.log('[Detection] Video ready — starting detection loop',
+          `videoWidth=${video.videoWidth} videoHeight=${video.videoHeight}`);
+        // Small delay to let the camera fully stabilise
+        setTimeout(() => startDetectionLoop(), 500);
+      };
+
+      // If video is already ready (e.g. re-render), start immediately
+      if (video.readyState >= 3) {
+        onCanPlay();
+      } else {
+        video.addEventListener('canplay', onCanPlay, { once: true });
+      }
+
+      return () => {
+        video.removeEventListener('canplay', onCanPlay);
+        if (detectionIntervalRef.current) {
+          clearInterval(detectionIntervalRef.current);
+          detectionIntervalRef.current = null;
+        }
+      };
     }
     return () => {
       if (detectionIntervalRef.current) {
@@ -96,35 +121,59 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
 
   const startDetectionLoop = () => {
     if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
+    console.log('[Detection] Detection loop started — capturing every 1.5s');
     detectionIntervalRef.current = setInterval(() => detectFromCamera(), 1500);
   };
 
   const detectFromCamera = async () => {
-    if (!videoRef.current || videoRef.current.readyState !== 4) return;
+    if (!videoRef.current || videoRef.current.readyState !== 4) {
+      console.log('[Detection] Video not ready, readyState:', videoRef.current?.readyState);
+      return;
+    }
     if (isDetectingRef.current) return;
     isDetectingRef.current = true;
     setIsDetecting(true);
     try {
       const canvas = document.createElement('canvas');
-      canvas.width = videoRef.current.videoWidth;
-      canvas.height = videoRef.current.videoHeight;
-      canvas.getContext('2d').drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+      const vw = videoRef.current.videoWidth;
+      const vh = videoRef.current.videoHeight;
+      if (!vw || !vh) {
+        console.warn('[Detection] Video has 0 dimensions, skipping frame');
+        return;
+      }
+      canvas.width = vw;
+      canvas.height = vh;
+      canvas.getContext('2d').drawImage(videoRef.current, 0, 0, vw, vh);
       const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
-      if (!blob) return;
+      if (!blob || blob.size === 0) {
+        console.warn('[Detection] Canvas produced empty blob, skipping');
+        return;
+      }
+      console.log(`[Detection] Captured frame ${vw}x${vh}, blob ${blob.size} bytes, model: ${currentModel}`);
       const formData = new FormData();
       formData.append('file', blob, 'frame.jpg');
       formData.append('camera_id', 'live_detection');
       let response, allDetections = [];
       if (currentModel === 'fight') {
         response = await apiEndpoints.detectFight(formData);
+        console.log('[Detection] Fight response:', response.data);
         if (response.data.is_fight) allDetections = [{ class: 'fight', confidence: response.data.fight_probability || 0.8, box: response.data.box || {} }];
       } else if (modelType === 'both') {
         response = await apiEndpoints.detectBoth(formData);
+        console.log('[Detection] Both response:', {
+          weapons: response.data.weapon_detections?.length || 0,
+          fire: response.data.fire_smoke_detections?.length || 0
+        });
         setDetectionResult(response.data);
         allDetections = [...(response.data.weapon_detections || []), ...(response.data.fire_smoke_detections || [])];
       } else {
         formData.append('model_type', currentModel);
         response = await apiEndpoints.detectObjects(formData);
+        console.log('[Detection] Single model response:', {
+          detections: response.data.detections?.length || 0,
+          model: response.data.model_used,
+          error: response.data.error
+        });
         allDetections = response.data.detections || [];
       }
       if (modelType !== 'both') {
@@ -142,12 +191,13 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
         }
       }
       if (allDetections.length > 0) {
+        console.log(`[Detection] Found ${allDetections.length} detection(s)!`, allDetections);
         createAlertFromDetection(allDetections);
         const max = Math.max(...allDetections.map(d => d.confidence));
         audioAlert.playAlert(max > 0.8 ? 'Critical' : max > 0.6 ? 'Warning' : 'Info');
       }
     } catch (err) {
-      console.error('Camera detection error:', err);
+      console.error('[Detection] Camera detection error:', err.response?.data || err.message || err);
     } finally {
       isDetectingRef.current = false;
       setIsDetecting(false);

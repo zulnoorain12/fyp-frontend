@@ -93,7 +93,8 @@ class DatabaseManager:
                 type VARCHAR(50),
                 confidence FLOAT,
                 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                image_url VARCHAR(500)
+                image_url VARCHAR(500),
+                is_read BOOLEAN DEFAULT FALSE
             );
             """
             
@@ -112,6 +113,11 @@ class DatabaseManager:
             self.cursor.execute(create_cameras_table)
             self.cursor.execute(create_detections_table)
             self.cursor.execute(create_alerts_table)
+            
+            # Add is_read column if it doesn't exist (for existing databases)
+            self.cursor.execute("""
+                ALTER TABLE detections ADD COLUMN IF NOT EXISTS is_read BOOLEAN DEFAULT FALSE;
+            """)
             
             # Commit changes
             self.connection.commit()
@@ -251,7 +257,7 @@ class DatabaseManager:
         try:
             query = """
             SELECT d.detection_id, d.type, d.confidence, d.timestamp, d.image_url,
-                   c.location, c.camera_id
+                   c.location, c.camera_id, d.is_read
             FROM detections d
             JOIN cameras c ON d.camera_id = c.camera_id
             ORDER BY d.timestamp DESC
@@ -270,7 +276,8 @@ class DatabaseManager:
                     "timestamp": row[3].isoformat() if row[3] else None,
                     "image_url": row[4],
                     "camera_location": row[5],
-                    "camera_id": row[6]
+                    "camera_id": row[6],
+                    "is_read": row[7] if row[7] is not None else False
                 })
             
             return detections
@@ -297,7 +304,7 @@ class DatabaseManager:
         try:
             query = """
             SELECT d.detection_id, d.type, d.confidence, d.timestamp, d.image_url,
-                   c.location, c.camera_id
+                   c.location, c.camera_id, d.is_read
             FROM detections d
             JOIN cameras c ON d.camera_id = c.camera_id
             WHERE d.detection_id = %s;
@@ -314,7 +321,8 @@ class DatabaseManager:
                     "timestamp": row[3].isoformat() if row[3] else None,
                     "image_url": row[4],
                     "camera_location": row[5],
-                    "camera_id": row[6]
+                    "camera_id": row[6],
+                    "is_read": row[7] if row[7] is not None else False
                 }
             
             return None
@@ -364,3 +372,53 @@ class DatabaseManager:
             self.logger.error(f"Error retrieving alerts: {e}")
             return []
 
+    def mark_detection_read(self, detection_id: int) -> bool:
+        """
+        Mark a single detection as read.
+        
+        Args:
+            detection_id: ID of the detection to mark as read
+            
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.db_connected or not self.cursor or not self.connection:
+            self.logger.warning("Database not connected. Cannot mark detection as read.")
+            return False
+            
+        try:
+            self.cursor.execute(
+                "UPDATE detections SET is_read = TRUE WHERE detection_id = %s",
+                (detection_id,)
+            )
+            self.connection.commit()
+            self.logger.info(f"Detection {detection_id} marked as read")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error marking detection as read: {e}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    def mark_all_detections_read(self) -> bool:
+        """
+        Mark all unread detections as read.
+        
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.db_connected or not self.cursor or not self.connection:
+            self.logger.warning("Database not connected. Cannot mark detections as read.")
+            return False
+            
+        try:
+            self.cursor.execute("UPDATE detections SET is_read = TRUE WHERE is_read = FALSE")
+            affected = self.cursor.rowcount
+            self.connection.commit()
+            self.logger.info(f"Marked {affected} detections as read")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error marking all detections as read: {e}")
+            if self.connection:
+                self.connection.rollback()
+            return False

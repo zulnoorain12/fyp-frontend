@@ -4,8 +4,8 @@ import os
 import logging
 from typing import Dict, Any, Optional, List
 import tensorflow as tf
-from pose_estimation import PoseEstimation
-from feature_extraction import FeatureExtraction
+from .pose_estimation import PoseEstimation
+from .feature_extraction import FeatureExtraction
 
 
 class FightDetectionService:

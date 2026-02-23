@@ -58,6 +58,16 @@
          text-xs sm:text-sm font-medium transition-all duration-300;
 }
 
+.analytics-refresh-btn {
+  @apply flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10
+         bg-slate-800/80 backdrop-blur-xl border border-white/10 rounded-xl
+         text-slate-400 hover:text-cyan-400 hover:border-cyan-500/30
+         transition-all duration-300 touch-manipulation;
+}
+.analytics-refresh-btn:active {
+  @apply scale-95;
+}
+
 .analytics-export-btn {
   @apply flex items-center gap-2 px-3 py-2 sm:px-4 sm:py-2.5
          bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-xl
@@ -70,16 +80,63 @@
 .analytics-status-banner {
   @apply mb-5 sm:mb-6 px-3 py-2.5 sm:px-4 sm:py-3
          bg-emerald-500/10 border border-emerald-500/20 rounded-xl
-         backdrop-blur-sm flex items-center gap-2 sm:gap-3;
+         backdrop-blur-sm flex items-center gap-2 sm:gap-3
+         transition-all duration-500;
+}
+
+.analytics-status-banner.analytics-status-live {
+  @apply bg-rose-500/10 border-rose-500/30;
 }
 
 .analytics-status-indicator {
   @apply w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400
-         shadow-lg shadow-emerald-500/50 animate-pulse shrink-0;
+         shadow-lg shadow-emerald-500/50 animate-pulse shrink-0
+         transition-colors duration-500;
+}
+
+.analytics-status-indicator.analytics-status-pulse {
+  @apply bg-rose-400 shadow-rose-500/50;
+  animation: livePulse 0.6s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.7; }
 }
 
 .analytics-status-text {
-  @apply text-emerald-400 text-xs sm:text-sm font-medium;
+  @apply text-emerald-400 text-xs sm:text-sm font-medium
+         transition-colors duration-500 flex-1;
+}
+
+.analytics-status-live .analytics-status-text {
+  @apply text-rose-400;
+}
+
+.analytics-last-updated {
+  @apply text-slate-500 text-xs hidden sm:block shrink-0;
+}
+
+/* ── Error Banner ── */
+.analytics-error-banner {
+  @apply mb-5 px-4 py-3 bg-rose-500/10 border border-rose-500/20 rounded-xl
+         flex items-center justify-between text-rose-400 text-sm;
+}
+.analytics-error-banner button {
+  @apply px-3 py-1 bg-rose-500/20 hover:bg-rose-500/30 rounded-lg
+         text-rose-400 text-xs font-medium transition-colors;
+}
+
+/* ── Loading ── */
+.analytics-loading {
+  @apply flex flex-col items-center gap-4 text-slate-400;
+}
+.analytics-loading-spinner {
+  @apply w-10 h-10 border-4 border-slate-700 border-t-cyan-500 rounded-full;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 /* ── Stats Grid ──────────────────────────────────── */
@@ -142,6 +199,10 @@
   @apply mb-4 sm:mb-6;
 }
 
+.chart-header-row {
+  @apply flex items-start justify-between gap-2;
+}
+
 .chart-title {
   @apply text-base sm:text-xl font-bold text-white mb-0.5 sm:mb-1;
 }
@@ -155,7 +216,6 @@
 }
 
 /* ── Bar Chart ───────────────────────────────────── */
-/* Height shrinks on mobile so bars don't overflow */
 .bar-chart {
   @apply flex items-end justify-between gap-1.5 sm:gap-3 h-44 sm:h-64;
 }
@@ -226,7 +286,7 @@
   @apply text-slate-400 text-xs;
 }
 
-/* ── Behavior List ───────────────────────────────── */
+/* ── Behavior / Detection Type List ──────────────── */
 .behavior-list {
   @apply space-y-3 sm:space-y-4;
 }
@@ -258,6 +318,70 @@
 
 .behavior-percentage {
   @apply text-slate-400 text-xs;
+}
+
+/* ── Recent Detections List ──────────────────────── */
+.recent-detections-list {
+  @apply space-y-2;
+}
+
+.recent-detection-item {
+  @apply flex items-center justify-between p-2.5 sm:p-3
+         bg-slate-800/30 rounded-lg hover:bg-slate-800/50
+         transition-all duration-300 gap-2;
+}
+
+.recent-detection-item.recent-detection-new {
+  animation: flashNew 1.5s ease-out;
+}
+
+@keyframes flashNew {
+  0% { background-color: rgba(6, 182, 212, 0.25); border-color: rgba(6, 182, 212, 0.5); }
+  100% { background-color: transparent; }
+}
+
+.recent-detection-info {
+  @apply flex items-center gap-2 sm:gap-3 min-w-0;
+}
+
+.recent-detection-type {
+  @apply text-white font-medium text-xs sm:text-sm truncate;
+}
+
+.recent-detection-confidence {
+  @apply px-2 py-0.5 rounded-md text-xs font-bold whitespace-nowrap;
+}
+
+.severity-critical { @apply bg-rose-500/20 text-rose-400; }
+.severity-warning  { @apply bg-amber-500/20 text-amber-400; }
+.severity-info     { @apply bg-blue-500/20 text-blue-400; }
+
+.recent-detection-time {
+  @apply text-slate-500 text-xs shrink-0;
+}
+
+/* ── Live Badge ──────────────────────────────────── */
+.live-badge {
+  @apply text-xs font-bold text-rose-400 bg-rose-500/10 px-2.5 py-1
+         rounded-lg border border-rose-500/20 shrink-0;
+  animation: liveGlow 2s ease-in-out infinite;
+}
+
+@keyframes liveGlow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* ── Empty State ─────────────────────────────────── */
+.analytics-empty-state {
+  @apply flex flex-col items-center justify-center py-8 sm:py-12 gap-3
+         text-slate-500;
+}
+.analytics-empty-state svg {
+  @apply opacity-40;
+}
+.analytics-empty-state p {
+  @apply text-xs sm:text-sm;
 }
 
 /* ── Camera Performance ──────────────────────────── */

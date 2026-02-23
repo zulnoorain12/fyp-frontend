@@ -20,7 +20,6 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
       fight: 'Fight Detected', person: 'Person Detected',
       car: 'Vehicle Detected', truck: 'Vehicle Detected'
     };
-    const severityMap = { high: 'Critical', medium: 'Warning', low: 'Info' };
 
     const timeAgo = (timestamp) => {
       let then;
@@ -50,23 +49,35 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
       description: `Detected ${detection.type} with ${(detection.confidence * 100).toFixed(1)}% confidence`,
       location: detection.camera_location || `Camera ${(detection.detection_id % 6) || 1}`,
       time: timeAgo(detection.timestamp),
-      status: 'Active',
+      // Use is_read from the database to determine status
+      status: detection.is_read ? 'Acknowledged' : 'Active',
       timestamp: detection.timestamp
     };
   };
 
-  const combineAlerts = (backendAlerts, socketAlerts) =>
-    [...backendAlerts, ...socketAlerts].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-  const markAsRead = (alertId) => {
-    const updated = alerts.map(a => a.id === alertId ? { ...a, status: 'Acknowledged' } : a);
-    setAlerts(updated);
-    setUnreadCount(updated.filter(a => a.status === 'Active' || a.status === 'Investigating').length);
+  const markAsRead = async (alertId) => {
+    try {
+      // Persist to database
+      await apiEndpoints.markDetectionRead(alertId);
+      // Update local state
+      const updated = alerts.map(a => a.id === alertId ? { ...a, status: 'Acknowledged' } : a);
+      setAlerts(updated);
+      setUnreadCount(updated.filter(a => a.status === 'Active' || a.status === 'Investigating').length);
+    } catch (err) {
+      console.error('Error marking alert as read:', err);
+    }
   };
 
-  const markAllAsRead = () => {
-    setAlerts(alerts.map(a => ({ ...a, status: 'Acknowledged' })));
-    setUnreadCount(0);
+  const markAllAsRead = async () => {
+    try {
+      // Persist to database
+      await apiEndpoints.markAllDetectionsRead();
+      // Update local state
+      setAlerts(alerts.map(a => ({ ...a, status: 'Acknowledged' })));
+      setUnreadCount(0);
+    } catch (err) {
+      console.error('Error marking all alerts as read:', err);
+    }
   };
 
   const getSeverityBadgeClass = (severity) => {
@@ -87,10 +98,12 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
       setAlerts(prev => {
         // Avoid duplicates
         if (prev.some(a => a.id === alertData.id)) return prev;
-        const newAlerts = [alertData, ...prev].slice(0, 100);
+        // New alerts from socket are always unread
+        const alert = { ...alertData, status: 'Active' };
+        const newAlerts = [alert, ...prev].slice(0, 100);
         return newAlerts;
       });
-      // Play audio based on severity
+      // Play audio for new alerts
       audioAlert.playAlert(alertData.severity || 'Info');
     };
 
@@ -100,7 +113,8 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
     };
   }, []);
 
-  // ── Initial fetch from database (one-time + slow poll as fallback) ──
+  // ── Initial fetch from database (one-time only) ──
+  // Real-time updates come via Socket.IO, so no polling needed
   useEffect(() => {
     const fetchAlerts = async () => {
       try {
@@ -113,7 +127,9 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
         setAlerts(prev => {
           // Merge backend alerts with any socket alerts already in state
           const socketOnly = prev.filter(a => typeof a.id === 'number' && String(a.id).length > 10);
-          return combineAlerts(backendAlerts, socketOnly);
+          const combined = [...backendAlerts, ...socketOnly]
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+          return combined;
         });
       } catch (err) {
         console.error('Error fetching alerts:', err);
@@ -132,9 +148,7 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
       }
     };
     fetchAlerts();
-    // Slow poll as a fallback; real-time updates come via Socket.IO
-    const interval = setInterval(fetchAlerts, 30000);
-    return () => clearInterval(interval);
+    // No polling interval — Socket.IO delivers real-time updates
   }, []);
 
   useEffect(() => {
