@@ -1,8 +1,9 @@
 import cv2
 import numpy as np
 import asyncio
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI, File, UploadFile, Form, Depends, HTTPException, Header
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import OAuth2PasswordBearer
 from ultralytics import YOLO
 import os
 from dotenv import load_dotenv
@@ -11,12 +12,15 @@ from datetime import datetime
 import base64
 import logging
 import socketio
+from pydantic import BaseModel, EmailStr
+from typing import Optional
 
 # Import our services
 from services.model_manager import ModelManager
 from services.detection_service import DetectionService
 from services.database_manager import DatabaseManager
 from services.fight_detection_service import FightDetectionService
+from services.auth_service import AuthService
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -24,6 +28,14 @@ logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
+
+# ── CORS allowed origins ─────────────────────────────────────
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
 
 # ── Socket.IO server ──────────────────────────────────────────
 sio = socketio.AsyncServer(
@@ -35,26 +47,107 @@ sio = socketio.AsyncServer(
 
 app = FastAPI(title="YOLO Object Detection API")
 
-# Wrap FastAPI with Socket.IO ASGI app
-socket_app = socketio.ASGIApp(sio, other_asgi_app=app)
-
-# Add CORS middleware
+# Add CORS middleware to FastAPI
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Wrap FastAPI with Socket.IO ASGI app
+_socket_app = socketio.ASGIApp(sio, other_asgi_app=app)
+
+
+# ── Top-level ASGI CORS wrapper ──────────────────────────────
+# Socket.IO's ASGIApp can swallow OPTIONS preflight requests before
+# FastAPI's CORSMiddleware ever sees them.  This thin wrapper ensures
+# every response carries the correct CORS headers.
+async def socket_app(scope, receive, send):
+    if scope["type"] == "http":
+        headers = dict(scope.get("headers", []))
+        origin = headers.get(b"origin", b"").decode()
+
+        # Handle preflight OPTIONS requests at the top level
+        if scope["method"] == "OPTIONS" and origin in ALLOWED_ORIGINS:
+            response_headers = [
+                (b"access-control-allow-origin", origin.encode()),
+                (b"access-control-allow-methods", b"GET, POST, PUT, PATCH, DELETE, OPTIONS"),
+                (b"access-control-allow-headers", b"*"),
+                (b"access-control-allow-credentials", b"true"),
+                (b"access-control-max-age", b"600"),
+                (b"content-length", b"0"),
+            ]
+            await send({"type": "http.response.start", "status": 200, "headers": response_headers})
+            await send({"type": "http.response.body", "body": b""})
+            return
+
+    await _socket_app(scope, receive, send)
 
 # Initialize services
 model_manager = ModelManager()
 detection_service = DetectionService()
 database_manager = DatabaseManager()
 fight_detection_service = FightDetectionService()
+auth_service = AuthService()
+
+# OAuth2 scheme for token extraction
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login", auto_error=False)
 
 # Global variable for current model
 current_model = "weapon"
+
+
+# ── Pydantic models for auth ─────────────────────────────────
+class SignUpRequest(BaseModel):
+    fullName: str
+    email: str
+    password: str
+    confirmPassword: str
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+class UserResponse(BaseModel):
+    user_id: int
+    full_name: str
+    email: str
+    role: str
+
+
+# ── Auth dependency ──────────────────────────────────────────
+async def get_current_user(authorization: Optional[str] = Header(None)):
+    """
+    Extract and verify the JWT token from the Authorization header.
+    Returns the user dict if valid, raises 401 otherwise.
+    """
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+
+    token = authorization.split(" ")[1]
+    payload = auth_service.verify_token(token, token_type="access")
+
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+    # Fetch full user from DB to ensure they still exist / are active
+    user = database_manager.get_user_by_id(payload.get("user_id"))
+    if not user or not user.get("is_active"):
+        raise HTTPException(status_code=401, detail="User not found or inactive")
+
+    return user
 
 # ── Socket.IO event handlers ─────────────────────────────────
 @sio.event
@@ -583,6 +676,214 @@ async def mark_all_detections_read():
         return {"message": "All detections marked as read"}
     else:
         return {"error": "Failed to mark all detections as read"}
+
+# ── Auth endpoints ───────────────────────────────────────────
+
+@app.post("/api/auth/signup")
+async def signup(req: SignUpRequest):
+    """
+    Register a new user account.
+    """
+    try:
+        logger.info(f"Signup attempt for: {req.email}")
+
+        # Validate passwords match
+        if req.password != req.confirmPassword:
+            raise HTTPException(status_code=400, detail="Passwords do not match")
+
+        # Validate password length
+        if len(req.password) < 6:
+            raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+
+        # Validate name
+        if not req.fullName.strip():
+            raise HTTPException(status_code=400, detail="Full name is required")
+
+        # Check if user already exists
+        existing = database_manager.get_user_by_email(req.email.lower().strip())
+        if existing:
+            raise HTTPException(status_code=409, detail="An account with this email already exists")
+
+        # Hash the password
+        logger.info("Hashing password...")
+        password_hash = auth_service.hash_password(req.password)
+        logger.info("Password hashed successfully")
+
+        # Create user in DB
+        logger.info("Creating user in database...")
+        user = database_manager.create_user(
+            full_name=req.fullName.strip(),
+            email=req.email.lower().strip(),
+            password_hash=password_hash,
+        )
+
+        if not user:
+            raise HTTPException(status_code=500, detail="Failed to create user. Please try again.")
+
+        logger.info(f"User created: {user['email']}")
+
+        # Generate tokens
+        tokens = auth_service.create_tokens(
+            user_id=user["user_id"],
+            email=user["email"],
+            name=user["full_name"],
+            role=user["role"],
+        )
+
+        logger.info(f"New user registered: {user['email']}")
+
+        return {
+            "message": "Account created successfully",
+            "user": {
+                "user_id": user["user_id"],
+                "full_name": user["full_name"],
+                "email": user["email"],
+                "role": user["role"],
+            },
+            **tokens,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Signup error: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Signup failed: {str(e)}")
+
+
+@app.post("/api/auth/login")
+async def login(req: LoginRequest):
+    """
+    Authenticate user and return JWT tokens.
+    """
+    # Look up user by email
+    user = database_manager.get_user_by_email(req.email.lower().strip())
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    # Check if user is active
+    if not user.get("is_active"):
+        raise HTTPException(status_code=403, detail="Account is deactivated")
+
+    # Verify password
+    if not auth_service.verify_password(req.password, user["password_hash"]):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+
+    # Generate tokens
+    tokens = auth_service.create_tokens(
+        user_id=user["user_id"],
+        email=user["email"],
+        name=user["full_name"],
+        role=user["role"],
+    )
+
+    logger.info(f"User logged in: {user['email']}")
+
+    return {
+        "message": "Login successful",
+        "user": {
+            "user_id": user["user_id"],
+            "full_name": user["full_name"],
+            "email": user["email"],
+            "role": user["role"],
+        },
+        **tokens,
+    }
+
+
+@app.get("/api/auth/me")
+async def get_me(current_user: dict = Depends(get_current_user)):
+    """
+    Return the currently authenticated user's profile.
+    """
+    return {
+        "user": current_user,
+    }
+
+
+@app.post("/api/auth/refresh")
+async def refresh_token(req: RefreshRequest):
+    """
+    Issue a new access token using a valid refresh token.
+    """
+    payload = auth_service.verify_token(req.refresh_token, token_type="refresh")
+
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+
+    # Ensure user still exists
+    user = database_manager.get_user_by_id(payload.get("user_id"))
+    if not user or not user.get("is_active"):
+        raise HTTPException(status_code=401, detail="User not found or inactive")
+
+    # Generate new tokens
+    tokens = auth_service.create_tokens(
+        user_id=user["user_id"],
+        email=user["email"],
+        name=user["full_name"],
+        role=user["role"],
+    )
+
+    return {
+        "message": "Token refreshed",
+        **tokens,
+    }
+
+
+@app.post("/api/auth/forgot-password")
+async def forgot_password(req: ForgotPasswordRequest):
+    """
+    Send a password-reset email to the user.
+    Always returns success to avoid leaking whether an email exists.
+    """
+    email = req.email.lower().strip()
+    logger.info(f"Password reset requested for: {email}")
+
+    # Look up user – but always respond with 200 to prevent enumeration
+    user = database_manager.get_user_by_email(email)
+
+    if user and user.get("is_active"):
+        try:
+            reset_token = auth_service.create_reset_token(email)
+            sent = auth_service.send_reset_email(email, reset_token)
+            if not sent:
+                logger.error(f"Failed to send reset email to {email}")
+        except Exception as e:
+            logger.error(f"Error creating/sending reset token: {e}")
+    else:
+        logger.info(f"No active account for {email} – silently ignoring")
+
+    return {
+        "message": "If an account with that email exists, a password reset link has been sent."
+    }
+
+
+@app.post("/api/auth/reset-password")
+async def reset_password(req: ResetPasswordRequest):
+    """
+    Reset user password using a valid reset token.
+    """
+    # Validate new password
+    if len(req.new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+
+    # Verify the reset token
+    email = auth_service.verify_reset_token(req.token)
+    if not email:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset link. Please request a new one.")
+
+    # Hash new password and update in DB
+    new_hash = auth_service.hash_password(req.new_password)
+    updated = database_manager.update_user_password(email, new_hash)
+
+    if not updated:
+        raise HTTPException(status_code=500, detail="Failed to update password. Please try again.")
+
+    logger.info(f"Password reset successful for: {email}")
+
+    return {
+        "message": "Your password has been reset successfully. You can now sign in with your new password."
+    }
+
 
 if __name__ == "__main__":
     import uvicorn

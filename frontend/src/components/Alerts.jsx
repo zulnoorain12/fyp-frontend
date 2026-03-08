@@ -12,6 +12,9 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedAlert, setSelectedAlert] = useState(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailData, setDetailData] = useState(null);
   const previousAlertIdsRef = useRef(new Set());
 
   const mapDetectionToAlert = (detection) => {
@@ -51,7 +54,11 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
       time: timeAgo(detection.timestamp),
       // Use is_read from the database to determine status
       status: detection.is_read ? 'Acknowledged' : 'Active',
-      timestamp: detection.timestamp
+      timestamp: detection.timestamp,
+      confidence: detection.confidence,
+      rawType: detection.type,
+      imageUrl: detection.image_url,
+      cameraId: detection.camera_id
     };
   };
 
@@ -90,6 +97,41 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
   };
 
   useEffect(() => { audioAlert.init(); }, []);
+
+  const openDetailModal = async (alert) => {
+    setSelectedAlert(alert);
+    setDetailLoading(true);
+    setDetailData(null);
+    try {
+      const response = await apiEndpoints.getDetectionById(alert.id);
+      setDetailData(response.data);
+    } catch (err) {
+      console.error('Error fetching detection details:', err);
+      // Still show the modal with the data we have from the alert itself
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
+  const closeDetailModal = () => {
+    setSelectedAlert(null);
+    setDetailData(null);
+  };
+
+  const formatExactTimestamp = (ts) => {
+    if (!ts) return 'Unknown';
+    let date;
+    if (typeof ts === 'string') {
+      date = new Date((!ts.includes('Z') && !ts.includes('+') && ts.includes('T')) ? ts + 'Z' : ts);
+    } else {
+      date = new Date(ts);
+    }
+    if (isNaN(date.getTime())) return 'Unknown';
+    return date.toLocaleString('en-US', {
+      weekday: 'short', year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true
+    });
+  };
 
   // ── Socket.IO: receive real-time alerts ─────────────────────
   useEffect(() => {
@@ -344,7 +386,7 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
                     <span>Mark as Read</span>
                   </button>
                 )}
-                <button className="alert-action-view">
+                <button className="alert-action-view" onClick={() => openDetailModal(alert)}>
                   <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" viewBox="0 0 24 24" fill="none">
                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" />
                     <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" />
@@ -355,6 +397,206 @@ const Alerts = ({ onLogout, onNavigate, currentPage }) => {
             </div>
           ))}
         </div>
+
+        {/* ── Detail Modal ─── */}
+        {selectedAlert && (
+          <div className="alert-modal-overlay" onClick={closeDetailModal}>
+            <div className="alert-modal" onClick={(e) => e.stopPropagation()}>
+              {/* Modal Header */}
+              <div className="alert-modal-header">
+                <div className="alert-modal-header-left">
+                  <div className={`alert-modal-icon ${selectedAlert.severity === 'Critical' ? 'alert-icon-critical' : selectedAlert.severity === 'Warning' ? 'alert-icon-warning' : 'alert-icon-info'}`}>
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none">
+                      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" stroke="currentColor" strokeWidth="2" />
+                      <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" strokeWidth="2" />
+                      <circle cx="12" cy="17" r="1" fill="currentColor" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="alert-modal-title">{selectedAlert.type}</h2>
+                    <p className="alert-modal-subtitle">Detection ID: #{selectedAlert.id}</p>
+                  </div>
+                </div>
+                <button className="alert-modal-close" onClick={closeDetailModal}>
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                    <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="alert-modal-body">
+                {detailLoading ? (
+                  <div className="alert-modal-loading">
+                    <div className="alert-modal-spinner"></div>
+                    <span>Loading detection details...</span>
+                  </div>
+                ) : (
+                  <>
+                    {/* Severity & Status Row */}
+                    <div className="alert-modal-badges">
+                      <span className={getSeverityBadgeClass(selectedAlert.severity)}>{selectedAlert.severity}</span>
+                      <span className={`alert-status-badge ${selectedAlert.status === 'Active' ? 'alert-status-active' :
+                          selectedAlert.status === 'Acknowledged' ? 'alert-status-acknowledged' :
+                            selectedAlert.status === 'Investigating' ? 'alert-status-investigating' :
+                              'alert-status-resolved'
+                        }`}>{selectedAlert.status}</span>
+                    </div>
+
+                    {/* Info Grid */}
+                    <div className="alert-modal-grid">
+                      {/* Confidence Score */}
+                      <div className="alert-modal-field">
+                        <span className="alert-modal-field-label">
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                          </svg>
+                          Confidence Score
+                        </span>
+                        <div className="alert-modal-confidence">
+                          <div className="alert-modal-confidence-bar">
+                            <div
+                              className={`alert-modal-confidence-fill ${(selectedAlert.confidence || (detailData?.detection?.confidence)) >= 0.8 ? 'confidence-high' :
+                                  (selectedAlert.confidence || (detailData?.detection?.confidence)) >= 0.6 ? 'confidence-medium' : 'confidence-low'
+                                }`}
+                              style={{ width: `${((selectedAlert.confidence || detailData?.detection?.confidence || 0) * 100).toFixed(1)}%` }}
+                            ></div>
+                          </div>
+                          <span className="alert-modal-confidence-value">
+                            {((selectedAlert.confidence || detailData?.detection?.confidence || 0) * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Detection Type */}
+                      <div className="alert-modal-field">
+                        <span className="alert-modal-field-label">
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" strokeWidth="2" />
+                            <polyline points="14 2 14 8 20 8" stroke="currentColor" strokeWidth="2" />
+                          </svg>
+                          Detection Type
+                        </span>
+                        <span className="alert-modal-field-value">
+                          {detailData?.detection?.type || selectedAlert.rawType || selectedAlert.type}
+                        </span>
+                      </div>
+
+                      {/* Exact Timestamp */}
+                      <div className="alert-modal-field">
+                        <span className="alert-modal-field-label">
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                            <path d="M12 6v6l4 2" stroke="currentColor" strokeWidth="2" />
+                          </svg>
+                          Exact Timestamp
+                        </span>
+                        <span className="alert-modal-field-value">
+                          {formatExactTimestamp(detailData?.detection?.timestamp || selectedAlert.timestamp)}
+                        </span>
+                      </div>
+
+                      {/* Camera Location */}
+                      <div className="alert-modal-field">
+                        <span className="alert-modal-field-label">
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2" />
+                            <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2" />
+                          </svg>
+                          Camera / Location
+                        </span>
+                        <span className="alert-modal-field-value">
+                          {detailData?.detection?.camera_location || selectedAlert.location}
+                        </span>
+                      </div>
+
+                      {/* Camera ID */}
+                      <div className="alert-modal-field">
+                        <span className="alert-modal-field-label">
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="2" />
+                            <circle cx="12" cy="13" r="4" stroke="currentColor" strokeWidth="2" />
+                          </svg>
+                          Camera ID
+                        </span>
+                        <span className="alert-modal-field-value">
+                          {detailData?.detection?.camera_id || selectedAlert.cameraId || 'N/A'}
+                        </span>
+                      </div>
+
+                      {/* Read Status */}
+                      <div className="alert-modal-field">
+                        <span className="alert-modal-field-label">
+                          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="2" />
+                            <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" strokeWidth="2" />
+                          </svg>
+                          Read Status
+                        </span>
+                        <span className="alert-modal-field-value">
+                          {(detailData?.detection?.is_read || selectedAlert.status === 'Acknowledged') ? '✓ Read' : '● Unread'}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Alert History (from API) */}
+                    {detailData?.alerts && detailData.alerts.length > 0 && (
+                      <div className="alert-modal-section">
+                        <h3 className="alert-modal-section-title">Alert History</h3>
+                        <div className="alert-modal-history">
+                          {detailData.alerts.map((a, idx) => (
+                            <div key={idx} className="alert-modal-history-item">
+                              <span className={`alert-severity-badge ${a.severity === 'high' ? 'alert-severity-critical' :
+                                  a.severity === 'medium' ? 'alert-severity-warning' : 'alert-severity-info'
+                                }`}>
+                                {a.severity}
+                              </span>
+                              <span className="text-slate-400 text-xs">{a.status}</span>
+                              <span className="text-slate-500 text-xs">{formatExactTimestamp(a.created_at)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Detection Image */}
+                    {(detailData?.detection?.image_url || selectedAlert.imageUrl) && (
+                      <div className="alert-modal-section">
+                        <h3 className="alert-modal-section-title">Detection Snapshot</h3>
+                        <div className="alert-modal-image">
+                          <img
+                            src={detailData?.detection?.image_url || selectedAlert.imageUrl}
+                            alt="Detection snapshot"
+                            className="alert-modal-img"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="alert-modal-footer">
+                {(selectedAlert.status === 'Active' || selectedAlert.status === 'Investigating') && (
+                  <button
+                    className="alert-action-acknowledge"
+                    onClick={() => { markAsRead(selectedAlert.id); closeDetailModal(); }}
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke="currentColor" strokeWidth="2" />
+                      <polyline points="22 4 12 14.01 9 11.01" stroke="currentColor" strokeWidth="2" />
+                    </svg>
+                    <span>Mark as Read</span>
+                  </button>
+                )}
+                <button className="alert-modal-close-btn" onClick={closeDetailModal}>
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

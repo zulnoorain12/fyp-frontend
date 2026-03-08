@@ -69,10 +69,25 @@ def init_database():
         );
         """
         
+        # Create users table
+        create_users_table = """
+        CREATE TABLE IF NOT EXISTS users (
+            user_id SERIAL PRIMARY KEY,
+            full_name VARCHAR(100) NOT NULL,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            password_hash VARCHAR(255) NOT NULL,
+            role VARCHAR(20) DEFAULT 'user',
+            is_active BOOLEAN DEFAULT TRUE,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        """
+        
         # Execute table creation queries
         cursor.execute(create_cameras_table)
         cursor.execute(create_detections_table)
         cursor.execute(create_alerts_table)
+        cursor.execute(create_users_table)
         
         # Insert default camera if not exists
         cursor.execute("SELECT COUNT(*) FROM cameras WHERE camera_id = 1")

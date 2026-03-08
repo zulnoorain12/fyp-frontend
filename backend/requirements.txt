@@ -11,3 +11,6 @@ psycopg2-binary==2.9.9
 mediapipe==0.10.14
 scikit-learn
 python-socketio[asgi]
+python-jose[cryptography]
+passlib[bcrypt]
+pydantic[email]

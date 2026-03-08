@@ -22,3 +22,45 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ── Credentials & Secrets ────────────────────────────
+# Environment variables (contain DB passwords, JWT secrets, SMTP credentials)
+.env
+.env.*
+.env.local
+.env.production
+.env.development
+backend/.env
+frontend/.env
+
+# Secret/Key files
+*.key
+*.pem
+*.cert
+*.crt
+*.p12
+*.pfx
+
+# ── Python ───────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# ── Model weights (large binary files) ──────────────
+*.pt
+*.pth
+*.onnx
+*.h5
+*.tflite
+*.pb
+backend/models/
+
+# ── OS files ─────────────────────────────────────────
+Thumbs.db
+ehthumbs.db
+Desktop.ini

@@ -109,10 +109,25 @@ class DatabaseManager:
             );
             """
             
+            # Create users table
+            create_users_table = """
+            CREATE TABLE IF NOT EXISTS users (
+                user_id SERIAL PRIMARY KEY,
+                full_name VARCHAR(100) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password_hash VARCHAR(255) NOT NULL,
+                role VARCHAR(20) DEFAULT 'user',
+                is_active BOOLEAN DEFAULT TRUE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+            """
+
             # Execute table creation queries
             self.cursor.execute(create_cameras_table)
             self.cursor.execute(create_detections_table)
             self.cursor.execute(create_alerts_table)
+            self.cursor.execute(create_users_table)
             
             # Add is_read column if it doesn't exist (for existing databases)
             self.cursor.execute("""
@@ -419,6 +434,174 @@ class DatabaseManager:
             return True
         except Exception as e:
             self.logger.error(f"Error marking all detections as read: {e}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    # ── User management methods ──────────────────────────────────
+
+    def create_user(self, full_name: str, email: str, password_hash: str, role: str = "user") -> Optional[Dict[str, Any]]:
+        """
+        Create a new user in the database.
+
+        Args:
+            full_name: User's full name
+            email: User's email (must be unique)
+            password_hash: Bcrypt hashed password
+            role: User role (default 'user')
+
+        Returns:
+            User dict if successful, None otherwise
+        """
+        if not self.db_connected or not self.cursor or not self.connection:
+            self.logger.warning("Database not connected. Cannot create user.")
+            return None
+
+        try:
+            insert_user = """
+            INSERT INTO users (full_name, email, password_hash, role)
+            VALUES (%s, %s, %s, %s)
+            RETURNING user_id, full_name, email, role, is_active, created_at;
+            """
+            self.cursor.execute(insert_user, (full_name, email, password_hash, role))
+            row = self.cursor.fetchone()
+            self.connection.commit()
+
+            if row:
+                user = {
+                    "user_id": row[0],
+                    "full_name": row[1],
+                    "email": row[2],
+                    "role": row[3],
+                    "is_active": row[4],
+                    "created_at": row[5].isoformat() if row[5] else None,
+                }
+                self.logger.info(f"User created: {email} (ID: {user['user_id']})")
+                return user
+            return None
+
+        except psycopg2.errors.UniqueViolation:
+            self.logger.warning(f"User with email {email} already exists")
+            if self.connection:
+                self.connection.rollback()
+            return None
+        except Exception as e:
+            self.logger.error(f"Error creating user: {e}")
+            if self.connection:
+                self.connection.rollback()
+            return None
+
+    def get_user_by_email(self, email: str) -> Optional[Dict[str, Any]]:
+        """
+        Get a user by their email address.
+
+        Args:
+            email: User's email address
+
+        Returns:
+            User dict (including password_hash) or None
+        """
+        if not self.db_connected or not self.cursor:
+            self.logger.warning("Database not connected. Cannot look up user.")
+            return None
+
+        try:
+            query = """
+            SELECT user_id, full_name, email, password_hash, role, is_active, created_at
+            FROM users
+            WHERE email = %s;
+            """
+            self.cursor.execute(query, (email,))
+            row = self.cursor.fetchone()
+
+            if row:
+                return {
+                    "user_id": row[0],
+                    "full_name": row[1],
+                    "email": row[2],
+                    "password_hash": row[3],
+                    "role": row[4],
+                    "is_active": row[5],
+                    "created_at": row[6].isoformat() if row[6] else None,
+                }
+            return None
+
+        except Exception as e:
+            self.logger.error(f"Error looking up user by email: {e}")
+            return None
+
+    def get_user_by_id(self, user_id: int) -> Optional[Dict[str, Any]]:
+        """
+        Get a user by their ID.
+
+        Args:
+            user_id: User's ID
+
+        Returns:
+            User dict (without password_hash) or None
+        """
+        if not self.db_connected or not self.cursor:
+            self.logger.warning("Database not connected. Cannot look up user.")
+            return None
+
+        try:
+            query = """
+            SELECT user_id, full_name, email, role, is_active, created_at
+            FROM users
+            WHERE user_id = %s;
+            """
+            self.cursor.execute(query, (user_id,))
+            row = self.cursor.fetchone()
+
+            if row:
+                return {
+                    "user_id": row[0],
+                    "full_name": row[1],
+                    "email": row[2],
+                    "role": row[3],
+                    "is_active": row[4],
+                    "created_at": row[5].isoformat() if row[5] else None,
+                }
+            return None
+
+        except Exception as e:
+            self.logger.error(f"Error looking up user by ID: {e}")
+            return None
+
+    def update_user_password(self, email: str, new_password_hash: str) -> bool:
+        """
+        Update a user's password hash.
+
+        Args:
+            email: User's email address
+            new_password_hash: The new bcrypt-hashed password
+
+        Returns:
+            True if successful, False otherwise
+        """
+        if not self.db_connected or not self.cursor or not self.connection:
+            self.logger.warning("Database not connected. Cannot update password.")
+            return False
+
+        try:
+            query = """
+            UPDATE users
+            SET password_hash = %s, updated_at = CURRENT_TIMESTAMP
+            WHERE email = %s AND is_active = TRUE;
+            """
+            self.cursor.execute(query, (new_password_hash, email))
+            affected = self.cursor.rowcount
+            self.connection.commit()
+
+            if affected > 0:
+                self.logger.info(f"Password updated for user: {email}")
+                return True
+            else:
+                self.logger.warning(f"No active user found with email: {email}")
+                return False
+
+        except Exception as e:
+            self.logger.error(f"Error updating user password: {e}")
             if self.connection:
                 self.connection.rollback()
             return False

@@ -239,7 +239,7 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
           <div className="content-card">
             <div className="card-header">
               <h2 className="card-title">Camera Status</h2>
-              <button className="view-all-button">View All →</button>
+              <button className="view-all-button" onClick={() => onNavigate('live-feed')}>View All →</button>
             </div>
             <div className="camera-list">
               {cameras.map(camera => (
@@ -261,7 +261,7 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
           <div className="content-card">
             <div className="card-header">
               <h2 className="card-title">Recent Alerts</h2>
-              <button className="view-all-button">View All →</button>
+              <button className="view-all-button" onClick={() => onNavigate('alerts')}>View All →</button>
             </div>
             <div className="alert-list">
               {recentAlerts.map(alert => (
@@ -276,7 +276,7 @@ const Dashboard = ({ onLogout, onNavigate, currentPage }) => {
                     <h3 className="alert-type">{alert.type}</h3>
                     <p className="alert-details">{alert.location} • {alert.time}</p>
                   </div>
-                  <button className="alert-view-button">View</button>
+                  <button className="alert-view-button" onClick={() => onNavigate('alerts')}>View</button>
                 </div>
               ))}
             </div>
