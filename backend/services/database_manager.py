@@ -605,3 +605,109 @@ class DatabaseManager:
             if self.connection:
                 self.connection.rollback()
             return False
+
+    # ── System settings management ────────────────────────────────
+
+    def _ensure_settings_table(self):
+        """Create system_settings table if it doesn't exist."""
+        if not self.db_connected or not self.cursor or not self.connection:
+            return
+        try:
+            self.cursor.execute("""
+                CREATE TABLE IF NOT EXISTS system_settings (
+                    key VARCHAR(100) PRIMARY KEY,
+                    value TEXT NOT NULL,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+            self.connection.commit()
+        except Exception as e:
+            self.logger.error(f"Error creating system_settings table: {e}")
+            if self.connection:
+                self.connection.rollback()
+
+    def get_settings(self) -> Dict[str, Any]:
+        """
+        Retrieve all system settings from the database.
+
+        Returns:
+            Dictionary of all settings key-value pairs.
+        """
+        if not self.db_connected or not self.cursor:
+            self.logger.warning("Database not connected. Returning empty settings.")
+            return {}
+
+        self._ensure_settings_table()
+
+        try:
+            self.cursor.execute("SELECT key, value FROM system_settings;")
+            rows = self.cursor.fetchall()
+            settings = {}
+            for key, value in rows:
+                # Try to parse JSON values (numbers, booleans, objects)
+                try:
+                    settings[key] = json.loads(value)
+                except (json.JSONDecodeError, TypeError):
+                    settings[key] = value
+            return settings
+        except Exception as e:
+            self.logger.error(f"Error retrieving settings: {e}")
+            return {}
+
+    def save_settings(self, settings: Dict[str, Any]) -> bool:
+        """
+        Save system settings to the database (upsert each key).
+
+        Args:
+            settings: Dictionary of settings to save.
+
+        Returns:
+            True if successful, False otherwise.
+        """
+        if not self.db_connected or not self.cursor or not self.connection:
+            self.logger.warning("Database not connected. Cannot save settings.")
+            return False
+
+        self._ensure_settings_table()
+
+        try:
+            for key, value in settings.items():
+                # Serialize value to JSON string
+                json_value = json.dumps(value)
+                self.cursor.execute("""
+                    INSERT INTO system_settings (key, value, updated_at)
+                    VALUES (%s, %s, CURRENT_TIMESTAMP)
+                    ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = CURRENT_TIMESTAMP;
+                """, (key, json_value))
+            self.connection.commit()
+            self.logger.info(f"Settings saved: {list(settings.keys())}")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error saving settings: {e}")
+            if self.connection:
+                self.connection.rollback()
+            return False
+
+    def clear_all_data(self) -> bool:
+        """
+        Clear all detection and alert data from the database.
+
+        Returns:
+            True if successful, False otherwise.
+        """
+        if not self.db_connected or not self.cursor or not self.connection:
+            self.logger.warning("Database not connected. Cannot clear data.")
+            return False
+
+        try:
+            # Order matters — alerts reference detections
+            self.cursor.execute("DELETE FROM alerts;")
+            self.cursor.execute("DELETE FROM detections;")
+            self.connection.commit()
+            self.logger.info("All detection and alert data cleared")
+            return True
+        except Exception as e:
+            self.logger.error(f"Error clearing data: {e}")
+            if self.connection:
+                self.connection.rollback()
+            return False

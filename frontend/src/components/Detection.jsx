@@ -19,6 +19,8 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
   const [isSwitchingModel, setIsSwitchingModel] = useState(false);
   const [isCameraActive, setIsCameraActive] = useState(false);
   const [isDetecting, setIsDetecting] = useState(false);
+  const [notificationSettings, setNotificationSettings] = useState({ alertSound: true });
+  const [detectionSettingsLoaded, setDetectionSettingsLoaded] = useState(false);
 
   const videoRef = useRef(null);
   const streamRef = useRef(null);
@@ -36,7 +38,19 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
         console.error('Failed to fetch current model:', err);
       }
     };
+    const loadSettings = async () => {
+      try {
+        const response = await apiEndpoints.getSettings();
+        const s = response.data.settings;
+        if (s.notifications) setNotificationSettings(prev => ({ ...prev, ...s.notifications }));
+        setDetectionSettingsLoaded(true);
+      } catch (err) {
+        console.error('Failed to load settings:', err);
+        setDetectionSettingsLoaded(true);
+      }
+    };
     fetchCurrentModel();
+    loadSettings();
     const modelCheckInterval = setInterval(fetchCurrentModel, 5000);
     return () => {
       clearInterval(modelCheckInterval);
@@ -158,14 +172,16 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
         response = await apiEndpoints.detectFight(formData);
         console.log('[Detection] Fight response:', response.data);
         if (response.data.is_fight) allDetections = [{ class: 'fight', confidence: response.data.fight_probability || 0.8, box: response.data.box || {} }];
-      } else if (modelType === 'both') {
-        response = await apiEndpoints.detectBoth(formData);
-        console.log('[Detection] Both response:', {
+      } else if (modelType === 'all') {
+        response = await apiEndpoints.detectAll(formData);
+        console.log('[Detection] All models response:', {
           weapons: response.data.weapon_detections?.length || 0,
-          fire: response.data.fire_smoke_detections?.length || 0
+          fire: response.data.fire_smoke_detections?.length || 0,
+          fight: response.data.fight_detections?.length || 0,
+          total: response.data.detections?.length || 0
         });
         setDetectionResult(response.data);
-        allDetections = [...(response.data.weapon_detections || []), ...(response.data.fire_smoke_detections || [])];
+        allDetections = response.data.detections || [];
       } else {
         formData.append('model_type', currentModel);
         response = await apiEndpoints.detectObjects(formData);
@@ -176,7 +192,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
         });
         allDetections = response.data.detections || [];
       }
-      if (modelType !== 'both') {
+      if (modelType !== 'all') {
         if (currentModel === 'fight') {
           setDetectionResult({
             detections: allDetections,
@@ -193,8 +209,10 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
       if (allDetections.length > 0) {
         console.log(`[Detection] Found ${allDetections.length} detection(s)!`, allDetections);
         createAlertFromDetection(allDetections);
-        const max = Math.max(...allDetections.map(d => d.confidence));
-        audioAlert.playAlert(max > 0.8 ? 'Critical' : max > 0.6 ? 'Warning' : 'Info');
+        if (notificationSettings.alertSound) {
+          const max = Math.max(...allDetections.map(d => d.confidence));
+          audioAlert.playAlert(max > 0.8 ? 'Critical' : max > 0.6 ? 'Warning' : 'Info');
+        }
       }
     } catch (err) {
       console.error('[Detection] Camera detection error:', err.response?.data || err.message || err);
@@ -256,13 +274,10 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
           is_fight: response.data.is_fight,
           message: response.data.message || (response.data.is_fight ? 'Fight detected!' : 'No fight detected')
         });
-      } else if (modelType === 'both') {
-        response = await apiEndpoints.detectBoth(formData);
+      } else if (modelType === 'all') {
+        response = await apiEndpoints.detectAll(formData);
         setDetectionResult(response.data);
-        allDetections = [
-          ...(response.data.weapon_detections || []),
-          ...(response.data.fire_smoke_detections || []),
-        ];
+        allDetections = response.data.detections || [];
       } else {
         formData.append('model_type', currentModel);
         response = await apiEndpoints.detectObjects(formData);
@@ -272,8 +287,10 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
 
       if (allDetections.length > 0) {
         createAlertFromDetection(allDetections);
-        const max = Math.max(...allDetections.map(d => d.confidence));
-        audioAlert.playAlert(max > 0.8 ? 'Critical' : max > 0.6 ? 'Warning' : 'Info');
+        if (notificationSettings.alertSound) {
+          const max = Math.max(...allDetections.map(d => d.confidence));
+          audioAlert.playAlert(max > 0.8 ? 'Critical' : max > 0.6 ? 'Warning' : 'Info');
+        }
       }
     } catch (err) {
       console.error('Detection error:', err);
@@ -300,7 +317,8 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
     const count =
       (detectionResult.detections || []).length +
       (detectionResult.weapon_detections || []).length +
-      (detectionResult.fire_smoke_detections || []).length;
+      (detectionResult.fire_smoke_detections || []).length +
+      (detectionResult.fight_detections || []).length;
     return count > 0 ? `⚠️ ${count} object${count > 1 ? 's' : ''} detected!` : '✅ No threats';
   };
 
@@ -368,9 +386,9 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                     Single Model
                   </label>
                   <label className="detection-radio-label">
-                    <input type="radio" name="modelType" value="both"
-                      checked={modelType === 'both'} onChange={(e) => setModelType(e.target.value)} />
-                    Both Models
+                    <input type="radio" name="modelType" value="all"
+                      checked={modelType === 'all'} onChange={(e) => setModelType(e.target.value)} />
+                    All Models
                   </label>
                 </div>
               </div>
@@ -385,7 +403,7 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                     disabled={isSwitchingModel}
                     className="detection-select"
                   >
-                    {availableModels.filter(m => m !== 'both').map((model) => (
+                    {availableModels.filter(m => m !== 'both' && m !== 'all').map((model) => (
                       <option key={model} value={model}>
                         {model === 'weapon' ? '🔫 Weapon Detection' :
                           model === 'fire_smoke' ? '🔥 Fire/Smoke Detection' :
@@ -512,8 +530,25 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
 
             {detectionResult && (
               <div>
-                {/* Standard detections */}
-                {(detectionResult.detections || []).length > 0 && (
+                {/* All Models summary banner */}
+                {modelType === 'all' && detectionResult.models_used && (
+                  <div className="detection-all-models-banner">
+                    <span className="detection-all-models-label">Models Used:</span>
+                    <div className="detection-all-models-tags">
+                      {detectionResult.models_used.map(m => (
+                        <span key={m} className={`detection-model-tag detection-model-tag-${m}`}>
+                          {m === 'weapon' ? '🔫 Weapon' : m === 'fire_smoke' ? '🔥 Fire/Smoke' : m === 'fight' ? '👊 Fight' : m}
+                        </span>
+                      ))}
+                    </div>
+                    {detectionResult.message && (
+                      <p className="detection-all-models-msg">{detectionResult.message}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Standard detections (single model mode) */}
+                {modelType !== 'all' && (detectionResult.detections || []).length > 0 && (
                   <div className="detection-results-group">
                     <h3 className="detection-results-heading">Detections Found:</h3>
                     <div className="detection-results-list">
@@ -534,10 +569,10 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                   </div>
                 )}
 
-                {/* Weapon detections */}
+                {/* Weapon detections (all models mode) */}
                 {(detectionResult.weapon_detections || []).length > 0 && (
                   <div className="detection-results-group">
-                    <h4 className="detection-sub-heading-weapon">Weapon Detections:</h4>
+                    <h4 className="detection-sub-heading-weapon">🔫 Weapon Detections:</h4>
                     <div className="detection-results-list">
                       {detectionResult.weapon_detections.map((d, i) => (
                         <div key={`w-${i}`} className="detection-result-item-weapon">
@@ -545,16 +580,17 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                             <span className="detection-result-class">{d.class}</span>
                             <span className="detection-confidence-weapon">{(d.confidence * 100).toFixed(1)}%</span>
                           </div>
+                          <span className="detection-source-tag detection-source-weapon">Weapon Model</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Fire/smoke detections */}
+                {/* Fire/smoke detections (all models mode) */}
                 {(detectionResult.fire_smoke_detections || []).length > 0 && (
                   <div className="detection-results-group">
-                    <h4 className="detection-sub-heading-fire">Fire/Smoke Detections:</h4>
+                    <h4 className="detection-sub-heading-fire">🔥 Fire/Smoke Detections:</h4>
                     <div className="detection-results-list">
                       {detectionResult.fire_smoke_detections.map((d, i) => (
                         <div key={`f-${i}`} className="detection-result-item-fire">
@@ -562,16 +598,44 @@ const Detection = ({ onLogout, onNavigate, currentPage }) => {
                             <span className="detection-result-class">{d.class}</span>
                             <span className="detection-confidence-fire">{(d.confidence * 100).toFixed(1)}%</span>
                           </div>
+                          <span className="detection-source-tag detection-source-fire">Fire/Smoke Model</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
 
+                {/* Fight detections (all models mode) */}
+                {(detectionResult.fight_detections || []).length > 0 && (
+                  <div className="detection-results-group">
+                    <h4 className="detection-sub-heading-fight">👊 Fight Detections:</h4>
+                    <div className="detection-results-list">
+                      {detectionResult.fight_detections.map((d, i) => (
+                        <div key={`fg-${i}`} className="detection-result-item-fight">
+                          <div className="detection-result-row">
+                            <span className="detection-result-class">{d.class}</span>
+                            <span className="detection-confidence-fight">{(d.confidence * 100).toFixed(1)}%</span>
+                          </div>
+                          <span className="detection-source-tag detection-source-fight">Fight Model</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* No detections message for all models mode */}
+                {modelType === 'all' && (detectionResult.detections || []).length === 0 && (
+                  <div className="detection-empty-all">
+                    <p>✅ No threats detected across any model</p>
+                  </div>
+                )}
+
                 {/* Processed images */}
                 {detectionResult.image && (
                   <div className="detection-image-section">
-                    <h3 className="detection-image-heading">Processed Image:</h3>
+                    <h3 className="detection-image-heading">
+                      {modelType === 'all' ? 'Combined Detection Result:' : 'Processed Image:'}
+                    </h3>
                     <div className="detection-image-wrap">
                       <img src={`data:image/jpeg;base64,${detectionResult.image}`} alt="Detection result" className="detection-result-img" />
                     </div>

@@ -205,6 +205,15 @@ async def load_models():
     # Connect to database
     if database_manager.connect():
         logger.info("Database connected successfully")
+        # Load and apply persisted settings
+        try:
+            saved = database_manager.get_settings()
+            thresholds = saved.get("thresholds", {})
+            if thresholds:
+                _apply_threshold_to_service(thresholds)
+                logger.info(f"Loaded persisted thresholds on startup")
+        except Exception as e:
+            logger.warning(f"Could not load persisted settings: {e}")
     else:
         logger.error("Failed to connect to database")
 
@@ -226,9 +235,44 @@ async def root():
 # Get available models
 @app.get("/models")
 async def get_models():
+    model_info = {}
+    # Weapon model info
+    if model_manager.weapon_model is not None:
+        model_info["weapon"] = {
+            "loaded": True,
+            "architecture": "YOLOv11",
+            "classes": list(model_manager.weapon_model.names.values()) if hasattr(model_manager.weapon_model, 'names') else [],
+            "file": "weapon.pt",
+        }
+    else:
+        model_info["weapon"] = {"loaded": False}
+
+    # Fire/smoke model info
+    if model_manager.fire_smoke_model is not None:
+        model_info["fire_smoke"] = {
+            "loaded": True,
+            "architecture": "YOLOv11",
+            "classes": list(model_manager.fire_smoke_model.names.values()) if hasattr(model_manager.fire_smoke_model, 'names') else [],
+            "file": "fire_smoke.pt",
+        }
+    else:
+        model_info["fire_smoke"] = {"loaded": False}
+
+    # Fight model info
+    if model_manager.fight_model is not None:
+        model_info["fight"] = {
+            "loaded": True,
+            "architecture": "BlazePose + LSTM",
+            "classes": ["fight", "no_fight"],
+            "file": "fight_detection_model.h5",
+        }
+    else:
+        model_info["fight"] = {"loaded": False}
+
     return {
         "models": model_manager.get_available_models(),
-        "current_model": model_manager.current_model
+        "current_model": model_manager.current_model,
+        "model_info": model_info
     }
 
 # Switch between models
@@ -237,7 +281,7 @@ async def switch_model(model_name: str = Form(...)):
     if model_manager.switch_model(model_name):
         return {"message": f"Switched to {model_name} model", "current_model": model_name}
     else:
-        return {"error": "Invalid model name. Use 'weapon', 'fire_smoke', 'fight', or 'both'"}
+        return {"error": "Invalid model name. Use 'weapon', 'fire_smoke', 'fight', 'both', or 'all'"}
 
 # Reset fight detection buffer
 @app.post("/fight/reset")
@@ -643,6 +687,236 @@ async def detect_both_models(
         logger.error(f"Error in dual model detection: {e}", exc_info=True)
         return {"error": "Detection failed", "details": str(e)}
 
+# Detect with ALL models (weapon + fire/smoke + fight)
+@app.post("/detect/all")
+async def detect_all_models(
+    file: UploadFile = File(...),
+    camera_id: str = Form("default")
+):
+    logger.info("Detecting with ALL models")
+
+    if not model_manager.models_loaded():
+        logger.error("No models loaded")
+        return {"error": "No models loaded"}
+
+    # ── Quality thresholds for All-Models mode ──────────────
+    ALL_MODE_CONFIDENCE = 0.6        # Minimum confidence for YOLO detections
+    FIGHT_CONFIDENCE_MIN = 0.7       # Higher bar for fight (prone to false positives)
+
+    # Strict known-class whitelists — anything outside these is discarded
+    WEAPON_CLASSES = {'weapon', 'gun', 'knife', 'pistol', 'rifle', 'handgun',
+                      'sword', 'bomb', 'grenade', 'firearm'}
+    FIRE_SMOKE_CLASSES = {'fire', 'smoke', 'flame', 'blaze'}
+
+    try:
+        # Read image file with size limit
+        contents = await file.read()
+        logger.info(f"[ALL] Received file of size: {len(contents)} bytes")
+
+        if len(contents) > 10 * 1024 * 1024:
+            return {"error": "File too large. Maximum size is 10MB."}
+        if not contents:
+            return {"error": "Empty file received"}
+
+        nparr = np.frombuffer(contents, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+        if img is None:
+            return {"error": "Invalid image file. Please upload a valid image file (JPEG, PNG, etc.)."}
+
+        logger.info(f"[ALL] Decoded image shape: {img.shape}")
+
+        # ── Helper: IoU for duplicate suppression ───────────────
+        def _iou(a, b):
+            """Compute Intersection-over-Union between two boxes (dict with x1,y1,x2,y2)."""
+            xa = max(a.get("x1", 0), b.get("x1", 0))
+            ya = max(a.get("y1", 0), b.get("y1", 0))
+            xb = min(a.get("x2", 0), b.get("x2", 0))
+            yb = min(a.get("y2", 0), b.get("y2", 0))
+            inter = max(0, xb - xa) * max(0, yb - ya)
+            area_a = max(0, a.get("x2", 0) - a.get("x1", 0)) * max(0, a.get("y2", 0) - a.get("y1", 0))
+            area_b = max(0, b.get("x2", 0) - b.get("x1", 0)) * max(0, b.get("y2", 0) - b.get("y1", 0))
+            union = area_a + area_b - inter
+            return inter / union if union > 0 else 0.0
+
+        # ── Collect raw detections from every loaded model ──────
+        raw_weapon = []
+        raw_fire_smoke = []
+        fight_detections = []
+
+        # Weapon model
+        weapon_model = model_manager.get_model("weapon")
+        if weapon_model is not None:
+            logger.info("[ALL] Running weapon detection")
+            weapon_result = detection_service.detect_objects(weapon_model, img)
+            if weapon_result["success"]:
+                raw_weapon = weapon_result["detections"]
+
+        # Fire/Smoke model
+        fire_smoke_model = model_manager.get_model("fire_smoke")
+        if fire_smoke_model is not None:
+            logger.info("[ALL] Running fire/smoke detection")
+            fire_result = detection_service.detect_objects(fire_smoke_model, img)
+            if fire_result["success"]:
+                raw_fire_smoke = fire_result["detections"]
+
+        # Fight model (with higher confidence bar)
+        if fight_detection_service and fight_detection_service.is_loaded:
+            logger.info("[ALL] Running fight detection")
+            try:
+                fight_result = fight_detection_service.detect_fight(img.copy(), force_predict=True)
+                if (fight_result.get("success")
+                        and fight_result.get("is_fight")
+                        and fight_result.get("fight_probability", 0) >= FIGHT_CONFIDENCE_MIN):
+                    box = fight_result.get("box") or {
+                        "x1": 0, "y1": 0,
+                        "x2": img.shape[1], "y2": img.shape[0]
+                    }
+                    fight_detections = [{
+                        "class": "fight",
+                        "confidence": fight_result["fight_probability"],
+                        "box": box,
+                        "model_source": "fight"
+                    }]
+                elif fight_result.get("is_fight"):
+                    logger.info(f"[ALL] Fight suppressed — confidence "
+                                f"{fight_result.get('fight_probability', 0):.2f} < {FIGHT_CONFIDENCE_MIN}")
+            except Exception as e:
+                logger.error(f"[ALL] Fight detection error: {e}")
+
+        logger.info(f"[ALL] Raw weapon classes: {[d['class'] for d in raw_weapon]}")
+        logger.info(f"[ALL] Raw fire_smoke classes: {[d['class'] for d in raw_fire_smoke]}")
+
+        # ── 1. Confidence gate — discard low-confidence detections ─
+        raw_weapon = [d for d in raw_weapon if d["confidence"] >= ALL_MODE_CONFIDENCE]
+        raw_fire_smoke = [d for d in raw_fire_smoke if d["confidence"] >= ALL_MODE_CONFIDENCE]
+
+        # ── 2. Cross-contamination filter ─────────────────────────
+        # Trust each model's own detections by default.
+        # Only MOVE detections that clearly belong to the OTHER model's domain.
+        # Keep unknown/custom class names with their originating model.
+
+        # Detections from weapon model that are clearly fire/smoke → move
+        misplaced_fire = [d for d in raw_weapon if d["class"].lower() in FIRE_SMOKE_CLASSES]
+        # Everything else from weapon model stays as weapon detection
+        weapon_detections = [d for d in raw_weapon if d["class"].lower() not in FIRE_SMOKE_CLASSES]
+
+        # Detections from fire/smoke model that are clearly weapon → move
+        misplaced_weapon = [d for d in raw_fire_smoke if d["class"].lower() in WEAPON_CLASSES]
+        # Everything else from fire/smoke model stays as fire/smoke detection
+        fire_smoke_detections = [d for d in raw_fire_smoke if d["class"].lower() not in WEAPON_CLASSES]
+
+        # Add misplaced detections to the correct category
+        weapon_detections += misplaced_weapon
+        fire_smoke_detections += misplaced_fire
+
+        if misplaced_fire or misplaced_weapon:
+            logger.info(f"[ALL] Reclassified — "
+                         f"fire from weapon model: {[d['class'] for d in misplaced_fire]}, "
+                         f"weapon from fire model: {[d['class'] for d in misplaced_weapon]}")
+
+        # Tag model_source on every detection
+        for d in weapon_detections:
+            d["model_source"] = "weapon"
+        for d in fire_smoke_detections:
+            d["model_source"] = "fire_smoke"
+
+        # ── 3. IoU-based duplicate suppression ────────────────────
+        # If both models detect essentially the same bounding-box region,
+        # keep only the higher-confidence detection.
+        combined = weapon_detections + fire_smoke_detections
+        keep_flags = [True] * len(combined)
+        for i in range(len(combined)):
+            if not keep_flags[i]:
+                continue
+            for j in range(i + 1, len(combined)):
+                if not keep_flags[j]:
+                    continue
+                box_i = combined[i].get("box", {})
+                box_j = combined[j].get("box", {})
+                if box_i and box_j and _iou(box_i, box_j) > 0.5:
+                    # Same region — keep the one with higher confidence
+                    if combined[i]["confidence"] >= combined[j]["confidence"]:
+                        keep_flags[j] = False
+                        logger.info(f"[ALL] Suppressed duplicate: {combined[j]['class']} "
+                                     f"({combined[j]['confidence']:.2f}) overlaps with "
+                                     f"{combined[i]['class']} ({combined[i]['confidence']:.2f})")
+                    else:
+                        keep_flags[i] = False
+                        logger.info(f"[ALL] Suppressed duplicate: {combined[i]['class']} "
+                                     f"({combined[i]['confidence']:.2f}) overlaps with "
+                                     f"{combined[j]['class']} ({combined[j]['confidence']:.2f})")
+                        break
+
+        deduped = [d for d, keep in zip(combined, keep_flags) if keep]
+        weapon_detections = [d for d in deduped if d.get("model_source") == "weapon"]
+        fire_smoke_detections = [d for d in deduped if d.get("model_source") == "fire_smoke"]
+
+        logger.info(f"[ALL] After quality filtering — Weapon: {len(weapon_detections)}, "
+                     f"Fire/Smoke: {len(fire_smoke_detections)}, Fight: {len(fight_detections)}")
+
+        # ── Aggregate ───────────────────────────────────────────
+        all_detections = weapon_detections + fire_smoke_detections + fight_detections
+        logger.info(f"[ALL] Final detections: {len(all_detections)}")
+
+        # ── Draw combined annotations on a single image ─────────
+        combined_img = img.copy()
+        MODEL_COLORS = {
+            "weapon": (0, 0, 255),      # Red
+            "fire_smoke": (255, 140, 0), # Orange-blue (BGR)
+            "fight": (0, 200, 255),      # Yellow (BGR)
+        }
+        for det in all_detections:
+            color = MODEL_COLORS.get(det.get("model_source"), (0, 255, 0))
+            box = det.get("box", {})
+            if box:
+                cv2.rectangle(
+                    combined_img,
+                    (int(box.get("x1", 0)), int(box.get("y1", 0))),
+                    (int(box.get("x2", 0)), int(box.get("y2", 0))),
+                    color, 2
+                )
+                label = f"{det['class']} {det['confidence']:.2f}"
+                cv2.putText(
+                    combined_img, label,
+                    (int(box.get("x1", 0)), int(box.get("y1", 0)) - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 1
+                )
+
+        # ── Encode combined image ───────────────────────────────
+        _, buffer = cv2.imencode('.jpg', combined_img, [cv2.IMWRITE_JPEG_QUALITY, 80])
+        combined_image_b64 = base64.b64encode(buffer.tobytes()).decode('utf-8')
+
+        # ── Save to DB & emit alerts (only for valid detections) ─
+        for detection in all_detections:
+            confidence = detection["confidence"]
+            severity = "high" if confidence >= 0.8 else "medium" if confidence >= 0.6 else "low"
+            detection_id = database_manager.save_detection(
+                detection_type=detection["class"],
+                confidence=confidence
+            )
+            if detection_id:
+                database_manager.save_alert(detection_id=detection_id, severity=severity)
+                await emit_alert(detection["class"], confidence, severity, detection_id)
+
+        return {
+            "detections": all_detections,
+            "weapon_detections": weapon_detections,
+            "fire_smoke_detections": fire_smoke_detections,
+            "fight_detections": fight_detections,
+            "image": combined_image_b64,
+            "models_used": [
+                m for m in ["weapon", "fire_smoke", "fight"]
+                if model_manager.get_model(m) is not None
+                or (m == "fight" and fight_detection_service and fight_detection_service.is_loaded)
+            ],
+            "message": f"Detected {len(all_detections)} object(s) across all models"
+                       if all_detections else "No detections found across any model"
+        }
+    except Exception as e:
+        logger.error(f"Error in all-model detection: {e}", exc_info=True)
+        return {"error": "Detection failed", "details": str(e)}
+
 # Get recent detections
 @app.get("/detections")
 async def get_recent_detections(limit: int = 50):
@@ -676,6 +950,104 @@ async def mark_all_detections_read():
         return {"message": "All detections marked as read"}
     else:
         return {"error": "Failed to mark all detections as read"}
+
+# ── Default settings (used when no DB value exists) ──────────
+DEFAULT_SETTINGS = {
+    "notifications": {
+        "emailAlerts": True,
+        "pushNotifications": True,
+        "smsAlerts": False,
+        "alertSound": True,
+    },
+    "detection": {
+        "motionDetection": True,
+        "objectDetection": True,
+        "poseEstimation": True,
+        "behaviorAnalysis": True,
+        "fireDetection": True,
+        "weaponDetection": True,
+    },
+    "thresholds": {
+        "detectionConfidence": 75,
+        "behaviorConfidence": 80,
+        "alertCooldown": 30,
+    },
+    "system": {
+        "recordingEnabled": True,
+        "autoArchive": True,
+        "retentionDays": 30,
+        "storageLimit": 100,
+    },
+}
+
+
+def _apply_threshold_to_service(thresholds: dict):
+    """Apply the detection confidence threshold to the live detection service."""
+    conf = thresholds.get("detectionConfidence", 75)
+    # Convert percentage (0-100) to a 0-1 float
+    detection_service.confidence_threshold = max(0.05, min(1.0, conf / 100.0))
+    logger.info(f"[Settings] Detection confidence threshold set to {detection_service.confidence_threshold:.2f}")
+
+
+# ── Settings endpoints ───────────────────────────────────────
+
+@app.get("/api/settings")
+async def get_settings():
+    """Return all persisted settings, merged with defaults."""
+    saved = database_manager.get_settings()
+
+    # Merge saved values over defaults
+    merged = {}
+    for section, defaults in DEFAULT_SETTINGS.items():
+        saved_section = saved.get(section, {})
+        if isinstance(defaults, dict) and isinstance(saved_section, dict):
+            merged[section] = {**defaults, **saved_section}
+        else:
+            merged[section] = saved_section if section in saved else defaults
+
+    return {"settings": merged}
+
+
+@app.put("/api/settings")
+async def update_settings(payload: dict):
+    """
+    Save settings and apply relevant values to the running system.
+    Expects: { "notifications": {...}, "detection": {...}, "thresholds": {...}, "system": {...} }
+    """
+    success = database_manager.save_settings(payload)
+
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to save settings")
+
+    # Apply threshold changes immediately
+    thresholds = payload.get("thresholds")
+    if thresholds:
+        _apply_threshold_to_service(thresholds)
+
+    return {"message": "Settings saved successfully", "settings": payload}
+
+
+@app.post("/api/settings/clear-data")
+async def clear_all_data():
+    """Clear all detection and alert data."""
+    success = database_manager.clear_all_data()
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to clear data")
+    return {"message": "All detection and alert data has been cleared"}
+
+
+@app.post("/api/settings/reset-defaults")
+async def reset_to_defaults():
+    """Reset all settings to factory defaults."""
+    success = database_manager.save_settings(DEFAULT_SETTINGS)
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to reset settings")
+
+    # Apply default thresholds
+    _apply_threshold_to_service(DEFAULT_SETTINGS["thresholds"])
+
+    return {"message": "Settings reset to defaults", "settings": DEFAULT_SETTINGS}
+
 
 # ── Auth endpoints ───────────────────────────────────────────
 

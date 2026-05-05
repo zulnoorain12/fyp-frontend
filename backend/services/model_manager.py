@@ -93,7 +93,7 @@ class ModelManager:
             return self.fire_smoke_model
         elif self.current_model == "fight" and self.fight_model:
             return self.fight_model
-        # For "both" mode, we don't return a single model
+        # For "all" mode, we don't return a single model
         # The camera service handles this case separately
         return None
     
@@ -115,7 +115,7 @@ class ModelManager:
     
     def switch_model(self, model_name: str) -> bool:
         """Switch to a different model."""
-        if model_name in ["weapon", "fire_smoke", "fight", "both"]:
+        if model_name in ["weapon", "fire_smoke", "fight", "both", "all"]:
             self.current_model = model_name
             self.logger.info(f"Switched to model: {model_name}")
             return True
@@ -131,8 +131,13 @@ class ModelManager:
             models.append("fire_smoke")
         if self.fight_model:
             models.append("fight")
-        # Add "both" option if both weapon and fire_smoke models are available
-        if self.weapon_model and self.fire_smoke_model:
-            models.append("both")
+        # Add "all" option if at least 2 models are available
+        loaded_count = sum([
+            self.weapon_model is not None,
+            self.fire_smoke_model is not None,
+            self.fight_model is not None,
+        ])
+        if loaded_count >= 2:
+            models.append("all")
         self.logger.info(f"Available models: {models}")
         return models

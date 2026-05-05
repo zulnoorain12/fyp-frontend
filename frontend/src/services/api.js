@@ -61,6 +61,9 @@ export const apiEndpoints = {
   detectBoth: (formData) => api.post('/detect/both', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
+  detectAll: (formData) => api.post('/detect/all', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
   detectFight: (formData) => api.post('/detect/fight', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
@@ -78,6 +81,12 @@ export const apiEndpoints = {
   // Mark as read
   markDetectionRead: (id) => api.patch(`/detections/${id}/read`),
   markAllDetectionsRead: () => api.patch('/detections/read-all'),
+
+  // Settings
+  getSettings: () => api.get('/api/settings'),
+  saveSettings: (settings) => api.put('/api/settings', settings),
+  clearAllData: () => api.post('/api/settings/clear-data'),
+  resetDefaults: () => api.post('/api/settings/reset-defaults'),
 };
 
 export default api;
