@@ -135,11 +135,11 @@ CREATE DATABASE cyberisai;
 3. Update the database credentials in `backend/.env` if needed:
 
 ```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=cyberisai
-DB_USER=postgres
-DB_PASSWORD=cyberisai
+DB_HOST=
+DB_PORT=
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
 ```
 
 4. Initialize the database tables:
@@ -164,7 +164,7 @@ cd backend
 python -m venv venv
 
 # Activate it (Windows)
-venv\Scripts\activate
+venv\Scripts\activate.ps1
 
 # Activate it (macOS/Linux)
 source venv/bin/activate
